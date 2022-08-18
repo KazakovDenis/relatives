@@ -10,6 +10,7 @@ fastapi = "^0.79.0"
 uvicorn = "^0.18.2"
 databases = {extras = ["sqlite"], version = "^0.6.1"}
 orm = {extras = ["sqlite"], version = "^0.3.1"}
+Jinja2 = "^3.1.2"
 
 [tool.poetry.dev-dependencies]
 

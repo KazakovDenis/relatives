@@ -1,7 +1,7 @@
 import orm
 
 from ext.orm.fields import ForeignKey
-from .init import models
+from deps import models
 
 
 class Person(orm.Model):
