@@ -1,4 +1,5 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
+from orm import MultipleMatches, NoMatch
 
 from .models import Person
 from .schemas import PersonSchema
@@ -19,4 +20,7 @@ async def person_create(person: PersonSchema):
 
 @router.get('/{pid}')
 async def person_detail(pid: int):
-    return await Person.objects.get(id=pid)
+    try:
+        return await Person.objects.get(id=pid)
+    except (NoMatch, MultipleMatches):
+        raise HTTPException(status_code=404, detail='Person not found')
