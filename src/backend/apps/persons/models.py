@@ -1,8 +1,11 @@
+from typing import Optional, Union
+
 import orm
 
+from deps import models, db
 from ext.orm.fields import ForeignKey
-from deps import models
 from .constants import BACK_RELATIONS, Gender, RelationType
+from .utils import ensure_rel_type
 
 
 class Relation(orm.Model):
@@ -30,14 +33,18 @@ class Person(orm.Model):
         'info': orm.Text(allow_null=True),
     }
 
-    async def get_relatives(self, rel_type: RelationType) -> list['Person']:
-        self.ensure_rel_type(rel_type)
-        rels = await Relation.objects.all(person_from=self, type=rel_type.value)
+    async def get_relatives(self, rel_type: Optional[Union[RelationType, str]] = None) -> list['Person']:
+        if rel_type:
+            rel_type = ensure_rel_type(rel_type)
+            rels = await Relation.objects.all(person_from=self, type=rel_type.value)
+        else:
+            rels = await Relation.objects.all(person_from=self)
         pids = [rel.person_to.id for rel in rels]
         return await Person.objects.filter(id__in=pids).all()
 
+    @db.transaction()
     async def add_relative(self, rel_type: RelationType, person: 'Person'):
-        self.ensure_rel_type(rel_type)
+        rel_type = ensure_rel_type(rel_type)
         await Relation.objects.get_or_create(
             {},
             person_from=self,
@@ -51,11 +58,7 @@ class Person(orm.Model):
             type=BACK_RELATIONS[rel_type].value,
         )
 
+    @db.transaction()
     async def remove_relative(self, person: 'Person'):
         await Relation.objects.filter(person_from=self, person_to=person).delete()
         await Relation.objects.filter(person_from=person, person_to=self).delete()
-
-    @staticmethod
-    def ensure_rel_type(rel_type: RelationType):
-        if not isinstance(rel_type, RelationType):
-            raise ValueError(f'Bad relation type: {rel_type}')
