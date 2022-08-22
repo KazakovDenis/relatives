@@ -3,11 +3,30 @@ from typing import Optional
 from fastapi import APIRouter, HTTPException
 from orm import MultipleMatches, NoMatch
 
-from .models import Person, Relation
-from .schemas import PersonSchema, RelationSchema
+from .models import Person, Relation, Tree
+from .schemas import PersonSchema, RelationSchema, TreeSchema
 
 
-router = APIRouter(prefix='/p')
+router = APIRouter()
+
+
+@router.get('/tree')
+async def tree_list():
+    return await Tree.objects.all()
+
+
+@router.post('/tree')
+async def tree_create(tree: TreeSchema):
+    tree, created = await Tree.objects.get_or_create(**tree.dict())
+    return tree
+
+
+@router.get('/tree/{tid}')
+async def tree_detail(tid: int):
+    try:
+        return await Tree.objects.get(id=tid)
+    except (NoMatch, MultipleMatches):
+        raise HTTPException(status_code=404, detail='Tree not found')
 
 
 @router.get('/persons')

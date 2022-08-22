@@ -6,7 +6,7 @@ from fastapi.staticfiles import StaticFiles
 
 def create_app() -> FastAPI:
     from apps import api_v1, ui
-    from deps import db, init_db, templates
+    from deps import db, templates
 
     app = FastAPI()
     app.include_router(api_v1.router)
@@ -16,7 +16,6 @@ def create_app() -> FastAPI:
     @app.on_event('startup')
     async def database_connect():
         await db.connect()
-        await init_db()
 
     @app.on_event('shutdown')
     async def database_disconnect():

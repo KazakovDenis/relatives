@@ -5,7 +5,6 @@ import orm
 from deps import models, db
 from ext.orm.fields import ForeignKey
 from .constants import BACK_RELATIONS, Gender, RelationType
-from .utils import ensure_rel_type
 
 
 class Relation(orm.Model):
@@ -19,6 +18,14 @@ class Relation(orm.Model):
     }
 
 
+def ensure_rel_type(rel_type: RelationType) -> RelationType:
+    if isinstance(rel_type, RelationType):
+        return rel_type
+    if not isinstance(rel_type, str):
+        raise ValueError(f'Bad relation type: {rel_type}')
+    return RelationType(rel_type)
+
+
 class Person(orm.Model):
     tablename = 'persons'
     registry = models
@@ -28,9 +35,11 @@ class Person(orm.Model):
         'surname': orm.String(max_length=100),
         'patronymic': orm.String(max_length=100, allow_null=True),
         'gender': orm.Enum(Gender),
+        'birthname': orm.String(max_length=200, allow_null=True),
         'birthdate': orm.Date(allow_null=True),
         'birthplace': orm.String(max_length=100, allow_null=True),
         'info': orm.Text(allow_null=True),
+        'photo': orm.URL(max_length=200,  allow_null=True),
     }
 
     async def get_relatives(self, rel_type: Optional[Union[RelationType, str]] = None) -> list['Person']:
@@ -62,3 +71,22 @@ class Person(orm.Model):
     async def remove_relative(self, person: 'Person'):
         await Relation.objects.filter(person_from=self, person_to=person).delete()
         await Relation.objects.filter(person_from=person, person_to=self).delete()
+
+
+class Tree(orm.Model):
+    tablename = 'trees'
+    registry = models
+    fields = {
+        'id': orm.Integer(primary_key=True),
+        'name': orm.String(max_length=100, unique=True, default='My tree'),
+    }
+
+
+class PersonTree(orm.Model):
+    tablename = 'person_tree'
+    registry = models
+    fields = {
+        'id': orm.Integer(primary_key=True),
+        'tree': ForeignKey(to='Tree', on_delete=orm.CASCADE),
+        'person': ForeignKey(to='Person', on_delete=orm.CASCADE),
+    }

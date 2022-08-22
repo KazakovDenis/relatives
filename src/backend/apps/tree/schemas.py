@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date
 from typing import Optional
 
 from pydantic import BaseModel
@@ -11,7 +11,8 @@ class PersonSchema(BaseModel):
     surname: str
     patronymic: Optional[str] = None
     gender: Gender
-    birthdate: Optional[datetime] = None
+    birthname: Optional[str] = None
+    birthdate: Optional[date] = None
     birthplace: Optional[str] = None
     info: Optional[str] = None
 
@@ -20,3 +21,7 @@ class RelationSchema(BaseModel):
     person_from: int
     person_to: int
     relation: RelationType
+
+
+class TreeSchema(BaseModel):
+    name: Optional[str]

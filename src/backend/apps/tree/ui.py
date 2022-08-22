@@ -11,4 +11,4 @@ router = APIRouter(prefix='/persons')
 @router.get('/add', response_class=HTMLResponse)
 async def root(request: Request):
     ctx = {'request': request}
-    return templates.TemplateResponse('ui/person_detail.html', ctx)
+    return templates.TemplateResponse('person_detail.html', ctx)

@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 
-from . import persons
+from . import tree
 
 
 router = APIRouter(prefix='/ui')
-router.include_router(persons.ui_router)
+router.include_router(tree.ui_router)
