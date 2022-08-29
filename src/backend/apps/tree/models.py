@@ -1,9 +1,9 @@
 from typing import Optional, Union
 
 import orm
-
-from deps import models, db
+from deps import db, models
 from ext.orm.fields import ForeignKey
+
 from .constants import BACK_RELATIONS, Gender, RelationType
 
 
@@ -17,8 +17,13 @@ class Relation(orm.Model):
         'type': orm.Enum(RelationType),
     }
 
+    def __hash__(self):
+        if self.person_from.id > self.person_to.id:
+            return hash((self.person_to.id, self.person_from.id))
+        return hash((self.person_from.id, self.person_to.id))
 
-def ensure_rel_type(rel_type: RelationType) -> RelationType:
+
+def ensure_rel_type(rel_type: Optional[Union[RelationType, str]]) -> RelationType:
     if isinstance(rel_type, RelationType):
         return rel_type
     if not isinstance(rel_type, str):
@@ -53,6 +58,7 @@ class Person(orm.Model):
 
     @db.transaction()
     async def add_relative(self, rel_type: RelationType, person: 'Person'):
+        # TODO: check relative is not the same person
         rel_type = ensure_rel_type(rel_type)
         await Relation.objects.get_or_create(
             {},

@@ -12,6 +12,7 @@ BACK_RELATIONS = {
     RelationType.PARENT: RelationType.CHILD,
     RelationType.CHILD: RelationType.PARENT,
     RelationType.SPOUSE: RelationType.SPOUSE,
+    RelationType.EX_SPOUSE: RelationType.EX_SPOUSE,
 }
 
 

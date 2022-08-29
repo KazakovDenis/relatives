@@ -1,10 +1,11 @@
 document.addEventListener("DOMContentLoaded", function() {
     retrieveNodes();
+    document.getElementById("cyto-download").addEventListener("click", download)
 });
 
 
-let nodes;
-let url = `${document.URL}api/v1/tree/1/`;
+let nodes, cyto;
+let url = `${document.URL}api/v1/tree/1/scheme`;
 
 
 function retrieveNodes() {
@@ -12,48 +13,70 @@ function retrieveNodes() {
     xhr.open('GET', url);
     xhr.send();
     xhr.onload = function() {
-      if (xhr.status === 200) {
-        parseResponse(xhr.response);
-        buildGraph();
-      }
+        if (xhr.status === 200) {
+            parseResponse(xhr.response);
+            buildTree();
+        } else if (xhr.status < 500) {
+            alert(`Server Error`);
+        } else {
+            alert(`Bad request`);
+        }
     };
     xhr.onerror = function() {
-      alert(`Network Error`);
+        alert(`Network Error`);
     };
 }
 
 
 function parseResponse(response) {
+    let data = JSON.parse(response);
     let newNodes = [];
-    response.forEach(item => {
+
+    data.nodes.forEach(item => {
+        let fullName;
+        if (item['patronymic']) {
+            fullName = `${item['name']} ${item['patronymic']} ${item['surname']}`;
+        } else {
+            fullName = `${item['name']} ${item['surname']}`;
+        }
         let node = {
             data: {
                 id: item['id'],
+                fullName,
             }
         }
+        newNodes.push(node)
+    })
+
+    data.edges.forEach(item => {
+        let person_from = item['person_from']['id'];
+        let person_to = item['person_to']['id'];
         let edge = {
             data: {
-                id: `${item['person_from']}/${item['person_to']}`,
-                source: item['person_from'],
-                target: item['person_to'],
+                id: `${person_from}/${person_to}`,
+                source: person_from,
+                target: person_to,
+                relationType: item['type'],
             }
         }
-        newNodes.push(node, edge)
+        newNodes.push(edge)
     })
     nodes = newNodes;
 }
 
 
-function buildGraph() {
-    cytoscape({
+function buildTree() {
+    cyto = cytoscape({
         container: document.getElementById('cyto'),
         elements: nodes,
         style: [
             {
                 selector: 'node',
                 style: {
-                    'background-color': 'rgba(102,102,102,0.65)',
-                    'label': 'data(id)'
+                    'label': 'data(fullName)',
+                    'background-color': 'rgba(54,119,206,0.65)',
+                    'font-size': 8,
+                    'text-valign': 'bottom',
                 }
             },
             {
@@ -61,15 +84,23 @@ function buildGraph() {
                 style: {
                     'width': 3,
                     'line-color': '#ccc',
-                    'target-arrow-color': '#ccc',
-                    'target-arrow-shape': 'triangle',
                     'curve-style': 'bezier'
                 }
             }
         ],
         layout: {
-            name: 'grid',
-            rows: 1
+            name: 'cose',
+            fit: true,
         }
     });
+    let head = cyto.nodes()[0];
+    head.style("background-color", "rgb(200,0,0)");
+}
+
+function download() {
+    let png64 = cyto.png();
+    let img = document.getElementById('cyto-png');
+    img.setAttribute('src', png64);
+    img.classList.remove("visually-hidden");
+    document.getElementById('cyto').classList.add("visually-hidden");
 }
