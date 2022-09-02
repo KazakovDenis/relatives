@@ -1,0 +1,200 @@
+{% extends "base.html" %}
+
+{% block extra_head %}
+<link href="{{ url_for('static', path='css/list.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', path='css/sidebar.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="flex-shrink-0 p-3 bg-white" style="width: 280px;">
+    <ul class="list-unstyled ps-0">
+      <li class="mb-1">
+        <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#home-collapse" aria-expanded="true">
+          Trees
+        </button>
+        <div class="collapse show" id="home-collapse">
+          <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+            <li><a href="#" class="link-dark d-inline-flex text-decoration-none rounded">Tree "Name"</a></li>
+          </ul>
+        </div>
+      </li>
+      <li class="border-top my-3"></li>
+      <li class="mb-1">
+        <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#account-collapse" aria-expanded="false">
+          Account
+        </button>
+        <div class="collapse" id="account-collapse">
+          <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+            <li><a href="#" class="link-dark d-inline-flex text-decoration-none rounded">New...</a></li>
+            <li><a href="#" class="link-dark d-inline-flex text-decoration-none rounded">Profile</a></li>
+            <li><a href="#" class="link-dark d-inline-flex text-decoration-none rounded">Settings</a></li>
+            <li><a href="#" class="link-dark d-inline-flex text-decoration-none rounded">Sign out</a></li>
+          </ul>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+      <h1 class="h2">Tree "Name"</h1>
+      <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group me-2">
+          <a href="{{ url_for('ui_person_detail') }}">
+            <button type="button" class="btn btn-sm btn-outline-secondary">Add person</button>
+          </a>
+        </div>
+        <div>
+          <a href="{{ url_for('ui_tree_scheme') }}">
+            <button type="button" class="btn btn-sm btn-outline-secondary">Switch to scheme</button>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="table-responsive">
+      <table class="table table-striped table-sm">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Header</th>
+            <th scope="col">Header</th>
+            <th scope="col">Header</th>
+            <th scope="col">Header</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1,001</td>
+            <td>random</td>
+            <td>data</td>
+            <td>placeholder</td>
+            <td>text</td>
+          </a></tr>
+          <tr>
+            <td>1,002</td>
+            <td>placeholder</td>
+            <td>irrelevant</td>
+            <td>visual</td>
+            <td>layout</td>
+          </tr>
+          <tr>
+            <td>1,003</td>
+            <td>data</td>
+            <td>rich</td>
+            <td>dashboard</td>
+            <td>tabular</td>
+          </tr>
+          <tr>
+            <td>1,003</td>
+            <td>information</td>
+            <td>placeholder</td>
+            <td>illustrative</td>
+            <td>data</td>
+          </tr>
+          <tr>
+            <td>1,004</td>
+            <td>text</td>
+            <td>random</td>
+            <td>layout</td>
+            <td>dashboard</td>
+          </tr>
+          <tr>
+            <td>1,005</td>
+            <td>dashboard</td>
+            <td>irrelevant</td>
+            <td>text</td>
+            <td>placeholder</td>
+          </tr>
+          <tr>
+            <td>1,006</td>
+            <td>dashboard</td>
+            <td>illustrative</td>
+            <td>rich</td>
+            <td>data</td>
+          </tr>
+          <tr>
+            <td>1,007</td>
+            <td>placeholder</td>
+            <td>tabular</td>
+            <td>information</td>
+            <td>irrelevant</td>
+          </tr>
+          <tr>
+            <td>1,008</td>
+            <td>random</td>
+            <td>data</td>
+            <td>placeholder</td>
+            <td>text</td>
+          </tr>
+          <tr>
+            <td>1,009</td>
+            <td>placeholder</td>
+            <td>irrelevant</td>
+            <td>visual</td>
+            <td>layout</td>
+          </tr>
+          <tr>
+            <td>1,010</td>
+            <td>data</td>
+            <td>rich</td>
+            <td>dashboard</td>
+            <td>tabular</td>
+          </tr>
+          <tr>
+            <td>1,011</td>
+            <td>information</td>
+            <td>placeholder</td>
+            <td>illustrative</td>
+            <td>data</td>
+          </tr>
+          <tr>
+            <td>1,012</td>
+            <td>text</td>
+            <td>placeholder</td>
+            <td>layout</td>
+            <td>dashboard</td>
+          </tr>
+          <tr>
+            <td>1,013</td>
+            <td>dashboard</td>
+            <td>irrelevant</td>
+            <td>text</td>
+            <td>visual</td>
+          </tr>
+          <tr>
+            <td>1,014</td>
+            <td>dashboard</td>
+            <td>illustrative</td>
+            <td>rich</td>
+            <td>data</td>
+          </tr>
+          <tr>
+            <td>1,015</td>
+            <td>random</td>
+            <td>tabular</td>
+            <td>information</td>
+            <td>text</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+</div>
+{% endblock %}
+
+{% block extra_script %}
+<script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js" integrity="sha384-uO3SXW5IuS1ZpFPKugNNWqTZRRglnUJK6UAZ/gxOX80nxEkN9NcGZTftn6RzhGWE" crossorigin="anonymous"></script>
+<script>
+  (() => {
+    'use strict'
+
+    feather.replace({ 'aria-hidden': 'true' });
+    const tooltipTriggerList = Array.from(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    tooltipTriggerList.forEach(tooltipTriggerEl => {
+      new bootstrap.Tooltip(tooltipTriggerEl)
+    })
+  })()
+</script>
+{% endblock %}

@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
 
 let nodes, cyto;
-let url = `${document.URL}api/v1/tree/1/scheme`;
+let url = `${document.location.origin}/api/v1/tree/1/scheme`;
 
 
 function retrieveNodes() {

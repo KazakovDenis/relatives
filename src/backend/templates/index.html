@@ -1,19 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div>
-    <h1 class="text-center">Relatives</h1>
-    <hr>
-    <div id="cyto" style="height: 900px"></div>
-    <img src="" alt="Tree" id="cyto-png" class="visually-hidden">
-    <hr>
-    <div class="text-center">
-        <button id="cyto-download" type="button" class="btn btn-primary">As picture</button>
-    </div>
+<div class="text-center h-100">
+    <h1>Build and fill your family tree with your relatives together</h1>
 </div>
-{% endblock %}
-
-{% block extra_script %}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.22.1/cytoscape.min.js"></script>
-<script src="{{ url_for('static', path='js/tree.js') }}"></script>
 {% endblock %}

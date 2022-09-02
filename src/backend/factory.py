@@ -7,8 +7,9 @@ from fastapi.staticfiles import StaticFiles
 def create_app() -> FastAPI:
     from apps import api_v1, ui
     from deps import db, templates
+    from middlewares import middlewares
 
-    app = FastAPI()
+    app = FastAPI(middleware=middlewares)
     app.include_router(api_v1.router)
     app.include_router(ui.router)
     app.mount('/static', StaticFiles(directory='static'), name='static')
