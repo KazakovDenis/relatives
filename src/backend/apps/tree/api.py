@@ -7,6 +7,7 @@ from .constants import BACK_RELATIONS, RelationType
 from .models import Person, PersonTree, Relation, Tree
 from .schemas import PersonSchema, RelationSchema, TreeSchema
 
+
 router = APIRouter()
 
 

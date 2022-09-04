@@ -9,6 +9,7 @@ import asyncio
 
 from deps import models
 
+
 # revision identifiers, used by Alembic.
 revision = '47f5291659f2'
 down_revision = None

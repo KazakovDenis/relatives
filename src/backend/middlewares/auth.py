@@ -1,7 +1,6 @@
 from apps.auth.models import Session, User
 from apps.auth.utils import token_to_uuid
-from starlette.authentication import (AuthCredentials, AuthenticationBackend,
-                                      AuthenticationError, BaseUser)
+from starlette.authentication import AuthCredentials, AuthenticationBackend, AuthenticationError, BaseUser
 
 
 class RequestUser(BaseUser):
@@ -24,6 +23,7 @@ class AuthBackend(AuthenticationBackend):
     async def authenticate(self, conn):
         if (
             'login' in conn.scope['path']
+            or 'signup' in conn.scope['path']
             or 'static' in conn.scope['path']
             or conn.scope['path'] == '/'
         ):

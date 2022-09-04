@@ -9,8 +9,8 @@
     <link rel="icon" type="image/png"href="{{ url_for('static', path='img/favicon.ico')}}">
     {% block extra_head %} {% endblock %}
   </head>
-  <body>
-    <div class="container-fluid">
+  <body class="vh-100">
+    <div class="container-fluid vh-100">
       <header class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom">
         <a href="/" class="d-flex align-items-center col-md-3 mb-2 mb-md-0 text-dark fs-2 fw-bold text-decoration-none">
           Relatives
@@ -28,7 +28,7 @@
             <button id="logout-button" type="button" class="btn btn-outline-danger me-2">Log out</button>
           {% else %}
             <a href="{{ url_for('ui_login') }}"><button type="button" class="btn btn-outline-primary me-2">Log in</button></a>
-            <a href="{{ url_for('api_signup') }}"><button type="button" class="btn btn-primary">Sign-up</button></a>
+            <a href="{{ url_for('ui_signup') }}"><button type="button" class="btn btn-primary">Sign-up</button></a>
           {% endif %}
         </div>
       </header>

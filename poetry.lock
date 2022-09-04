@@ -121,6 +121,34 @@ aiopg = ["aiopg"]
 aiomysql = ["aiomysql"]
 
 [[package]]
+name = "dnspython"
+version = "2.2.1"
+description = "DNS toolkit"
+category = "main"
+optional = false
+python-versions = ">=3.6,<4.0"
+
+[package.extras]
+dnssec = ["cryptography (>=2.6,<37.0)"]
+curio = ["curio (>=1.2,<2.0)", "sniffio (>=1.1,<2.0)"]
+doh = ["h2 (>=4.1.0)", "httpx (>=0.21.1)", "requests (>=2.23.0,<3.0.0)", "requests-toolbelt (>=0.9.1,<0.10.0)"]
+idna = ["idna (>=2.1,<4.0)"]
+trio = ["trio (>=0.14,<0.20)"]
+wmi = ["wmi (>=1.5.1,<2.0.0)"]
+
+[[package]]
+name = "email-validator"
+version = "1.2.1"
+description = "A robust email syntax and deliverability validation library."
+category = "main"
+optional = false
+python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,>=2.7"
+
+[package.dependencies]
+dnspython = ">=1.15.0"
+idna = ">=2.0.0"
+
+[[package]]
 name = "fastapi"
 version = "0.79.0"
 description = "FastAPI framework, high performance, easy to learn, fast to code, ready for production"
@@ -332,14 +360,15 @@ python-versions = ">=3.6"
 
 [[package]]
 name = "pydantic"
-version = "1.9.2"
+version = "1.10.1"
 description = "Data validation and settings management using python type hints"
 category = "main"
 optional = false
-python-versions = ">=3.6.1"
+python-versions = ">=3.7"
 
 [package.dependencies]
-typing-extensions = ">=3.7.4.3"
+email-validator = {version = ">=1.0.3", optional = true, markers = "extra == \"email\""}
+typing-extensions = ">=4.1.0"
 
 [package.extras]
 dotenv = ["python-dotenv (>=0.10.4)"]
@@ -508,7 +537,7 @@ standard = ["colorama (>=0.4)", "uvloop (>=0.14.0,!=0.15.0,!=0.15.1)", "PyYAML (
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "e99de26901de8180f532eb68efb2f85f0df9f990797f2c4f9553360c1fc059fe"
+content-hash = "1f809dab51e519021bfacfd7e98c1aea1ce27f58bb12ff0d0b1c3b5e5b6a00ed"
 
 [metadata.files]
 aiocsv = []
@@ -524,6 +553,8 @@ attrs = []
 click = []
 colorama = []
 databases = []
+dnspython = []
+email-validator = []
 fastapi = []
 flake8 = []
 greenlet = []

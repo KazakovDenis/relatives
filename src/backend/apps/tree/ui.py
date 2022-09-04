@@ -3,6 +3,7 @@ from fastapi import APIRouter
 from fastapi.requests import Request
 from fastapi.responses import HTMLResponse
 
+
 router = APIRouter(prefix='/persons')
 
 

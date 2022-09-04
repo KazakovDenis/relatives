@@ -2,16 +2,35 @@ from typing import Optional
 
 from fastapi import APIRouter, Cookie, HTTPException, Query, status
 from fastapi.responses import Response
+from pydantic import BaseModel, EmailStr, constr
 
 from .models import User
-from .utils import (AUTH_COOKIE, create_session, delete_session,
-                    validate_password)
+from .utils import AUTH_COOKIE, create_session, create_user, delete_session, validate_password
+
 
 router = APIRouter(prefix='/auth')
 
 
-@router.get('/signup')
-async def api_signup():
+class Credentials(BaseModel):
+    email: EmailStr
+    password: constr(min_length=6)
+
+
+@router.post('/signup')
+async def api_signup(response: Response, cred: Credentials, token: str = Cookie(None, alias=AUTH_COOKIE)):
+    if token:
+        return {'result': 'already logged in'}
+
+    try:
+        user = await create_user(pwd=cred.password, email=cred.email)
+    except Exception:   # noqa - no unified exception in orm
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail='User already exists',
+        )
+
+    token = await create_session(user)
+    response.set_cookie(AUTH_COOKIE, f'Bearer {token}', secure=True, httponly=True)
     return {'result': 'ok'}
 
 

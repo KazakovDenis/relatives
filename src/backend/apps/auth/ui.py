@@ -1,20 +1,23 @@
+from apps.tree.models import UserTree
 from deps import templates
 from fastapi import APIRouter
 from fastapi.requests import Request
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse
+
 
 router = APIRouter()
+
+
+@router.get('/signup', response_class=HTMLResponse)
+async def ui_signup(request: Request):
+    ctx = {'request': request, 'signup': True}
+    return templates.TemplateResponse('login.html', ctx)
 
 
 @router.get('/login', response_class=HTMLResponse)
 async def ui_login(request: Request):
     ctx = {'request': request}
     return templates.TemplateResponse('login.html', ctx)
-
-
-@router.post('/login', response_class=HTMLResponse)
-async def ui_login(request: Request):   # noqa: F811
-    return RedirectResponse(request.url_for('ui_tree_list'))
 
 
 @router.api_route('/tree/list', methods=['GET', 'POST'], response_class=HTMLResponse)

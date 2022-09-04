@@ -5,6 +5,7 @@ from typing import Optional
 
 from .models import Session, User
 
+
 AUTH_COOKIE = 'Authorization'
 
 
