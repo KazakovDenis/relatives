@@ -1,4 +1,3 @@
-from apps.tree.models import UserTree
 from deps import templates
 from fastapi import APIRouter
 from fastapi.requests import Request

@@ -17,7 +17,11 @@ class Credentials(BaseModel):
 
 
 @router.post('/signup')
-async def api_signup(response: Response, cred: Credentials, token: str = Cookie(None, alias=AUTH_COOKIE)):
+async def api_signup(
+        response: Response,
+        cred: Credentials,
+        token: str = Cookie(None, alias=AUTH_COOKIE),
+):
     if token:
         return {'result': 'already logged in'}
 
