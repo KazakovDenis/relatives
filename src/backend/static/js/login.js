@@ -11,7 +11,7 @@ let loginUrl = `${document.location.origin}/api/v1/auth/login`;
 let signupUrl = `${document.location.origin}/api/v1/auth/signup`;
 
 function redirectToList() {
-    window.location.replace(`${document.location.origin}/ui/tree/list`);
+    window.location.replace(`${document.location.origin}/ui/tree/list?page=1`);
 }
 
 function login() {

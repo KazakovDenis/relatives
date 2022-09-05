@@ -84,7 +84,17 @@ class Tree(orm.Model):
     registry = models
     fields = {
         'id': orm.Integer(primary_key=True),
-        'name': orm.String(max_length=100, unique=True, default='My tree'),
+        'name': orm.String(max_length=100, default='My tree'),
+    }
+
+
+class UserTree(orm.Model):
+    tablename = 'user_tree'
+    registry = models
+    fields = {
+        'id': orm.Integer(primary_key=True),
+        'user': orm.ForeignKey('User', on_delete=orm.CASCADE),
+        'tree': orm.ForeignKey(Tree, on_delete=orm.CASCADE),
     }
 
 

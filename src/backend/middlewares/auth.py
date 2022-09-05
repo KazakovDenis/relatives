@@ -16,6 +16,10 @@ class RequestUser(BaseUser):
     def display_name(self) -> str:
         return self.user.name
 
+    @property
+    def identity(self):
+        return self.user.id
+
 
 class AuthBackend(AuthenticationBackend):
     cookie = 'Authorization'
