@@ -2,7 +2,7 @@ from fastapi import APIRouter, Query
 from fastapi.requests import Request
 from fastapi.responses import HTMLResponse
 
-from apps.core.models import UserTree, Tree, PersonTree
+from apps.core.models import PersonTree, Tree, UserTree
 from deps import templates
 
 
