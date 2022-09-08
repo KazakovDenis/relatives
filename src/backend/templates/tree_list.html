@@ -1,17 +1,17 @@
 {% extends "back_base.html" %}
 
 {% block data %}
-  <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+  <main>
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
       <h1 class="h2">Persons in the tree</h1>
       <div class="btn-toolbar mb-2 mb-md-0">
         <div class="btn-group me-2">
-          <a href="{{ url_for('ui_person_detail') }}">
+          <a href="{{ url_for('ui_person_add') }}">
             <button type="button" class="btn btn-sm btn-outline-secondary">Add person</button>
           </a>
         </div>
         <div>
-          <a href="{{ url_for('ui_tree_scheme') }}">
+          <a href="{{ url_for('ui_tree_scheme', tree_id=1) }}">
             <button type="button" class="btn btn-sm btn-outline-secondary">Switch to scheme</button>
           </a>
         </div>
@@ -31,7 +31,7 @@
         </thead>
         <tbody>
          {% for person in persons %}
-          <tr onclick="document.location = '#';" onmouseover="">
+          <tr onclick="document.location = `{{ url_for('ui_person_detail', person_id=person.id) }}`;">
             <td>{{ loop.index + offset }}</td>
             <td>{{ person.surname }}</td>
             <td>{{ person.name }}</td>

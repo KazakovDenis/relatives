@@ -9,6 +9,7 @@
       name: form.elements.name.value,
       surname: form.elements.surname.value,
       patronymic: form.elements.patronymic.value,
+      birthname: form.elements.birthname.value,
       birthdate: form.elements.birthdate.value,
       birthplace: form.elements.birthplace.value,
       gender: form.elements.gender.value,
@@ -18,10 +19,12 @@
 
     xhr.open('POST', createUserUrl);
     xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+    xhr.responseType = 'json';
     xhr.send(payload);
     xhr.onload = function() {
         if (xhr.status === 200) {
-            window.location.replace(`${document.location.origin}/ui/tree/list?page=1`);
+          const person_id = xhr.response.id;
+          window.location.replace(`${document.location.origin}/ui/person/${person_id}`);
         }
     };
     xhr.onerror = function() {

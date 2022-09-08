@@ -44,6 +44,7 @@ function signup() {
     let xhr = new XMLHttpRequest();
     xhr.open('POST', signupUrl);
     xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+    xhr.responseType = 'json';
     xhr.send(payload);
     xhr.onload = function() {
         if (xhr.status === 200) {

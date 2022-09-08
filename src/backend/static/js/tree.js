@@ -5,11 +5,13 @@ document.addEventListener("DOMContentLoaded", function() {
 
 
 let nodes, cyto;
-let url = `${document.location.origin}/api/v1/tree/1/scheme`;
 
 
 function retrieveNodes() {
-    let xhr = new XMLHttpRequest();
+    let cytoDiv = document.getElementById('cyto');
+    const url = `${document.location.origin}/api/v1/tree/${cytoDiv.dataset.treeId}/scheme`;
+
+    const xhr = new XMLHttpRequest();
     xhr.open('GET', url);
     xhr.send();
     xhr.onload = function() {

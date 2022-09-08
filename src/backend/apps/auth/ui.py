@@ -1,9 +1,8 @@
+from apps.core.models import Person, PersonTree, Relation, Tree, UserTree
+from deps import templates
 from fastapi import APIRouter, Query
 from fastapi.requests import Request
 from fastapi.responses import HTMLResponse
-
-from apps.core.models import PersonTree, Tree, UserTree
-from deps import templates
 
 
 router = APIRouter()
@@ -51,13 +50,30 @@ async def ui_tree_list(request: Request, page: int = Query(1)):
     return templates.TemplateResponse('tree_list.html', ctx)
 
 
-@router.get('/tree/scheme', response_class=HTMLResponse)
-async def ui_tree_scheme(request: Request):
-    ctx = {'request': request}
+@router.get('/tree/{tree_id}/scheme', response_class=HTMLResponse)
+async def ui_tree_scheme(request: Request, tree_id: int):
+    ctx = {'request': request, 'tree_id': tree_id}
     return templates.TemplateResponse('tree_scheme.html', ctx)
 
 
-@router.get('/person', response_class=HTMLResponse)
-async def ui_person_detail(request: Request):
+@router.get('/person/add', response_class=HTMLResponse)
+async def ui_person_add(request: Request):
     ctx = {'request': request}
+    return templates.TemplateResponse('person_detail.html', ctx)
+
+
+@router.get('/person/{person_id}', response_class=HTMLResponse)
+async def ui_person_detail(request: Request, person_id: int):
+    person = await Person.objects.get(id=person_id)
+    relations = await Relation.objects.order_by('type').all(person_from=person)
+
+    # TODO: select_related error: Please specify the 'onclause' of this join explicitly.
+    for rel in relations:
+        await rel.person_to.load()
+
+    ctx = {
+        'request': request,
+        'person': person,
+        'relations': relations,
+    }
     return templates.TemplateResponse('person_detail.html', ctx)
