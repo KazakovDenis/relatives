@@ -1,26 +1,35 @@
 (() => {
   'use strict'
 
-  let createUserUrl = `${document.location.origin}/api/v1/persons`;
+  const personForm = document.getElementById('person-form');
+  const createPersonButton = document.getElementById('create-person-button');
+  const deletePersonButton = document.getElementById('delete-person-button');
 
-  function createUser() {
-    const form = document.getElementById('create-person-form');
-    const payload = JSON.stringify({
-      name: form.elements.name.value,
-      surname: form.elements.surname.value,
-      patronymic: form.elements.patronymic.value,
-      birthname: form.elements.birthname.value,
-      birthdate: form.elements.birthdate.value,
-      birthplace: form.elements.birthplace.value,
-      gender: form.elements.gender.value,
-      info: form.elements.info.value,
-    });
+  createPersonButton.addEventListener('click', event => {
+    if (personForm.checkValidity()) {
+      const personId = personForm.dataset.personId;
+      if (personId) {
+        updatePerson(personId);
+      } else {
+        createPerson();
+      }
+    }
+    personForm.classList.add('was-validated')
+  }, false)
+
+  deletePersonButton.addEventListener('click', event => {
+    const personId = personForm.dataset.personId;
+    if (personId) deletePerson(personId);
+  }, false)
+
+  function createPerson() {
+    const createPersonUrl = `${document.location.origin}/api/v1/persons`;
     const xhr = new XMLHttpRequest();
 
-    xhr.open('POST', createUserUrl);
+    xhr.open('POST', createPersonUrl);
     xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8');
     xhr.responseType = 'json';
-    xhr.send(payload);
+    xhr.send(getFormData());
     xhr.onload = function() {
         if (xhr.status === 200) {
           const person_id = xhr.response.id;
@@ -32,17 +41,48 @@
     };
   }
 
-  const forms = document.querySelectorAll('.needs-validation');
+  function updatePerson(personId) {
+    const personUrl = `${document.location.origin}/api/v1/persons/${personId}`;
+    const xhr = new XMLHttpRequest();
 
-  Array.from(forms).forEach(form => {
-    form.addEventListener('submit', event => {
-      event.preventDefault();
-      event.stopPropagation();
+    xhr.open('PATCH', personUrl);
+    xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+    xhr.responseType = 'json';
+    xhr.send(getFormData());
+    xhr.onerror = function() {
+        alert(`Network Error`);
+    };
+  }
 
-      if (form.checkValidity()) {
-        createUser();
-      }
-      form.classList.add('was-validated')
-    }, false)
-  })
+  function deletePerson(personId) {
+    const personUrl = `${document.location.origin}/api/v1/persons/${personId}`;
+    const xhr = new XMLHttpRequest();
+
+    xhr.open('DELETE', personUrl);
+    xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+    xhr.responseType = 'json';
+    xhr.send();
+    xhr.onload = function() {
+        if (xhr.status === 200) {
+          window.location.replace(`${document.location.origin}/ui/tree/list`);
+        }
+    };
+    xhr.onerror = function() {
+        alert(`Network Error`);
+    };
+  }
+
+  function getFormData() {
+    return JSON.stringify({
+      name: personForm.elements.name.value,
+      surname: personForm.elements.surname.value,
+      patronymic: personForm.elements.patronymic.value,
+      birthname: personForm.elements.birthname.value,
+      birthdate: personForm.elements.birthdate.value,
+      birthplace: personForm.elements.birthplace.value,
+      gender: personForm.elements.gender.value,
+      info: personForm.elements.info.value,
+    });
+  }
+
 })()

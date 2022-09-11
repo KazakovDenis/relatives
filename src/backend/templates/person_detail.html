@@ -60,11 +60,11 @@
   <h1 class="h2">{% if person %}Edit person{% else %}Add new person{% endif %}</h1>
   <div class="btn-toolbar mb-2 mb-md-0">
     <div class="btn-group me-2">
-      <button type="button" class="btn btn-outline-secondary">{% if person %}Save{% else %}Add{% endif %}</button>
+      <button type="button" id="create-person-button" class="btn btn-outline-success">{% if person %}Save{% else %}Add{% endif %}</button>
     </div>
     {% if person %}
     <div class="btn-group me-2">
-      <button type="button" class="btn btn-outline-secondary">Delete</button>
+      <button type="button" id="delete-person-button" class="btn btn-outline-danger">Delete</button>
     </div>
     {% endif %}
   </div>
@@ -73,7 +73,7 @@
   <div class="row d-flex justify-content-center">
     <div class="col-6">
       <h4 class="mb-3">Personal information</h4>
-      <form class="needs-validation" id="create-person-form" novalidate>
+      <form class="needs-validation" id="person-form" {% if person %}data-person-id="{{ person.id }}"{% endif %} novalidate>
         <div class="row g-3">
           <div class="col-4">
             <label for="surname" class="form-label">Last name</label>
@@ -166,7 +166,7 @@
       {% if person %}
         <h4 class="mb-3">Immediate family</h4>
         {% for rel in relations %}
-          <form class="form-inline" data-relative-id="{{ rel.person_to.id }}">
+          <form class="form-inline" data-relation-id="{{ rel.id }}">
             <div class="input-group mb-2 mr-sm-2">
               <input type="text" class="form-control" value="{{ rel.person_to.fio }}" placeholder="Type in name or surname">
               <select class="custom-select mx-2">
