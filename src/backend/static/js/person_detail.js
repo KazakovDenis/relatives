@@ -5,6 +5,7 @@
   const createPersonButton = document.getElementById('create-person-button');
   const deletePersonButton = document.getElementById('delete-person-button');
   const addRelativeForm = document.getElementById('add-relative-form');
+  const foundRelativesDiv = document.getElementById('found-relatives');
   const relativeForms = document.querySelectorAll('.relative-form');
 
   createPersonButton.addEventListener('click', event => {
@@ -17,19 +18,21 @@
       }
     }
     personForm.classList.add('was-validated')
-  }, false)
+  }, false);
 
   deletePersonButton.addEventListener('click', event => {
     const personId = personForm.dataset.personId;
     if (personId) deletePerson(personId);
-  }, false)
+  }, false);
+
+  addRelativeForm.addEventListener('keyup', findRelatives);
 
   relativeForms.forEach(form => {
     form.addEventListener('submit', event => {
       event.preventDefault();
       deleteRelative(event.target);
     });
-  })
+  });
 
   function createPerson() {
     const createPersonUrl = `${document.location.origin}/api/v1/persons`;
@@ -79,6 +82,38 @@
     xhr.onerror = function() {
         alert(`Network Error`);
     };
+  }
+
+  function findRelatives(event) {
+    if (event.target.value.length < 5) return;
+    const personUrl = `${document.location.origin}/api/v1/persons?q=${event.target.value}`;
+    const xhr = new XMLHttpRequest();
+
+    xhr.open('GET', personUrl);
+    xhr.responseType = 'json';
+    xhr.send();
+    xhr.onload = function() {
+      foundRelativesDiv.innerHTML = '';
+
+      if (xhr.status === 200) {
+        xhr.response.forEach(rel => {
+          const newRelative = document.createElement('tr');
+          newRelative.setAttribute('data-relative-id', rel.id);
+          newRelative.innerText = `${rel.surname} ${rel.name} ${rel.patronymic}`;
+          newRelative.addEventListener('click', event => {
+            const newRelativeInput = addRelativeForm.querySelector('input');
+            console.log(event.target);
+            newRelativeInput.value = event.target.textContent;
+            newRelativeInput.setAttribute('data-relative-id', event.target.dataset.relativeId);
+          })
+          foundRelativesDiv.append(newRelative);
+        });
+      }
+    };
+    xhr.onerror = function() {
+        alert(`Network Error`);
+    };
+
   }
 
   function deleteRelative(relativeForm) {

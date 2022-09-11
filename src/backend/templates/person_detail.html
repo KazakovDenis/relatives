@@ -168,7 +168,7 @@
         {% for rel in relations %}
           <form class="form-inline relative-form" data-relative-id="{{ rel.person_to.id }}">
             <div class="input-group mb-2 mr-sm-2">
-              <input type="text" class="form-control" value="{{ rel.person_to.fio }}" placeholder="Type in name or surname">
+              <input type="text" class="form-control" value="{{ rel.person_to.fio }}" placeholder="Type in full name">
               <select class="custom-select mx-2">
                 <option value="PARENT" {% if rel.type.value == 'PARENT' %}selected{% endif %}>Parent</option>
                 <option value="SPOUSE" {% if rel.type.value == 'SPOUSE' %}selected{% endif %}>Spouse</option>
@@ -192,6 +192,9 @@
             <button type="submit" class="btn btn-success">V</button>
           </div>
         </form>
+        <table class="table table-hover">
+          <tbody id="found-relatives"></tbody>
+        </table>
       {% endif %}
     </div>
   </div>

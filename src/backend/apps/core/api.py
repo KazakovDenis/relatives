@@ -1,6 +1,6 @@
 from typing import Optional
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Query
 from orm import MultipleMatches, NoMatch
 
 from .constants import BACK_RELATIONS, RelationType
@@ -45,8 +45,25 @@ async def tree_scheme(tid: int):
 
 
 @router.get('/persons')
-async def person_list():
-    return await Person.objects.all()
+async def person_list(q: str = Query('')):
+    if not q:
+        return []
+
+    q = q.split(maxsplit=2)
+    if len(q) == 3:
+        where = {
+            'surname__icontains': q[0],
+            'name__icontains': q[1],
+            'patronymic__icontains': q[2],
+        }
+    elif len(q) == 2:
+        where = {
+            'surname__icontains': q[0],
+            'name__icontains': q[1],
+        }
+    else:
+        where = {'surname__icontains': q[0]}
+    return await Person.objects.filter(**where).all()
 
 
 @router.post('/persons')
