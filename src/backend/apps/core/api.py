@@ -83,6 +83,17 @@ async def person_relatives(pid: int, relation: Optional[str] = None):
     return await person.get_relatives(relation)
 
 
+@router.delete('/persons/{from_}/relatives/{to}')
+async def person_relative_delete(from_: int, to: int):
+    try:
+        person_from = await Person.objects.get(id=from_)
+        person_to = await Person.objects.get(id=to)
+    except (NoMatch, MultipleMatches):
+        raise HTTPException(status_code=404, detail='Person not found')
+    await person_from.remove_relative(person_to)
+    return {'result': 'ok'}
+
+
 @router.get('/relations')
 async def relation_list():
     return await Relation.objects.all()
@@ -112,15 +123,3 @@ async def relation_detail(rid: int):
         return await Relation.objects.get(id=rid)
     except (NoMatch, MultipleMatches):
         raise HTTPException(status_code=404, detail='Relation not found')
-
-
-@router.delete('/relations/{rid}')
-async def relation_delete(rid: int):
-    try:
-        rel = await Relation.objects.get(id=rid)
-    except (NoMatch, MultipleMatches):
-        raise HTTPException(status_code=404, detail='Relation not found')
-
-    await Relation.objects.filter(person_from=rel.person_to, person_to=rel.person_from).delete()
-    await rel.delete()
-    return {'result': 'ok'}

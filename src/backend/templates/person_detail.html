@@ -166,7 +166,7 @@
       {% if person %}
         <h4 class="mb-3">Immediate family</h4>
         {% for rel in relations %}
-          <form class="form-inline" data-relation-id="{{ rel.id }}">
+          <form class="form-inline relative-form" data-relative-id="{{ rel.person_to.id }}">
             <div class="input-group mb-2 mr-sm-2">
               <input type="text" class="form-control" value="{{ rel.person_to.fio }}" placeholder="Type in name or surname">
               <select class="custom-select mx-2">

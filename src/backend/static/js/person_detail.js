@@ -4,6 +4,8 @@
   const personForm = document.getElementById('person-form');
   const createPersonButton = document.getElementById('create-person-button');
   const deletePersonButton = document.getElementById('delete-person-button');
+  const addRelativeForm = document.getElementById('add-relative-form');
+  const relativeForms = document.querySelectorAll('.relative-form');
 
   createPersonButton.addEventListener('click', event => {
     if (personForm.checkValidity()) {
@@ -21,6 +23,13 @@
     const personId = personForm.dataset.personId;
     if (personId) deletePerson(personId);
   }, false)
+
+  relativeForms.forEach(form => {
+    form.addEventListener('submit', event => {
+      event.preventDefault();
+      deleteRelative(event.target);
+    });
+  })
 
   function createPerson() {
     const createPersonUrl = `${document.location.origin}/api/v1/persons`;
@@ -65,6 +74,25 @@
     xhr.onload = function() {
         if (xhr.status === 200) {
           window.location.replace(`${document.location.origin}/ui/tree/list`);
+        }
+    };
+    xhr.onerror = function() {
+        alert(`Network Error`);
+    };
+  }
+
+  function deleteRelative(relativeForm) {
+    const personFrom = personForm.dataset.personId;
+    const personTo = relativeForm.dataset.relativeId;
+    const url = `${document.location.origin}/api/v1/persons/${personFrom}/relatives/${personTo}`;
+    const xhr = new XMLHttpRequest();
+
+    xhr.open('DELETE', url);
+    xhr.responseType = 'json';
+    xhr.send();
+    xhr.onload = function() {
+        if (xhr.status === 200) {
+          relativeForm.remove();
         }
     };
     xhr.onerror = function() {

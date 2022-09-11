@@ -80,6 +80,7 @@ class Person(orm.Model):
 
     @db.transaction()
     async def remove_relative(self, person: 'Person'):
+        # todo: This backend does not support multiple-table criteria within DELETE
         await Relation.objects.filter(person_from=self, person_to=person).delete()
         await Relation.objects.filter(person_from=person, person_to=self).delete()
 
