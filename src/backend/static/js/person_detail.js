@@ -98,7 +98,7 @@
           const newRelative = document.createElement('li');
           newRelative.classList.add('list-group-item', 'list-group-item-action');
           newRelative.setAttribute('data-relative-id', rel.id);
-          newRelative.innerText = `${rel.surname} ${rel.name} ${rel.patronymic}`;
+          newRelative.innerText = `${rel.surname} ${rel.name} ${rel.patronymic || ''}`;
           newRelative.addEventListener('click', event => {
             const newRelativeInput = addRelativeForm.querySelector('input');
             newRelativeInput.value = event.target.textContent;
