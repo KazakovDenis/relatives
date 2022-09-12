@@ -166,35 +166,43 @@
       {% if person %}
         <h4 class="mb-3">Immediate family</h4>
         {% for rel in relations %}
-          <form class="form-inline relative-form" data-relative-id="{{ rel.person_to.id }}">
+          <form class="form-inline needs-validation relative-form" data-relative-id="{{ rel.person_to.id }}">
             <div class="input-group mb-2 mr-sm-2">
-              <input type="text" class="form-control" value="{{ rel.person_to.fio }}" placeholder="Type in full name">
-              <select class="custom-select mx-2">
+              <input type="text" class="form-control" value="{{ rel.person_to.fio }}" placeholder="Type in full name" required>
+              <select class="form-select mx-2" required>
                 <option value="PARENT" {% if rel.type.value == 'PARENT' %}selected{% endif %}>Parent</option>
                 <option value="SPOUSE" {% if rel.type.value == 'SPOUSE' %}selected{% endif %}>Spouse</option>
                 <option value="EX_SPOUSE" {% if rel.type.value == 'EX_SPOUSE' %}selected{% endif %}>Ex-spouse</option>
                 <option value="CHILD" {% if rel.type.value == 'CHILD' %}selected{% endif %}>Child</option>
               </select>
-              <button type="submit" class="btn btn-danger">X</button>
+              <button type="submit" class="btn btn-danger">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-x" viewBox="0 0 16 16">
+                  <path d="M6 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H1s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C9.516 10.68 8.289 10 6 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z"/>
+                  <path fill-rule="evenodd" d="M12.146 5.146a.5.5 0 0 1 .708 0L14 6.293l1.146-1.147a.5.5 0 0 1 .708.708L14.707 7l1.147 1.146a.5.5 0 0 1-.708.708L14 7.707l-1.146 1.147a.5.5 0 0 1-.708-.708L13.293 7l-1.147-1.146a.5.5 0 0 1 0-.708z"/>
+                </svg>
+              </button>
             </div>
           </form>
         {% endfor %}
-        <form class="form-inline" id="add-relative-form">
+        <form class="form-inline needs-validation" id="add-relative-form">
           <div class="input-group mb-2 mr-sm-2">
-            <input type="text" class="form-control" placeholder="Type in name or surname">
-            <select class="custom-select mx-2">
-              <option selected>Choose...</option>
+            <input type="text" class="form-control" name="fullName" placeholder="Type in name or surname" required>
+            <select class="form-select mx-2" name="relation" required>
+              <option value="" selected>Choose...</option>
               <option value="PARENT">Parent</option>
               <option value="SPOUSE">Spouse</option>
               <option value="EX_SPOUSE">Ex-spouse</option>
               <option value="CHILD">Child</option>
             </select>
-            <button type="submit" class="btn btn-success">V</button>
+            <button type="submit" class="btn btn-success">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-plus" viewBox="0 0 16 16">
+                <path d="M6 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H1s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C9.516 10.68 8.289 10 6 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z"/>
+                <path fill-rule="evenodd" d="M13.5 5a.5.5 0 0 1 .5.5V7h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V8h-1.5a.5.5 0 0 1 0-1H13V5.5a.5.5 0 0 1 .5-.5z"/>
+              </svg>
+            </button>
           </div>
         </form>
-        <table class="table table-hover">
-          <tbody id="found-relatives"></tbody>
-        </table>
+        <ul id="found-relatives" class="list-group"></ul>
       {% endif %}
     </div>
   </div>
