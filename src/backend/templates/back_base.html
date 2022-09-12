@@ -14,24 +14,10 @@
           Trees
         </button>
         <div class="collapse show" id="home-collapse">
-          <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-            {% for tree in trees %}
-              <li><a href="#" class="link-dark d-inline-flex text-decoration-none rounded">{{ tree.name }}</a></li>
-            {% endfor %}
-          </ul>
-        </div>
-      </li>
-      <li class="border-top my-3"></li>
-      <li class="mb-1">
-        <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#account-collapse" aria-expanded="false">
-          Account
-        </button>
-        <div class="collapse" id="account-collapse">
-          <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-            <li><a href="#" class="link-dark d-inline-flex text-decoration-none rounded">New...</a></li>
-            <li><a href="#" class="link-dark d-inline-flex text-decoration-none rounded">Profile</a></li>
-            <li><a href="#" class="link-dark d-inline-flex text-decoration-none rounded">Settings</a></li>
-            <li><a href="#" class="link-dark d-inline-flex text-decoration-none rounded">Sign out</a></li>
+          <ul id="tree-list" class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+            <li id="tree-create">
+              <a href="{{ url_for('tree_create') }}" class="link-dark d-inline-flex text-decoration-none rounded">+ Add</a>
+            </li>
           </ul>
         </div>
       </li>
@@ -56,4 +42,5 @@
     })
   })()
 </script>
+<script src="{{ url_for('static', path='js/back_main.js') }}"></script>
 {% endblock %}

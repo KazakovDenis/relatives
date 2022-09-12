@@ -3,7 +3,7 @@
 {% block data %}
 <div>
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-      <h1 class="h2">Tree</h1>
+      <h1 class="h2">Scheme of "{{ tree.name }}"</h1>
       <div class="btn-toolbar mb-2 mb-md-0">
         <div class="btn-group me-2">
           <button id="cyto-download" type="button" class="btn btn-sm btn-outline-secondary">As picture</button>
@@ -14,18 +14,19 @@
           </a>
         </div>
         <div>
-          <a href="{{ url_for('ui_tree_list') }}">
+          <a href="{{ url_for('ui_tree_list', tree_id=tree.id) }}">
             <button type="button" class="btn btn-sm btn-outline-secondary">Switch to list</button>
           </a>
         </div>
       </div>
     </div>
-    <div id="cyto" data-tree-id="{{ tree_id }}" style="height: 900px;"></div>
+    <div id="cyto" data-tree-id="{{ tree.id }}" style="height: 900px;"></div>
     <img src="" alt="Tree" id="cyto-png" class="visually-hidden">
 </div>
 {% endblock %}
 
 {% block extra_script %}
+{{ super() }}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.22.1/cytoscape.min.js"></script>
 <script src="{{ url_for('static', path='js/tree.js') }}"></script>
 {% endblock %}

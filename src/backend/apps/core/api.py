@@ -1,10 +1,11 @@
 from typing import Optional
 
 from fastapi import APIRouter, HTTPException, Query
+from fastapi.requests import Request
 from orm import MultipleMatches, NoMatch
 
 from .constants import BACK_RELATIONS, RelationType
-from .models import Person, PersonTree, Relation, Tree
+from .models import Person, PersonTree, Relation, Tree, UserTree
 from .schemas import PersonSchema, RelationSchema, TreeSchema
 
 
@@ -12,8 +13,9 @@ router = APIRouter()
 
 
 @router.get('/tree')
-async def tree_list():
-    return await Tree.objects.all()
+async def tree_list(request: Request):
+    uts = await UserTree.objects.select_related('tree').all(user=request.user.user)
+    return [ut.tree for ut in uts]
 
 
 @router.post('/tree')

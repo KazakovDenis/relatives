@@ -21,30 +21,27 @@ async def ui_login(request: Request):
     return templates.TemplateResponse('login.html', ctx)
 
 
-# TODO: move list retrieve & rendering to JS
-@router.api_route('/tree/list', methods=['GET', 'POST'], response_class=HTMLResponse)
-async def ui_tree_list(request: Request, page: int = Query(1)):
-    uts = await UserTree.objects.select_related('tree').all(user=request.user.user)
-    if not uts:
+@router.api_route('/tree/{tree_id}/list', methods=['GET', 'POST'], response_class=HTMLResponse)
+async def ui_tree_list(request: Request, tree_id: int, page: int = Query(1)):
+    ut = await UserTree.objects.select_related('tree').first(user=request.user.user, tree__id=tree_id)
+    if not ut:
         tree = await Tree.objects.create()
         ut = await UserTree.objects.create(user=request.user.user, tree=tree)
-        uts = [ut]
 
     offset = (page - 1) * PERSONS_PER_PAGE
 
-    # TODO: fetch active tree
     pts = await (
         PersonTree.objects.select_related('person')
         .offset(offset)
         .limit(PERSONS_PER_PAGE)
-        .all(tree=uts[0].tree)
+        .all(tree=ut.tree)
     )
 
     ctx = {
         'request': request,
+        'tree': ut.tree,
         'page': page,
         'offset': offset,
-        'trees': [ut.tree for ut in uts],
         'persons': [pt.person for pt in pts],
     }
     return templates.TemplateResponse('tree_list.html', ctx)
@@ -52,7 +49,8 @@ async def ui_tree_list(request: Request, page: int = Query(1)):
 
 @router.get('/tree/{tree_id}/scheme', response_class=HTMLResponse)
 async def ui_tree_scheme(request: Request, tree_id: int):
-    ctx = {'request': request, 'tree_id': tree_id}
+    tree = await Tree.objects.get(id=tree_id)
+    ctx = {'request': request, 'tree': tree}
     return templates.TemplateResponse('tree_scheme.html', ctx)
 
 

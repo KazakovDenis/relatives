@@ -1,6 +1,7 @@
 {% extends "back_base.html" %}
 
 {% block extra_head %}
+{{ super() }}
 <style>
 .bd-placeholder-img {
   font-size: 1.125rem;
@@ -210,5 +211,6 @@
 {% endblock %}
 
 {% block extra_script %}
+{{ super() }}
 <script src="{{ url_for('static', path='js/person_detail.js') }}"></script>
 {% endblock %}
