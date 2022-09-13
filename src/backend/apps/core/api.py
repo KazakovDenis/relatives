@@ -19,8 +19,9 @@ async def tree_list(request: Request):
 
 
 @router.post('/tree')
-async def tree_create(tree: TreeSchema):
-    tree, created = await Tree.objects.get_or_create(**tree.dict())
+async def tree_create(request: Request, tree: TreeSchema):
+    tree, _ = await Tree.objects.get_or_create({}, **tree.dict())
+    await UserTree.objects.get_or_create({}, user=request.user.user, tree=tree)
     return tree
 
 

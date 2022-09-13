@@ -1,17 +1,23 @@
-<div class="modal fade" id="new-tree-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="new-tree-modal" tabindex="-1" aria-labelledby="new-tree-modal" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
-      <div class="modal-header">
+      <form action="" id="new-tree-form">
+        <div class="modal-header">
         <h5 class="modal-title" id="exampleModalLabel">Think of a name of new tree</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <div class="modal-body">
-        <label for="new-tree-name" class="visually-hidden"></label>
-        <input type="text" class="form-control" id="new-tree-name" placeholder="My family" required>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary">Create</button>
-      </div>
+        <div class="modal-body">
+          <label for="new-tree-name" class="visually-hidden"></label>
+          <input type="text" class="form-control" name="treeName" id="new-tree-name" placeholder="My family" required>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Create</button>
+        </div>
+      </form>
     </div>
   </div>
 </div>
+
+{% block extra_script %}
+<script src="{{ url_for('static', path='js/new_tree_modal.js') }}"></script>
+{% endblock %}

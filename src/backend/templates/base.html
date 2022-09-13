@@ -10,7 +10,7 @@
     {% block extra_head %} {% endblock %}
   </head>
   <body class="vh-100">
-    <div class="container-fluid vh-100">
+    <div class="container-fluid h-100">
       <header class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom">
         <a href="/" class="d-flex align-items-center col-md-3 mb-2 mb-md-0 text-dark fs-2 fw-bold text-decoration-none">
           Relatives
@@ -33,7 +33,9 @@
         </div>
       </header>
 
-      {% block content %} {% endblock %}
+      <div class="vh-100">
+        {% block content %} {% endblock %}
+      </div>
 
       <footer class="my-5 pt-5 text-muted text-center text-small">
         <hr>
