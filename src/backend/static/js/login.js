@@ -10,8 +10,8 @@ document.addEventListener('DOMContentLoaded', function() {
 let loginUrl = `${document.location.origin}/api/v1/auth/login`;
 let signupUrl = `${document.location.origin}/api/v1/auth/signup`;
 
-function redirectToList() {
-    window.location.replace(`${document.location.origin}/ui/tree/1/list?page=1`);
+function welcome() {
+    window.location.replace(`${document.location.origin}/ui/welcome`);
 }
 
 function login() {
@@ -23,7 +23,7 @@ function login() {
     xhr.send();
     xhr.onload = function() {
         if (xhr.status === 200) {
-            redirectToList();
+            welcome();
         } else {
             alert(`Bad credentials`);
         }
@@ -48,9 +48,9 @@ function signup() {
     xhr.send(payload);
     xhr.onload = function() {
         if (xhr.status === 200) {
-            redirectToList();
+            welcome();
         } else {
-            alert(`Error`);
+            alert(`Bad credentials`);
         }
     };
     xhr.onerror = function() {

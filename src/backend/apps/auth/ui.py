@@ -1,9 +1,8 @@
 from apps.core.models import Person, PersonTree, Relation, Tree, UserTree
 from deps import templates
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, Query
 from fastapi.requests import Request
 from fastapi.responses import HTMLResponse, RedirectResponse
-from orm import MultipleMatches, NoMatch
 
 
 router = APIRouter()
@@ -22,13 +21,18 @@ async def ui_login(request: Request):
     return templates.TemplateResponse('login.html', ctx)
 
 
-@router.api_route('/tree/{tree_id}/list', methods=['GET', 'POST'], response_class=HTMLResponse)
-async def ui_tree_list(request: Request, tree_id: int, page: int = Query(1)):
-    ut = await UserTree.objects.select_related('tree').first(user=request.user.user, tree__id=tree_id)
+@router.get('/welcome', response_class=HTMLResponse)
+async def ui_welcome(request: Request):
+    ut = await UserTree.objects.first(user=request.user.user)
     if not ut:
         tree = await Tree.objects.create()
         ut = await UserTree.objects.create(user=request.user.user, tree=tree)
+    return RedirectResponse(request.url_for('ui_tree_list', tree_id=ut.tree.id))
 
+
+@router.api_route('/tree/{tree_id}/list', methods=['GET', 'POST'], response_class=HTMLResponse)
+async def ui_tree_list(request: Request, tree_id: int, page: int = Query(1)):
+    ut = await UserTree.objects.select_related('tree').first(user=request.user.user, tree__id=tree_id)
     offset = (page - 1) * PERSONS_PER_PAGE
 
     pts = await (
@@ -51,17 +55,13 @@ async def ui_tree_list(request: Request, tree_id: int, page: int = Query(1)):
 # TODO: change to DELETE for front + api
 @router.get('/tree/{tree_id}/delete', response_class=HTMLResponse)
 async def ui_tree_delete(request: Request, tree_id: int):
-    try:
-        this_tree = await Tree.objects.get(id=tree_id)
-    except (NoMatch, MultipleMatches):
-        raise HTTPException(status_code=404, detail='Tree not found')
+    ut = await UserTree.objects.exclude(tree__id=tree_id).filter(user=request.user.user).first()
+    if not ut:
+        # raise HTTPException(status_code=403, detail='Cant delete the last tree')
+        return RedirectResponse(request.url_for('ui_tree_list', tree_id=tree_id))
 
-    next_tree = await Tree.objects.exclude(id=tree_id).first()
-    if not next_tree:
-        raise HTTPException(status_code=403, detail='Cant delete the last tree')
-
-    await this_tree.delete()
-    return RedirectResponse(request.url_for('ui_tree_list', tree_id=next_tree.id))
+    await Tree.objects.filter(id=tree_id).delete()
+    return RedirectResponse(request.url_for('ui_tree_list', tree_id=ut.tree.id))
 
 
 @router.get('/tree/{tree_id}/scheme', response_class=HTMLResponse)
