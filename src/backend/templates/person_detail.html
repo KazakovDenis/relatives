@@ -102,7 +102,7 @@
             <label for="patronymic" class="form-label">Patronymic <span class="text-muted">(Optional)</span></label>
             <div class="input-group has-validation">
             {% if person %}
-              <input type="text" class="form-control" id="patronymic" placeholder="" value="{{ person.patronymic }}">
+              <input type="text" class="form-control" id="patronymic" placeholder="" value="{{ person.patronymic or '' }}">
             {% else %}
               <input type="text" class="form-control" id="patronymic" placeholder="" value="">
             {% endif %}
@@ -122,7 +122,7 @@
           <div class="col-6">
             <label for="birthplace" class="form-label">Place of birth <span class="text-muted">(Optional)</span></label>
             {% if person %}
-              <input type="text" class="form-control" id="birthplace" placeholder="Murmansk" value="{{ person.birthplace }}">
+              <input type="text" class="form-control" id="birthplace" placeholder="Murmansk" value="{{ person.birthplace or ''  }}">
             {% else %}
               <input type="text" class="form-control" id="birthplace" placeholder="Murmansk" value="">
             {% endif %}

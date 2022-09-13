@@ -50,7 +50,7 @@ class Person(orm.Model):
     @property
     def fio(self):
         # noinspection PyUnresolvedReferences
-        return '%s %s %s' % (self.surname, self.name, self.patronymic)
+        return '%s %s %s' % (self.surname, self.name, self.patronymic or '')
 
     async def get_relatives(self, rel_type: Optional[Union[RelationType, str]] = None) -> list['Person']:
         if rel_type:

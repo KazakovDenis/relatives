@@ -45,6 +45,7 @@ function parseResponse(response) {
             data: {
                 id: item['id'],
                 fullName,
+                href: `${document.location.origin}/ui/person/${item['id']}`,
             }
         }
         newNodes.push(node)
@@ -95,6 +96,15 @@ function buildTree() {
             fit: true,
         }
     });
+
+    cyto.on('tap', 'node', function(){
+      try {
+        window.open( this.data('href') );
+      } catch(e){
+        window.location.href = this.data('href');
+      }
+    });
+
     let head = cyto.nodes()[0];
     head.style("background-color", "rgb(200,0,0)");
 }
