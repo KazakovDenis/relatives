@@ -1,7 +1,8 @@
 from typing import Optional
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query, status
 from fastapi.requests import Request
+from fastapi.responses import Response
 from orm import MultipleMatches, NoMatch
 
 from .constants import BACK_RELATIONS, RelationType
@@ -19,10 +20,16 @@ async def tree_list(request: Request):
 
 
 @router.post('/tree')
-async def tree_create(request: Request, tree: TreeSchema):
-    tree, _ = await Tree.objects.get_or_create({}, **tree.dict())
-    await UserTree.objects.get_or_create({}, user=request.user.user, tree=tree)
-    return tree
+async def tree_create(request: Request, response: Response, tree: TreeSchema):
+    ut = await UserTree.objects.select_related('tree').first(user=request.user.user, tree__name=tree.name)
+    if ut:
+        tree_obj = ut.tree
+        response.status_code = status.HTTP_200_OK
+    else:
+        tree_obj = await Tree.objects.create(**tree.dict())
+        await UserTree.objects.create(user=request.user.user, tree=tree_obj)
+        response.status_code = status.HTTP_201_CREATED
+    return tree_obj
 
 
 @router.get('/tree/{tid}')

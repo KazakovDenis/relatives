@@ -33,6 +33,9 @@ async def ui_welcome(request: Request):
 @router.api_route('/tree/{tree_id}/list', methods=['GET', 'POST'], response_class=HTMLResponse)
 async def ui_tree_list(request: Request, tree_id: int, page: int = Query(1)):
     ut = await UserTree.objects.select_related('tree').first(user=request.user.user, tree__id=tree_id)
+    if not ut:
+        return RedirectResponse(request.url_for('ui_welcome'))
+
     offset = (page - 1) * PERSONS_PER_PAGE
 
     pts = await (
@@ -55,13 +58,25 @@ async def ui_tree_list(request: Request, tree_id: int, page: int = Query(1)):
 # TODO: change to DELETE for front + api
 @router.get('/tree/{tree_id}/delete', response_class=HTMLResponse)
 async def ui_tree_delete(request: Request, tree_id: int):
-    ut = await UserTree.objects.exclude(tree__id=tree_id).filter(user=request.user.user).first()
-    if not ut:
+    other = (
+        await UserTree.objects.select_related('tree')
+        .exclude(tree__id=tree_id)
+        .filter(user=request.user.user)
+        .first()
+    )
+    if not other:
         # raise HTTPException(status_code=403, detail='Cant delete the last tree')
-        return RedirectResponse(request.url_for('ui_tree_list', tree_id=tree_id))
+        return RedirectResponse(request.url_for('ui_welcome'))
 
-    await Tree.objects.filter(id=tree_id).delete()
-    return RedirectResponse(request.url_for('ui_tree_list', tree_id=ut.tree.id))
+    if not (tree := await Tree.objects.first(id=tree_id)):
+        return RedirectResponse(request.url_for('ui_welcome'))
+
+    await UserTree.objects.filter(tree=tree, user=request.user.user).delete()
+
+    # do not delete a tree if it has another related users
+    if not await UserTree.objects.filter(tree=tree).exists():
+        await tree.delete()
+    return RedirectResponse(request.url_for('ui_tree_list', tree_id=tree_id))
 
 
 @router.get('/tree/{tree_id}/scheme', response_class=HTMLResponse)

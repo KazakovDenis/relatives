@@ -18,7 +18,7 @@
         xhr.responseType = 'json';
         xhr.send(payload);
         xhr.onload = function() {
-            if (xhr.status === 200) {
+            if (xhr.status === 201) {
                 const tree = xhr.response;
                 newTreeForm.querySelector('.btn-close').click();
                 const newTreeLink = treeCreateLink.cloneNode();
@@ -26,6 +26,8 @@
                 newTreeLink.setAttribute('id', null);
                 newTreeLink.innerHTML = `<a href="${treeUrl}" class="link-dark d-inline-flex text-decoration-none rounded">${tree.name}</a>`;
                 treeCreateLink.parentNode.insertBefore(newTreeLink, treeCreateLink);
+            } else if (xhr.status === 200) {
+                newTreeForm.querySelector('.btn-close').click();
             }
         };
         xhr.onerror = function() {
