@@ -1,10 +1,11 @@
 from typing import Optional
 
-from fastapi import APIRouter, HTTPException, Query, status
-from fastapi.requests import Request
+from fastapi import APIRouter, HTTPException, Query, Security, status
 from fastapi.responses import Response
 from orm import MultipleMatches, NoMatch
 
+from ..auth.models import User
+from ..auth.utils import get_user
 from .constants import BACK_RELATIONS, RelationType
 from .models import Person, PersonTree, Relation, Tree, UserTree
 from .schemas import PersonSchema, RelationSchema, TreeSchema
@@ -14,20 +15,20 @@ router = APIRouter()
 
 
 @router.get('/tree')
-async def tree_list(request: Request):
-    uts = await UserTree.objects.select_related('tree').all(user=request.user.user)
+async def tree_list(user: User = Security(get_user)):
+    uts = await UserTree.objects.select_related('tree').all(user=user)
     return [ut.tree for ut in uts]
 
 
 @router.post('/tree')
-async def tree_create(request: Request, response: Response, tree: TreeSchema):
-    ut = await UserTree.objects.select_related('tree').first(user=request.user.user, tree__name=tree.name)
+async def tree_create(response: Response, tree: TreeSchema, user: User = Security(get_user)):
+    ut = await UserTree.objects.select_related('tree').first(user=user, tree__name=tree.name)
     if ut:
         tree_obj = ut.tree
         response.status_code = status.HTTP_200_OK
     else:
         tree_obj = await Tree.objects.create(**tree.dict())
-        await UserTree.objects.create(user=request.user.user, tree=tree_obj)
+        await UserTree.objects.create(user=user, tree=tree_obj)
         response.status_code = status.HTTP_201_CREATED
     return tree_obj
 
@@ -42,7 +43,7 @@ async def tree_detail(tid: int):
 
 @router.get('/tree/{tid}/scheme')
 async def tree_scheme(tid: int):
-    pts = await PersonTree.objects.filter(tree__id=tid).select_related('person').all()
+    pts = await PersonTree.objects.select_related('person').all(tree__id=tid)
     rels = (
         await Relation.objects
         .exclude(type=RelationType.CHILD)

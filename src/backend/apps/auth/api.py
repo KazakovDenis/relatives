@@ -2,18 +2,13 @@ from typing import Optional
 
 from fastapi import APIRouter, Cookie, HTTPException, Query, status
 from fastapi.responses import Response
-from pydantic import BaseModel, EmailStr, constr
 
 from .models import User
+from .schemas import Credentials
 from .utils import AUTH_COOKIE, create_session, create_user, delete_session, validate_password
 
 
 router = APIRouter(prefix='/auth')
-
-
-class Credentials(BaseModel):
-    email: EmailStr
-    password: constr(min_length=6)
 
 
 @router.post('/signup')

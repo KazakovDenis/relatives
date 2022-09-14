@@ -3,10 +3,19 @@ from datetime import datetime
 from hashlib import sha256
 from typing import Optional
 
+from fastapi import HTTPException, status
+from fastapi.requests import Request
+from fastapi.security import SecurityScopes
+
 from .models import Session, User
 
 
 AUTH_COOKIE = 'Authorization'
+
+
+class Scopes:
+    ADMIN = 'ADMIN'
+    USER = 'USER'
 
 
 def hash_password(pwd: str) -> str:
@@ -20,6 +29,13 @@ def validate_password(rcv_pwd: str, ex_pwd: str) -> bool:
 async def create_user(pwd: str, **kwargs) -> User:
     hashed = hash_password(pwd)
     user = await User.objects.create(password=hashed, **kwargs)
+    return user
+
+
+def get_user(request: Request, scopes: SecurityScopes) -> Optional[User]:
+    user = request.user.user
+    if not user.is_active:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
     return user
 
 

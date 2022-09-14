@@ -1,5 +1,5 @@
 from apps.auth.models import Session, User
-from apps.auth.utils import token_to_uuid
+from apps.auth.utils import Scopes, token_to_uuid
 from starlette.authentication import AuthCredentials, AuthenticationBackend, AuthenticationError, BaseUser
 
 
@@ -47,4 +47,6 @@ class AuthBackend(AuthenticationBackend):
         session = await Session.objects.select_related('user').first(token=as_uuid)
         if not session:
             return
-        return AuthCredentials(['authenticated']), RequestUser(session.user)
+        user = session.user
+        scope = Scopes.ADMIN if user.is_superuser else Scopes.USER
+        return AuthCredentials([scope]), RequestUser(user)
