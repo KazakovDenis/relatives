@@ -9,7 +9,7 @@
           <button id="cyto-download" type="button" class="btn btn-sm btn-outline-secondary">As picture</button>
         </div>
         <div class="btn-group me-2">
-          <a href="{{ url_for('ui_person_add') }}">
+          <a href="{{ url_for('ui_person_add', tree_id=tree.id) }}">
             <button type="button" class="btn btn-sm btn-outline-secondary">Add person</button>
           </a>
         </div>

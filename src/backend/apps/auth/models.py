@@ -12,6 +12,7 @@ class User(orm.Model):
         'is_superuser': orm.Boolean(default=False),
         'is_active': orm.Boolean(default=True),
     }
+    id: int
 
 
 class Session(orm.Model):

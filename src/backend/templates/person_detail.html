@@ -72,7 +72,7 @@
 </div>
 <main class="ms-sm-auto px-md-4">
   <div class="row d-flex justify-content-center">
-    <div class="col-6">
+    <div class="col-6" id="person-data" {% if tree_id %}data-tree-id="{{ tree_id }}"{% endif %}>
       <h4 class="mb-3">Personal information</h4>
       <form class="needs-validation" id="person-form" {% if person %}data-person-id="{{ person.id }}"{% endif %} novalidate>
         <div class="row g-3">
@@ -115,9 +115,6 @@
             {% else %}
               <input type="date" class="form-control" id="birthdate" placeholder="01.01.1980" value="">
             {% endif %}
-            <div class="invalid-feedback">
-              Please enter a valid email address for shipping updates.
-            </div>
           </div>
           <div class="col-6">
             <label for="birthplace" class="form-label">Place of birth <span class="text-muted">(Optional)</span></label>

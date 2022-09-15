@@ -1,6 +1,7 @@
 (() => {
   'use strict'
 
+  const treeId = document.getElementById('person-data').dataset.treeId;
   const personForm = document.getElementById('person-form');
   const createPersonButton = document.getElementById('create-person-button');
   const deletePersonButton = document.getElementById('delete-person-button');
@@ -33,7 +34,7 @@
   });
 
   function createPerson() {
-    const createPersonUrl = `${document.location.origin}/api/v1/persons`;
+    const createPersonUrl = `${document.location.origin}/api/v1/tree/${treeId}/persons`;
     const xhr = new XMLHttpRequest();
 
     xhr.open('POST', createPersonUrl);
@@ -43,7 +44,7 @@
     xhr.onload = function() {
         if (xhr.status === 200) {
           const person_id = xhr.response.id;
-          window.location.replace(`${document.location.origin}/ui/person/${person_id}`);
+          window.location.replace(`${document.location.origin}/ui/tree/${treeId}/person/${person_id}`);
         }
     };
     xhr.onerror = function() {
@@ -52,7 +53,7 @@
   }
 
   function updatePerson(personId) {
-    const personUrl = `${document.location.origin}/api/v1/persons/${personId}`;
+    const personUrl = `${document.location.origin}/api/v1/tree/${treeId}/persons/${personId}`;
     const xhr = new XMLHttpRequest();
 
     xhr.open('PATCH', personUrl);
@@ -65,7 +66,7 @@
   }
 
   function deletePerson(personId) {
-    const personUrl = `${document.location.origin}/api/v1/persons/${personId}`;
+    const personUrl = `${document.location.origin}/api/v1/tree/${treeId}/persons/${personId}`;
     const xhr = new XMLHttpRequest();
 
     xhr.open('DELETE', personUrl);
@@ -74,7 +75,7 @@
     xhr.send();
     xhr.onload = function() {
         if (xhr.status === 200) {
-          window.location.replace(`${document.location.origin}/ui/tree/list`);
+          window.location.replace(`${document.location.origin}/ui/tree/${treeId}/list`);
         }
     };
     xhr.onerror = function() {
@@ -84,7 +85,7 @@
 
   function findRelatives(event) {
     if (event.target.value.length < 5) return;
-    const personUrl = `${document.location.origin}/api/v1/persons?q=${event.target.value}`;
+    const personUrl = `${document.location.origin}/api/v1/tree/${treeId}/persons?q=${event.target.value}`;
     const xhr = new XMLHttpRequest();
 
     xhr.open('GET', personUrl);
@@ -122,7 +123,7 @@
     if (!oldForm.checkValidity()) return;
 
     const relativeId = event.target.elements.fullName.dataset.relativeId;
-    const url = `${document.location.origin}/api/v1/relations`;
+    const url = `${document.location.origin}/api/v1/tree/${treeId}/relations`;
     const payload = JSON.stringify({
       'person_from': personForm.dataset.personId,
       'person_to': relativeId,
@@ -173,7 +174,7 @@
     const relativeForm = event.target;
     const personFrom = personForm.dataset.personId;
     const personTo = relativeForm.dataset.relativeId;
-    const url = `${document.location.origin}/api/v1/persons/${personFrom}/relatives/${personTo}`;
+    const url = `${document.location.origin}/api/v1/tree/${treeId}/persons/${personFrom}/relatives/${personTo}`;
     const xhr = new XMLHttpRequest();
 
     xhr.open('DELETE', url);
