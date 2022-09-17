@@ -43,7 +43,7 @@ async def api_login(
     if token:
         return {'result': 'already logged in'}
 
-    user = await User.objects.first(email=email)
+    user = await User.objects.get_or_none(email=email)
     if not (user and validate_password(password, user.password)):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

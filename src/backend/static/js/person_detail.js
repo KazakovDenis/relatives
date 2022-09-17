@@ -21,13 +21,17 @@
     personForm.classList.add('was-validated')
   }, false);
 
-  deletePersonButton.addEventListener('click', event => {
-    const personId = personForm.dataset.personId;
-    if (personId) deletePerson(personId);
-  }, false);
+  if (deletePersonButton) {
+      deletePersonButton.addEventListener('click', event => {
+      const personId = personForm.dataset.personId;
+      if (personId) deletePerson(personId);
+    }, false);
+  }
 
-  addRelativeForm.addEventListener('keyup', findRelatives);
-  addRelativeForm.addEventListener('submit', addRelative);
+  if (addRelativeForm) {
+    addRelativeForm.addEventListener('keyup', findRelatives);
+    addRelativeForm.addEventListener('submit', addRelative);
+  }
 
   relativeForms.forEach(form => {
     form.addEventListener('submit', deleteRelative);

@@ -15,11 +15,11 @@ def create_app() -> FastAPI:
     app.mount('/static', StaticFiles(directory='static'), name='static')
 
     @app.on_event('startup')
-    async def database_connect():
+    async def startup():
         await db.connect()
 
     @app.on_event('shutdown')
-    async def database_disconnect():
+    async def shutdown():
         await db.disconnect()
 
     @app.get('/', response_class=HTMLResponse)

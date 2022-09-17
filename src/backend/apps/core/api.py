@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Query, Security, status
 from fastapi.responses import Response
-from orm import MultipleMatches, NoMatch
+from ormar import MultipleMatches, NoMatch
 
 from ..auth.models import User
 from ..auth.utils import get_user
@@ -21,7 +21,7 @@ async def tree_list(user: User = Security(get_user)):
 
 @router.post('/tree')
 async def tree_create(response: Response, tree: TreeSchema, user: User = Security(get_user)):
-    ut = await UserTree.objects.select_related('tree').first(user=user, tree__name=tree.name)
+    ut = await UserTree.objects.select_related('tree').get_or_none(user=user, tree__name=tree.name)
     if ut:
         tree_obj = ut.tree
         response.status_code = status.HTTP_200_OK
@@ -120,7 +120,7 @@ async def person_delete(tree_id: int, pid: int, user: User = Security(get_user))
     if not (tree := await has_tree_perm(user.id, tree_id)):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
 
-    person = await Person.objects.first(id=pid)
+    person = await Person.objects.get_or_none(id=pid)
     await PersonTree.objects.filter(tree=tree, person=person).delete()
     if not await PersonTree.objects.filter(person=person).exists():
         await person.delete()

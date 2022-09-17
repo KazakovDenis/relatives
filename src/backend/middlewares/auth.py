@@ -44,7 +44,7 @@ class AuthBackend(AuthenticationBackend):
         if not (as_uuid := token_to_uuid(token)):
             return
 
-        session = await Session.objects.select_related('user').first(token=as_uuid)
+        session = await Session.objects.select_related('user').get_or_none(token=as_uuid)
         if not session:
             return
         user = session.user

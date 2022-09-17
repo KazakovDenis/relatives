@@ -15,7 +15,7 @@ PERSONS_PER_PAGE = 20
 
 @router.get('/welcome', response_class=RedirectResponse)
 async def ui_welcome(request: Request, user: User = Security(get_user)):
-    ut = await UserTree.objects.first(user=user)
+    ut = await UserTree.objects.get_or_none(user=user)
     if not ut:
         tree = await Tree.objects.create()
         ut = await UserTree.objects.create(user=user, tree=tree)
@@ -56,7 +56,7 @@ async def ui_tree_delete(request: Request, tree_id: int, user: User = Security(g
         await UserTree.objects.select_related('tree')
         .exclude(tree__id=tree_id)
         .filter(user=user)
-        .first()
+        .get_or_none()
     )
     if not other:
         # raise HTTPException(status_code=403, detail='Cant delete the last tree')

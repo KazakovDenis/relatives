@@ -33,8 +33,8 @@ async def create_user(pwd: str, **kwargs) -> User:
 
 
 def get_user(request: Request, scopes: SecurityScopes) -> Optional[User]:
-    user = request.user.user
-    if not user.is_active:
+    user = getattr(request.user, 'user', None)
+    if not user or not user.is_active:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
     return user
 

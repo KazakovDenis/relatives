@@ -1,26 +1,13 @@
+from datetime import date
 from typing import Optional, Union
 
-import orm
-from deps import db, models
-from ext.orm.fields import ForeignKey
+import ormar
+from deps import db, metadata
+from ormar import ReferentialAction
+from pydantic import HttpUrl
 
+from ..auth.models import User
 from .constants import BACK_RELATIONS, Gender, RelationType
-
-
-class Relation(orm.Model):
-    tablename = 'relations'
-    registry = models
-    fields = {
-        'id': orm.Integer(primary_key=True),
-        'person_from': ForeignKey(to='Person', on_delete=orm.CASCADE),
-        'person_to': ForeignKey(to='Person', on_delete=orm.CASCADE),
-        'type': orm.Enum(RelationType),
-    }
-
-    def __hash__(self):
-        if self.person_from.id > self.person_to.id:
-            return hash((self.person_to.id, self.person_from.id))
-        return hash((self.person_from.id, self.person_to.id))
 
 
 def ensure_rel_type(rel_type: Optional[Union[RelationType, str]]) -> RelationType:
@@ -31,21 +18,22 @@ def ensure_rel_type(rel_type: Optional[Union[RelationType, str]]) -> RelationTyp
     return RelationType(rel_type)
 
 
-class Person(orm.Model):
-    tablename = 'persons'
-    registry = models
-    fields = {
-        'id': orm.Integer(primary_key=True),
-        'name': orm.String(max_length=100),
-        'surname': orm.String(max_length=100),
-        'patronymic': orm.String(max_length=100, allow_null=True),
-        'gender': orm.Enum(Gender),
-        'birthname': orm.String(max_length=200, allow_null=True),
-        'birthdate': orm.Date(allow_null=True),
-        'birthplace': orm.String(max_length=100, allow_null=True),
-        'info': orm.Text(allow_null=True),
-        'photo': orm.URL(max_length=200,  allow_null=True),
-    }
+class Person(ormar.Model):
+    class Meta:
+        database = db
+        metadata = metadata
+        tablename = 'persons'
+
+    id: int = ormar.Integer(primary_key=True)
+    name: str = ormar.String(max_length=100)
+    surname: str = ormar.String(max_length=100),
+    patronymic: Optional[str] = ormar.String(max_length=100, nullable=True)
+    gender: Gender = ormar.Enum(enum_class=Gender),
+    birthname: Optional[str] = ormar.String(max_length=200, nullable=True)
+    birthdate: Optional[date] = ormar.Date(nullable=True),
+    birthplace: Optional[str] = ormar.String(max_length=100, nullable=True)
+    info: Optional[str] = ormar.Text(nullable=True),
+    photo: Optional[HttpUrl] = ormar.String(max_length=200, nullable=True)
 
     @property
     def fio(self):
@@ -85,30 +73,50 @@ class Person(orm.Model):
         await Relation.objects.filter(person_from=person, person_to=self).delete()
 
 
-class Tree(orm.Model):
-    tablename = 'trees'
-    registry = models
-    fields = {
-        'id': orm.Integer(primary_key=True),
-        'name': orm.String(max_length=100, default='My tree'),
-    }
+class Tree(ormar.Model):
+    class Meta:
+        database = db
+        metadata = metadata
+        tablename = 'trees'
+
+    id: int = ormar.Integer(primary_key=True)
+    name: str = ormar.String(max_length=100, default='My tree')
 
 
-class UserTree(orm.Model):
-    tablename = 'user_tree'
-    registry = models
-    fields = {
-        'id': orm.Integer(primary_key=True),
-        'user': orm.ForeignKey('User', on_delete=orm.CASCADE),
-        'tree': orm.ForeignKey(Tree, on_delete=orm.CASCADE),
-    }
+class UserTree(ormar.Model):
+    class Meta:
+        database = db
+        metadata = metadata
+        tablename = 'user_tree'
+
+    id: int = ormar.Integer(primary_key=True)
+    user: User = ormar.ForeignKey(User, ondelete=ReferentialAction.CASCADE)
+    tree: Tree = ormar.ForeignKey(Tree, ondelete=ReferentialAction.CASCADE)
 
 
-class PersonTree(orm.Model):
-    tablename = 'person_tree'
-    registry = models
-    fields = {
-        'id': orm.Integer(primary_key=True),
-        'tree': ForeignKey(to='Tree', on_delete=orm.CASCADE),
-        'person': ForeignKey(to='Person', on_delete=orm.CASCADE),
-    }
+class PersonTree(ormar.Model):
+    class Meta:
+        database = db
+        metadata = metadata
+        tablename = 'person_tree'
+
+    id: int = ormar.Integer(primary_key=True)
+    tree: Tree = ormar.ForeignKey(Tree, ondelete=ReferentialAction.CASCADE)
+    person: Person = ormar.ForeignKey(Person, ondelete=ReferentialAction.CASCADE)
+
+
+class Relation(ormar.Model):
+    class Meta:
+        database = db
+        metadata = metadata
+        tablename = 'relations'
+
+    id: int = ormar.Integer(primary_key=True)
+    person_from: Person = ormar.ForeignKey(Person, ondelete=ReferentialAction.CASCADE, related_name='relations_to')
+    person_to: Person = ormar.ForeignKey(Person, ondelete=ReferentialAction.CASCADE, related_name='relations_from')
+    type: str = ormar.Enum(enum_class=RelationType)
+
+    def __hash__(self):
+        if self.person_from.id > self.person_to.id:
+            return hash((self.person_to.id, self.person_from.id))
+        return hash((self.person_from.id, self.person_to.id))

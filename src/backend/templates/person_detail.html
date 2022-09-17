@@ -154,9 +154,7 @@
         </div>
         <div class="col-12">
           <label for="info" class="form-label">Additional info <span class="text-muted">(Optional)</span></label>
-          <textarea class="form-control" id="info">
-          {% if person %}{{ person.info or '' }}{% endif %}
-          </textarea>
+          <textarea class="form-control" id="info">{% if person %}{{ person.info or '' }}{% endif %}</textarea>
         </div>
       </form>
     </div>

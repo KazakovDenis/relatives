@@ -1,26 +1,30 @@
-import orm
-from deps import models
+from datetime import datetime
+
+import ormar
+from deps import db, metadata
+from ormar import ReferentialAction
 
 
-class User(orm.Model):
-    tablename = 'users'
-    registry = models
-    fields = {
-        'id': orm.Integer(primary_key=True),
-        'email': orm.Email(max_length=100, unique=True),
-        'password': orm.String(max_length=100),
-        'is_superuser': orm.Boolean(default=False),
-        'is_active': orm.Boolean(default=True),
-    }
-    id: int
+class User(ormar.Model):
+    class Meta:
+        database = db
+        metadata = metadata
+        tablename = 'users'
+
+    id: int = ormar.Integer(primary_key=True)
+    email: str = ormar.String(max_length=100, unique=True)
+    password: str = ormar.String(max_length=100)
+    is_superuser: str = ormar.Boolean(default=False)
+    is_active: str = ormar.Boolean(default=True)
 
 
-class Session(orm.Model):
-    tablename = 'sessions'
-    registry = models
-    fields = {
-        'id': orm.Integer(primary_key=True),
-        'user': orm.ForeignKey(User, on_delete=orm.CASCADE),
-        'token': orm.UUID(index=True),
-        'issued_at': orm.DateTime(),
-    }
+class Session(ormar.Model):
+    class Meta:
+        database = db
+        metadata = metadata
+        tablename = 'sessions'
+
+    id: int = ormar.Integer(primary_key=True)
+    user: User = ormar.ForeignKey(User, ondelete=ReferentialAction.CASCADE)
+    token: str = ormar.UUID(index=True)
+    issued_at: datetime = ormar.DateTime()
