@@ -95,11 +95,7 @@ async def ui_person_detail(request: Request, tree_id: int, person_id: int, user:
         return RedirectResponse(request.url_for('ui_welcome'))
 
     person = await Person.objects.get(id=person_id)
-    relations = await Relation.objects.order_by('type').all(person_from=person)
-
-    # TODO: select_related error: Please specify the 'onclause' of this join explicitly.
-    for rel in relations:
-        await rel.person_to.load()
+    relations = await Relation.objects.select_related('person_to').order_by('type').all(person_from=person)
 
     ctx = {
         'request': request,

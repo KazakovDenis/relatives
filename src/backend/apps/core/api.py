@@ -93,8 +93,7 @@ async def person_list(tree_id: int, q: str = Query(''), user: User = Security(ge
     else:
         where = {'surname__icontains': q[0]}
 
-    # TODO: filter with tree
-    return await Person.objects.filter(**where).limit(20).all()
+    return await Person.objects.filter(**where, persontrees__tree__id=tree_id).limit(20).all()
 
 
 @router.get('/tree/{tree_id}/persons/{pid}')

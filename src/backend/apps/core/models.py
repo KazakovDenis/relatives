@@ -26,13 +26,13 @@ class Person(ormar.Model):
 
     id: int = ormar.Integer(primary_key=True)
     name: str = ormar.String(max_length=100)
-    surname: str = ormar.String(max_length=100),
+    surname: str = ormar.String(max_length=100)
     patronymic: Optional[str] = ormar.String(max_length=100, nullable=True)
-    gender: Gender = ormar.Enum(enum_class=Gender),
+    gender: Gender = ormar.Enum(enum_class=Gender)
     birthname: Optional[str] = ormar.String(max_length=200, nullable=True)
-    birthdate: Optional[date] = ormar.Date(nullable=True),
+    birthdate: Optional[date] = ormar.Date(nullable=True)
     birthplace: Optional[str] = ormar.String(max_length=100, nullable=True)
-    info: Optional[str] = ormar.Text(nullable=True),
+    info: Optional[str] = ormar.Text(nullable=True)
     photo: Optional[HttpUrl] = ormar.String(max_length=200, nullable=True)
 
     @property
