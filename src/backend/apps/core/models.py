@@ -1,5 +1,5 @@
 from datetime import date
-from typing import Optional, Union
+from typing import Optional, Tuple, Union
 
 import ormar
 from deps import db, metadata
@@ -116,7 +116,15 @@ class Relation(ormar.Model):
     person_to: Person = ormar.ForeignKey(Person, ondelete=ReferentialAction.CASCADE, related_name='relations_from')
     type: str = ormar.Enum(enum_class=RelationType)
 
-    def __hash__(self):
+    def as_tuple(self) -> Tuple[int, int]:
         if self.person_from.id > self.person_to.id:
-            return hash((self.person_to.id, self.person_from.id))
-        return hash((self.person_from.id, self.person_to.id))
+            return self.person_to.id, self.person_from.id
+        return self.person_from.id, self.person_to.id
+
+    def __hash__(self):
+        return hash(self.as_tuple())
+
+    def __eq__(self, other):
+        if not isinstance(other, type(self)):
+            return False
+        return self.as_tuple() == other.as_tuple()

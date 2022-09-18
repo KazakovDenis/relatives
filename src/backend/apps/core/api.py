@@ -46,15 +46,15 @@ async def tree_scheme(tid: int, user: User = Security(get_user)):
     if not (tree := await has_tree_perm(user.id, tid)):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
 
-    pts = await PersonTree.objects.select_related('person').all(tree=tree)
+    persons = await Person.objects.all(persontrees__tree=tree)
     rels = (
         await Relation.objects
         .exclude(type=RelationType.CHILD)
-        .all(person_from__in=[p.person.id for p in pts])
+        .all(person_from__in=[p.id for p in persons])
     )
     return {
-        'nodes': [pt.person for pt in pts],
-        'edges': [rel for rel in rels],
+        'nodes': persons,
+        'edges': list({rel for rel in rels}),
     }
 
 

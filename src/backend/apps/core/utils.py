@@ -2,9 +2,8 @@ from typing import Tuple
 
 import aiofiles
 import pydantic
-import typesystem
 from aiocsv import AsyncDictReader
-from orm import NoMatch
+from ormar import NoMatch
 
 from .constants import RelationType
 from .models import Person
@@ -22,7 +21,7 @@ async def load_persons_csv(filename: str) -> Tuple[int, int]:
                 validated = PersonSchema(**row)
                 person = await Person.objects.create(**validated.dict())
                 loaded += 1
-            except (pydantic.ValidationError, typesystem.ValidationError):
+            except pydantic.ValidationError:
                 errors += 1
                 continue
 

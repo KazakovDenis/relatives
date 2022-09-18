@@ -1,15 +1,15 @@
 document.addEventListener("DOMContentLoaded", function() {
     retrieveNodes();
-    document.getElementById("cyto-download").addEventListener("click", download)
+    document.getElementById("cyto-download").addEventListener("click", download);
 });
 
 
-let nodes, cyto;
+let nodes, cyto, treeId;
 
 
 function retrieveNodes() {
-    let cytoDiv = document.getElementById('cyto');
-    const url = `${document.location.origin}/api/v1/tree/${cytoDiv.dataset.treeId}/scheme`;
+    treeId = document.getElementById('cyto').dataset.treeId;
+    const url = `${document.location.origin}/api/v1/tree/${treeId}/scheme`;
 
     const xhr = new XMLHttpRequest();
     xhr.open('GET', url);
@@ -45,7 +45,7 @@ function parseResponse(response) {
             data: {
                 id: item['id'],
                 fullName,
-                href: `${document.location.origin}/ui/person/${item['id']}`,
+                href: `${document.location.origin}/ui/tree/${treeId}/person/${item['id']}`,
             }
         }
         newNodes.push(node)
