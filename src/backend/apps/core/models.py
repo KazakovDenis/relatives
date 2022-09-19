@@ -37,7 +37,6 @@ class Person(ormar.Model):
 
     @property
     def fio(self):
-        # noinspection PyUnresolvedReferences
         return '%s %s %s' % (self.surname, self.name, self.patronymic or '')
 
     async def get_relatives(self, rel_type: Optional[Union[RelationType, str]] = None) -> list['Person']:
@@ -51,7 +50,8 @@ class Person(ormar.Model):
 
     @db.transaction()
     async def add_relative(self, rel_type: RelationType, person: 'Person'):
-        # TODO: check relative is not the same person
+        if self.id == person.id:
+            return
         rel_type = ensure_rel_type(rel_type)
         await Relation.objects.get_or_create(
             {},

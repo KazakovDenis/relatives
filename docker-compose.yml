@@ -1,0 +1,14 @@
+version: '3'
+
+services:
+  backend:
+    image: relatives_backend:latest
+    build:
+      context: .
+      dockerfile: src/backend/docker/Dockerfile
+    environment:
+      WORKERS: 2
+    volumes:
+      - ./src/backend/relatives.db:/app/relatives.db
+    ports:
+      - "8000:8000"
