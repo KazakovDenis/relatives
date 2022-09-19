@@ -6,8 +6,8 @@ services:
     build:
       context: .
       dockerfile: src/backend/docker/Dockerfile
-    environment:
-      WORKERS: 2
+    env_file:
+      - .env
     volumes:
       - ./src/backend/relatives.db:/app/relatives.db
     ports:

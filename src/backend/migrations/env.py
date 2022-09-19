@@ -17,9 +17,11 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-from deps import DB_URL, metadata  # noqa: E402
+from config import settings  # noqa: E402
+from deps import metadata  # noqa: E402
 
 
+db_dsn = settings.get_db_dsn()
 target_metadata = metadata
 
 # other values from the config, defined by the needs of env.py,
@@ -41,7 +43,7 @@ def run_migrations_offline() -> None:
 
     """
     context.configure(
-        url=DB_URL,
+        url=db_dsn,
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
@@ -59,7 +61,7 @@ def run_migrations_online() -> None:
     and associate a connection with the context.
 
     """
-    connectable = create_engine(DB_URL)
+    connectable = create_engine(db_dsn)
 
     with connectable.connect() as connection:
         context.configure(

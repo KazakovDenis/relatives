@@ -2,8 +2,9 @@ import sqlalchemy
 from databases import Database
 from fastapi.templating import Jinja2Templates
 
+from config import settings
 
-DB_URL = 'sqlite:///relatives.db'
-db = Database(DB_URL)
+
+db = Database(settings.get_db_dsn())
 metadata = sqlalchemy.MetaData()
 templates = Jinja2Templates('templates')
