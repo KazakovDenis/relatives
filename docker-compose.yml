@@ -10,6 +10,7 @@ services:
     env_file:
       - .env
     volumes:
+      - ./static:/app/static
       - ./relatives.db:/app/relatives.db
     ports:
       - "9000:8000"
