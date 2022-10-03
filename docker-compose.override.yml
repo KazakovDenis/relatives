@@ -6,4 +6,5 @@ services:
       - ./src/backend/relatives.db:/app/relatives.db
     ports:
       - "8000:8000"
+    restart: no
     profiles: []
