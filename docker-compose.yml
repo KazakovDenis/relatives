@@ -3,12 +3,15 @@ version: '3'
 services:
   backend:
     image: relatives_backend:latest
+    container_name: relatives_backend
     build:
       context: .
       dockerfile: src/backend/docker/Dockerfile
     env_file:
       - .env
     volumes:
-      - ./src/backend/relatives.db:/app/relatives.db
+      - ./relatives.db:/app/relatives.db
     ports:
-      - "8000:8000"
+      - "443:8000"
+    profiles:
+      - prod
