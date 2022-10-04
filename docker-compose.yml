@@ -10,7 +10,8 @@ services:
     env_file:
       - .env
     volumes:
-      - ./static:/app/static
+      # why not copied from container?
+      #- ./static/:/app/static/
       - ./relatives.db:/app/relatives.db
     ports:
       - "9000:8000"
