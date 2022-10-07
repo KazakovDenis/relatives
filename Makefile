@@ -1,6 +1,10 @@
 run:
 	uvicorn main:app
 
+test:
+	coverage run
+	coverage report
+
 precommit:
 	flake8
 	isort .
