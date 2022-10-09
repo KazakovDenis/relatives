@@ -2,12 +2,12 @@ run:
 	uvicorn main:app
 
 style:
-	flake8
-	isort .
+	poetry run flake8
+	poetry run isort .
 
 test:
-	coverage run
-	coverage report
+	poetry run coverage run
+	poetry run coverage report
 
 DIST_DIR="dist"
 BACKEND_ZIP="relatives_backend.img"
