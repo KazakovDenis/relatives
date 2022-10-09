@@ -1,8 +1,7 @@
 import sqlalchemy
+from config import settings
 from databases import Database
 from fastapi.templating import Jinja2Templates
-
-from config import settings
 
 
 db = Database(settings.get_db_dsn())

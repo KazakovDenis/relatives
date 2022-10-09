@@ -1,13 +1,13 @@
 run:
 	uvicorn main:app
 
+style:
+	flake8
+	isort .
+
 test:
 	coverage run
 	coverage report
-
-precommit:
-	flake8
-	isort .
 
 DIST_DIR="dist"
 BACKEND_ZIP="relatives_backend.img"
