@@ -5,7 +5,7 @@ run-name: ${{ github.actor }} pushed changes
 on: [push]
 
 env:
-  DB_DSN: "sqlite:///:memory:"
+  DB_DSN: "sqlite:///test_relatives.db"
 
 jobs:
   CI:
