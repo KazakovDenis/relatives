@@ -4,6 +4,9 @@ run-name: ${{ github.actor }} pushed changes
 
 on: [push]
 
+env:
+  DB_DSN: "sqlite:///:memory:"
+
 jobs:
   CI:
     strategy:
@@ -24,6 +27,8 @@ jobs:
       - name: Install dependencies
         run: poetry install --no-cache
       - name: Run linters
-        run: make lint
+        run: make style
+      - name: Apply migrations
+        run: make migrate
       - name: Run tests
         run: make test

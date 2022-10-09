@@ -1,6 +1,9 @@
 run:
 	uvicorn main:app
 
+migrate:
+	cd src/backend && poetry run alembic upgrade head
+
 style:
 	poetry run flake8
 	poetry run isort .

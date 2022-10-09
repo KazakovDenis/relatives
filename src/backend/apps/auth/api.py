@@ -30,6 +30,7 @@ async def api_signup(
 
     token = await create_session(user)
     response.set_cookie(AUTH_COOKIE, f'Bearer {token}', secure=True, httponly=True)
+    response.status_code = status.HTTP_201_CREATED
     return {'result': 'ok'}
 
 
@@ -44,11 +45,9 @@ async def api_login(
         return {'result': 'already logged in'}
 
     user = await User.objects.get_or_none(email=email)
-    if not (user and validate_password(password, user.password)):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail='Invalid credentials',
-        )
+    if not (user and user.is_active and validate_password(password, user.password)):
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+
     token = await create_session(user)
     response.set_cookie(AUTH_COOKIE, f'Bearer {token}', secure=True, httponly=True)
     return {'result': 'ok'}
@@ -57,6 +56,7 @@ async def api_login(
 @router.get('/logout')
 async def api_logout(response: Response, auth_token: Optional[str] = Cookie(None, alias=AUTH_COOKIE)):
     response.delete_cookie(AUTH_COOKIE)
+    response.status_code = status.HTTP_202_ACCEPTED
     if auth_token:
         await delete_session(auth_token.removeprefix('Bearer '))
     return {'result': 'ok'}

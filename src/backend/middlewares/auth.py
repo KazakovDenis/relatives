@@ -37,7 +37,11 @@ class AuthBackend(AuthenticationBackend):
         if self.cookie not in conn.cookies:
             raise AuthenticationError('Not authenticated')
 
-        scheme, token = conn.cookies[self.cookie].split()
+        auth_row = conn.cookies[self.cookie].split()
+        if len(auth_row) < 2:
+            return
+
+        scheme, token = auth_row
         if scheme.lower() != 'bearer':
             return
 

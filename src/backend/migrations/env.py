@@ -21,7 +21,7 @@ from config import settings  # noqa: E402
 from deps import metadata  # noqa: E402
 
 
-db_dsn = settings.get_db_dsn()
+db_dsn = settings.DB_DSN
 target_metadata = metadata
 
 # other values from the config, defined by the needs of env.py,
