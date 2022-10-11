@@ -4,14 +4,14 @@ from fastapi import APIRouter, Cookie, HTTPException, Query, status
 from fastapi.responses import Response
 
 from .models import User
-from .schemas import Credentials
+from .schemas import Credentials, ResultOk
 from .utils import AUTH_COOKIE, create_session, create_user, delete_session, validate_password
 
 
 router = APIRouter(prefix='/auth')
 
 
-@router.post('/signup')
+@router.post('/signup', response_model=ResultOk)
 async def api_signup(
         response: Response,
         cred: Credentials,
@@ -34,7 +34,7 @@ async def api_signup(
     return {'result': 'ok'}
 
 
-@router.get('/login')
+@router.get('/login', response_model=ResultOk)
 async def api_login(
         response: Response,
         token: str = Cookie(None, alias=AUTH_COOKIE),
@@ -53,7 +53,7 @@ async def api_login(
     return {'result': 'ok'}
 
 
-@router.get('/logout')
+@router.get('/logout', response_model=ResultOk)
 async def api_logout(response: Response, auth_token: Optional[str] = Cookie(None, alias=AUTH_COOKIE)):
     response.delete_cookie(AUTH_COOKIE)
     response.status_code = status.HTTP_202_ACCEPTED

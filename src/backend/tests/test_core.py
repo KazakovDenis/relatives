@@ -1,6 +1,7 @@
 import pytest
 from apps.auth.utils import AUTH_COOKIE
-from apps.core.models import Tree, UserTree
+from apps.core.models import Person, Tree
+from apps.core.schemas import TreeBuildSchema
 from fastapi import status
 
 
@@ -22,25 +23,9 @@ def test_core_api_not_logged(client, method, path):
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
 
-async def test_core_api_tree_list(request, event_loop, client, user, session):
-    tree = await Tree.objects.create(name='Test')
-    await UserTree.objects.create(tree=tree, user=user)
-    request.addfinalizer(lambda: event_loop.run_until_complete(tree.delete()))
-
-    response = client.get(
-        CORE_PREFIX + '/tree',
-        cookies={AUTH_COOKIE: f'Bearer {session}'},
-    )
-    assert response.status_code == status.HTTP_200_OK
-    assert Tree(**response.json()[0])
-
-
-def test_core_api_tree_create(request, event_loop, client, session):
+def test_core_api_tree_create(async_teardown, client, session):
     name = 'Test'
-
-    async def teardown():
-        await Tree.objects.delete(name=name)
-    request.addfinalizer(lambda: event_loop.run_until_complete(teardown()))
+    async_teardown(Tree.objects.delete(name=name))
 
     response = client.post(
         CORE_PREFIX + '/tree',
@@ -49,3 +34,48 @@ def test_core_api_tree_create(request, event_loop, client, session):
     )
     assert response.status_code == status.HTTP_201_CREATED
     assert Tree(**response.json())
+
+
+def test_core_api_tree_list(client, session, tree):
+    response = client.get(
+        CORE_PREFIX + '/tree',
+        cookies={AUTH_COOKIE: f'Bearer {session}'},
+    )
+    assert response.status_code == status.HTTP_200_OK
+    assert Tree(**response.json()[0])
+
+
+def test_core_api_tree_detail(client, session, tree):
+    response = client.get(
+        CORE_PREFIX + f'/tree/{tree.id}',
+        cookies={AUTH_COOKIE: f'Bearer {session}'},
+    )
+    assert response.status_code == status.HTTP_200_OK
+    assert Tree(**response.json())
+
+
+def test_core_api_tree_scheme(client, session, tree):
+    response = client.get(
+        CORE_PREFIX + f'/tree/{tree.id}/scheme',
+        cookies={AUTH_COOKIE: f'Bearer {session}'},
+    )
+    assert response.status_code == status.HTTP_200_OK
+    assert TreeBuildSchema(**response.json())
+
+
+def test_core_api_tree_person_list(client, session, tree, person):
+    response = client.get(
+        CORE_PREFIX + f'/tree/{tree.id}/persons?q={person.surname}',
+        cookies={AUTH_COOKIE: f'Bearer {session}'},
+    )
+    assert response.status_code == status.HTTP_200_OK
+    assert Person(**response.json()[0])
+
+
+def test_core_api_tree_person_detail(client, session, tree, person):
+    response = client.get(
+        CORE_PREFIX + f'/tree/{tree.id}/persons/{person.id}',
+        cookies={AUTH_COOKIE: f'Bearer {session}'},
+    )
+    assert response.status_code == status.HTTP_200_OK
+    assert Person(**response.json())

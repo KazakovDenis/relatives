@@ -21,6 +21,7 @@ class PersonSchema(BaseModel):
     birthplace: Optional[str] = None
     info: Optional[str] = None
 
+    # TODO: remove after fix on the front
     @validator('birthdate')
     def birthdate_str_or_date(cls, v):
         return None if v == '' else v

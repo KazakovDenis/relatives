@@ -4,6 +4,8 @@ import os
 import pytest
 from apps.auth.models import User
 from apps.auth.utils import create_session, hash_password
+from apps.core.constants import Gender
+from apps.core.models import Person, PersonTree, Tree, UserTree
 from factory import create_app
 from fastapi.testclient import TestClient
 
@@ -53,3 +55,28 @@ def blocked_user():
 @pytest.fixture
 async def session(user):
     return await create_session(user)
+
+
+@pytest.fixture
+async def tree(user):
+    tree = await Tree.objects.create(name='Test')
+    await UserTree.objects.create(tree=tree, user=user)
+    yield tree
+    await tree.delete()
+
+
+@pytest.fixture
+async def person(tree):
+    person = await Person.objects.create(name='John', surname='Doe', gender=Gender.MALE)
+    await PersonTree.objects.create(tree=tree, person=person)
+    yield person
+    await person.delete()
+
+
+@pytest.fixture
+def async_teardown(request, event_loop):
+    def inner(coro):
+        request.addfinalizer(
+            lambda: event_loop.run_until_complete(coro),
+        )
+    return inner
