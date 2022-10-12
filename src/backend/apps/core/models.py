@@ -25,6 +25,7 @@ class Person(ormar.Model):
         tablename = 'persons'
 
     id: int = ormar.Integer(primary_key=True)
+    # TODO: migrate from name/surname/patronymic to fullname
     name: str = ormar.String(max_length=100)
     surname: str = ormar.String(max_length=100)
     patronymic: Optional[str] = ormar.String(max_length=100, nullable=True)

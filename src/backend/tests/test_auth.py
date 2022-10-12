@@ -18,13 +18,9 @@ def test_auth_ui_pages(client, path):
     assert response.status_code == status.HTTP_200_OK
 
 
-def test_auth_api_signup(request, event_loop, client):
+def test_auth_api_signup(async_teardown, client):
     email = 'signup@test.com'
-
-    def delete_user():
-        # noinspection PyUnresolvedReferences
-        event_loop.run_until_complete(User.objects.delete(email=email))
-    request.addfinalizer(delete_user)
+    async_teardown(User.objects.delete(email=email))
 
     response = client.post(
         AUTH_PREFIX + '/signup',
@@ -63,3 +59,9 @@ def test_auth_api_logout(client, user, logged_in, session):
         },
     )
     assert response.status_code == status.HTTP_202_ACCEPTED
+
+
+@pytest.mark.parametrize('cookie', ['Basic login:pass', 'Bearer not_uuid'])
+def test_auth_bad_auth_cookie(client, user, cookie):
+    response = client.get('/api/v1/tree', cookies={AUTH_COOKIE: cookie})
+    assert response.status_code == status.HTTP_403_FORBIDDEN

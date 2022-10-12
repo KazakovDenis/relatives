@@ -7,10 +7,29 @@ from ..auth.utils import get_user
 from .constants import BACK_RELATIONS, RelationType
 from .models import Person, PersonTree, Relation, Tree, UserTree
 from .permissions import has_tree_perm
-from .schemas import PersonSchema, RelationCreateSchema, RelationSchema, ResultOk, TreeBuildSchema, TreeSchema
+from .schemas import (PersonSchema,
+                      PersonUpdateSchema,
+                      RelationCreateSchema,
+                      RelationSchema,
+                      ResultOk,
+                      TreeBuildSchema,
+                      TreeSchema,)
 
 
 router = APIRouter()
+
+
+@router.post('/tree', response_model=Tree)
+async def tree_create(response: Response, tree: TreeSchema, user: User = Security(get_user)):
+    ut = await UserTree.objects.select_related('tree').get_or_none(user=user, tree__name=tree.name)
+    if ut:
+        tree_obj = ut.tree
+        response.status_code = status.HTTP_409_CONFLICT
+    else:
+        tree_obj = await Tree.objects.create(**tree.dict())
+        await UserTree.objects.create(user=user, tree=tree_obj)
+        response.status_code = status.HTTP_201_CREATED
+    return tree_obj
 
 
 @router.get('/tree', response_model=list[Tree])
@@ -19,25 +38,10 @@ async def tree_list(user: User = Security(get_user)):
     return [ut.tree for ut in uts]
 
 
-@router.post('/tree', response_model=Tree)
-async def tree_create(response: Response, tree: TreeSchema, user: User = Security(get_user)):
-    ut = await UserTree.objects.select_related('tree').get_or_none(user=user, tree__name=tree.name)
-    if ut:
-        tree_obj = ut.tree
-        response.status_code = status.HTTP_200_OK
-    else:
-        tree_obj = await Tree.objects.create(**tree.dict())
-        await UserTree.objects.create(user=user, tree=tree_obj)
-        response.status_code = status.HTTP_201_CREATED
-    return tree_obj
-
-
 @router.get('/tree/{tid}', response_model=Tree)
 async def tree_detail(tid: int, user: User = Security(get_user)):
     if not (tree := await has_tree_perm(user.id, tid)):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
-    if not tree:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     return tree
 
 
@@ -59,14 +63,12 @@ async def tree_scheme(tid: int, user: User = Security(get_user)):
 
 
 @router.post('/tree/{tree_id}/persons', response_model=Person)
-async def person_create(person: PersonSchema, tree_id: int, user: User = Security(get_user)):
+async def person_create(response: Response, person: PersonSchema, tree_id: int, user: User = Security(get_user)):
     if not (tree := await has_tree_perm(user.id, tree_id)):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
-    if not tree:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Tree not found')
-
     person = await Person.objects.create(**person.dict())
     await PersonTree.objects.create(tree=tree, person=person)
+    response.status_code = status.HTTP_201_CREATED
     return person
 
 
@@ -107,10 +109,11 @@ async def person_detail(tree_id: int, pid: int, user: User = Security(get_user))
 
 
 @router.patch('/tree/{tree_id}/persons/{pid}', response_model=ResultOk)
-async def person_update(tree_id: int, pid: int, person: PersonSchema, user: User = Security(get_user)):
+async def person_update(tree_id: int, pid: int, person: PersonUpdateSchema, user: User = Security(get_user)):
     if not await has_tree_perm(user.id, tree_id):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
-    await Person.objects.filter(id=pid).update(**person.dict())
+    data = {k: v for k, v in person.dict().items() if v is not None}
+    await Person.objects.filter(id=pid).update(**data)
     return {'result': 'ok'}
 
 
@@ -120,27 +123,16 @@ async def person_delete(tree_id: int, pid: int, user: User = Security(get_user))
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
 
     person = await Person.objects.get_or_none(id=pid)
+    # delete person from current tree
     await PersonTree.objects.filter(tree=tree, person=person).delete()
+    # delete person totally if it was the only tree
     if not await PersonTree.objects.filter(person=person).exists():
         await person.delete()
     return {'result': 'ok'}
 
 
-@router.delete('/tree/{tree_id}/persons/{from_}/relatives/{to}', response_model=ResultOk)
-async def person_relative_delete(tree_id: int, from_: int, to: int, user: User = Security(get_user)):
-    if not await has_tree_perm(user.id, tree_id):
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
-    try:
-        person_from = await Person.objects.get(id=from_)
-        person_to = await Person.objects.get(id=to)
-    except (NoMatch, MultipleMatches):
-        raise HTTPException(status_code=404, detail='Person not found')
-    await person_from.remove_relative(person_to)
-    return {'result': 'ok'}
-
-
 @router.post('/tree/{tree_id}/relations', response_model=RelationCreateSchema)
-async def relation_create(relation: RelationSchema, tree_id: int, user: User = Security(get_user)):
+async def relation_create(response: Response, relation: RelationSchema, tree_id: int, user: User = Security(get_user)):
     if not await has_tree_perm(user.id, tree_id):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
 
@@ -154,7 +146,21 @@ async def relation_create(relation: RelationSchema, tree_id: int, user: User = S
        person_to=rel.person_from,
        type=BACK_RELATIONS[relation.relation],
     )
+    response.status_code = status.HTTP_201_CREATED
     return {
         'relation': rel,
         'back_relation': back_rel,
     }
+
+
+@router.delete('/tree/{tree_id}/persons/{from_}/relatives/{to}', response_model=ResultOk)
+async def person_relative_delete(tree_id: int, from_: int, to: int, user: User = Security(get_user)):
+    if not await has_tree_perm(user.id, tree_id):
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+    try:
+        person_from = await Person.objects.get(id=from_)
+        person_to = await Person.objects.get(id=to)
+    except (NoMatch, MultipleMatches):
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Person not found')
+    await person_from.remove_relative(person_to)
+    return {'result': 'ok'}

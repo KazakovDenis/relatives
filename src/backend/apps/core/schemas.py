@@ -27,6 +27,12 @@ class PersonSchema(BaseModel):
         return None if v == '' else v
 
 
+class PersonUpdateSchema(PersonSchema):
+    name: Optional[str]
+    surname: Optional[str]
+    gender: Optional[Gender]
+
+
 class RelationSchema(BaseModel):
     person_from: int
     person_to: int

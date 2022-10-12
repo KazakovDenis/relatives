@@ -26,7 +26,7 @@
                 newTreeLink.setAttribute('id', null);
                 newTreeLink.innerHTML = `<a href="${treeUrl}" class="link-dark d-inline-flex text-decoration-none rounded">${tree.name}</a>`;
                 treeCreateLink.parentNode.insertBefore(newTreeLink, treeCreateLink);
-            } else if (xhr.status === 200) {
+            } else if (xhr.status === 409) {
                 newTreeForm.querySelector('.btn-close').click();
             }
         };

@@ -74,7 +74,15 @@ async def person(tree):
 
 
 @pytest.fixture
+async def relative():
+    person = await Person.objects.create(name='Anna', surname='Doe', gender=Gender.FEMALE)
+    yield person
+    await person.delete()
+
+
+@pytest.fixture
 def async_teardown(request, event_loop):
+    # noinspection PyUnresolvedReferences
     def inner(coro):
         request.addfinalizer(
             lambda: event_loop.run_until_complete(coro),
