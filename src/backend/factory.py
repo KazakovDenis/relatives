@@ -1,13 +1,19 @@
 from fastapi import FastAPI
+from fastapi.middleware import Middleware
 from fastapi.requests import Request
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
+from starlette.middleware.authentication import AuthenticationMiddleware
 
 
 def create_app() -> FastAPI:
     from apps import api_v1, ui
+    from apps.auth.middleware import AuthBackend
     from deps import db, templates
-    from middlewares import middlewares
+
+    middlewares = [
+        Middleware(AuthenticationMiddleware, backend=AuthBackend()),
+    ]
 
     app = FastAPI(middleware=middlewares)
     app.include_router(api_v1.router)

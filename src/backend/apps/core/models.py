@@ -84,6 +84,7 @@ class Tree(ormar.Model):
     name: str = ormar.String(max_length=100, default='My tree')
 
 
+# TODO: (user, tree) unique constraint
 class UserTree(ormar.Model):
     class Meta:
         database = db
@@ -118,9 +119,13 @@ class Relation(ormar.Model):
     type: str = ormar.Enum(enum_class=RelationType)
 
     def as_tuple(self) -> Tuple[int, int]:
-        if self.person_from.id > self.person_to.id:
-            return self.person_to.id, self.person_from.id
-        return self.person_from.id, self.person_to.id
+        person_from = getattr(self.person_from, 'id', None)
+        person_to = getattr(self.person_to, 'id', None)
+        if not person_from or not person_to:
+            return person_from, person_to
+        if person_from > person_to:
+            return person_to, person_from
+        return person_from, person_to
 
     def __hash__(self):
         return hash(self.as_tuple())
