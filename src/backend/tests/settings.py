@@ -4,5 +4,5 @@ SUPER_USER_PASS = 'super:user'
 ACTIVE_USER_EMAIL = 'active@user.com'
 ACTIVE_USER_PASS = 'active:user'
 
-BLOCKED_USER_EMAIL = 'blocked@user.com'
-BLOCKED_USER_PASS = 'blocked:user'
+INACTIVE_USER_EMAIL = 'inactive@user.com'
+INACTIVE_USER_PASS = 'inactive:user'

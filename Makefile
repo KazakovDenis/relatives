@@ -6,7 +6,7 @@ migrate:
 
 style:
 	poetry run flake8
-	poetry run isort .
+	poetry run isort -c .
 
 test:
 	poetry run coverage run

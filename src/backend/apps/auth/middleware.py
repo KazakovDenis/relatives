@@ -26,8 +26,11 @@ class AuthBackend(AuthenticationBackend):
 
     async def authenticate(self, conn):
         if (
+            # TODO: refactor path check
             'login' in conn.scope['path']
             or 'signup' in conn.scope['path']
+            or 'activate' in conn.scope['path']
+            or 'verify-email' in conn.scope['path']
             or 'static' in conn.scope['path']
             or conn.scope['path'] == '/'
         ):

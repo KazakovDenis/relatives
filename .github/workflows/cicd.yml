@@ -6,6 +6,7 @@ on: [push]
 
 env:
   DB_DSN: "sqlite:///test_relatives.db"
+  MAIL_SUPPRESS: 1
 
 jobs:
   CI:

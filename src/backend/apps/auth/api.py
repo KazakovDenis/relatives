@@ -1,6 +1,7 @@
 from typing import Optional
 
 from fastapi import APIRouter, Cookie, HTTPException, Query, status
+from fastapi.background import BackgroundTasks
 from fastapi.responses import Response
 
 from .models import User
@@ -15,8 +16,12 @@ router = APIRouter(prefix='/auth')
 async def api_signup(
         response: Response,
         cred: Credentials,
+        background_tasks: BackgroundTasks,
         token: str = Cookie(None, alias=AUTH_COOKIE),
 ):
+    # FIXME
+    from tools.notifications.email import verify_email
+
     if token:
         return {'result': 'already logged in'}
 
@@ -29,7 +34,7 @@ async def api_signup(
         )
 
     token = await create_session(user)
-    response.set_cookie(AUTH_COOKIE, f'Bearer {token}', secure=True, httponly=True)
+    background_tasks.add_task(verify_email, cred.email, token)
     response.status_code = status.HTTP_201_CREATED
     return {'result': 'ok'}
 

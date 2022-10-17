@@ -39,11 +39,11 @@ def user():
 
 
 @pytest.fixture(scope='session')
-def blocked_user():
+def inactive_user():
     obj = asyncio.run(
         User.objects.create(
-            email=settings.BLOCKED_USER_EMAIL,
-            password=hash_password(settings.BLOCKED_USER_PASS),
+            email=settings.INACTIVE_USER_EMAIL,
+            password=hash_password(settings.INACTIVE_USER_PASS),
             is_superuser=False,
             is_active=False,
         ),

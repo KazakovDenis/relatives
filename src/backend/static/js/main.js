@@ -12,7 +12,7 @@ function logout() {
     xhr.open('GET', logoutUrl);
     xhr.send();
     xhr.onload = function() {
-        if (xhr.status === 200) {
+        if (xhr.status === 202) {
             window.location.replace(document.location.origin);
         }
     };

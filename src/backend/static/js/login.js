@@ -10,9 +10,6 @@ document.addEventListener('DOMContentLoaded', function() {
 let loginUrl = `${document.location.origin}/api/v1/auth/login`;
 let signupUrl = `${document.location.origin}/api/v1/auth/signup`;
 
-function welcome() {
-    window.location.replace(`${document.location.origin}/ui/welcome`);
-}
 
 function login() {
     let email = document.getElementById('email-input').value;
@@ -23,7 +20,7 @@ function login() {
     xhr.send();
     xhr.onload = function() {
         if (xhr.status === 200) {
-            welcome();
+            window.location.replace(`${document.location.origin}/ui/welcome`);
         } else {
             alert(`Bad credentials`);
         }
@@ -47,8 +44,8 @@ function signup() {
     xhr.responseType = 'json';
     xhr.send(payload);
     xhr.onload = function() {
-        if (xhr.status === 200) {
-            welcome();
+        if (xhr.status === 201) {
+            window.location.replace(`${document.location.origin}/ui/verify-email`);
         } else {
             alert(`Bad credentials`);
         }
