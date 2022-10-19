@@ -73,7 +73,7 @@ async def person_create(response: Response, person: PersonSchema, tree_id: int, 
 
 
 @router.get('/tree/{tree_id}/persons', response_model=list[Person])
-async def person_list(tree_id: int, q: str = Query(''), user: User = Security(get_user)):
+async def person_list(tree_id: int, q: str = Query(''), exclude: int = Query(0), user: User = Security(get_user)):
     if not await has_tree_perm(user.id, tree_id):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
 
@@ -95,7 +95,7 @@ async def person_list(tree_id: int, q: str = Query(''), user: User = Security(ge
     else:
         where = {'surname__icontains': q[0]}
 
-    return await Person.objects.filter(**where, persontrees__tree__id=tree_id).limit(20).all()
+    return await Person.objects.exclude(id=exclude).filter(**where, persontrees__tree__id=tree_id).limit(20).all()
 
 
 @router.get('/tree/{tree_id}/persons/{pid}', response_model=Person)

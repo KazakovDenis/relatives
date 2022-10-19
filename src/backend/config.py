@@ -9,8 +9,9 @@ class Settings(BaseSettings):
     SENTRY_DSN: str = ''
     MAIL_SERVER: str = 'localhost'
     MAIL_PORT: int = 465
-    MAIL_USERNAME: str = 'user@google.com'
+    MAIL_USERNAME: str = 'user@gmail.com'
     MAIL_PASSWORD: str = 'password'
+    MAIL_FROM: str = MAIL_USERNAME
     MAIL_SUPPRESS: int = 0
 
     class Config:

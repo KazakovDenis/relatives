@@ -39,6 +39,7 @@ async def api_signup(
     return {'result': 'ok'}
 
 
+# TODO: error when already logged in
 @router.get('/login', response_model=ResultOk)
 async def api_login(
         response: Response,

@@ -13,9 +13,14 @@
             <button type="button" class="btn btn-sm btn-outline-secondary">Add person</button>
           </a>
         </div>
-        <div>
+        <div class="btn-group me-2">
           <a href="{{ url_for('ui_tree_list', tree_id=tree.id) }}">
             <button type="button" class="btn btn-sm btn-outline-secondary">Switch to list</button>
+          </a>
+        </div>
+        <div class="btn-group me-2">
+          <a href="{{ url_for('ui_tree_delete', tree_id=tree.id) }}">
+            <button type="button" class="btn btn-sm btn-outline-danger">Delete tree</button>
           </a>
         </div>
       </div>

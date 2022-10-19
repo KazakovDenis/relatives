@@ -89,7 +89,10 @@
 
   function findRelatives(event) {
     if (event.target.value.length < 5) return;
-    const personUrl = `${document.location.origin}/api/v1/tree/${treeId}/persons?q=${event.target.value}`;
+
+    const query = event.target.value;
+    const personId = personForm.dataset.personId;
+    const personUrl = `${document.location.origin}/api/v1/tree/${treeId}/persons?q=${query}&exclude=${personId}`;
     const xhr = new XMLHttpRequest();
 
     xhr.open('GET', personUrl);
@@ -140,7 +143,7 @@
     xhr.responseType = 'json';
     xhr.send(payload);
     xhr.onload = function() {
-      if (xhr.status === 200) {
+      if (xhr.status === 201) {
         oldForm.removeEventListener('submit', addRelative);
         oldForm.removeEventListener('keyup', findRelatives);
         oldForm.addEventListener('submit', deleteRelative);
