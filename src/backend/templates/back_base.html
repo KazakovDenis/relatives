@@ -10,10 +10,10 @@
   <div class="flex-shrink-0 p-3 bg-white col-2">
     <ul class="list-unstyled ps-0">
       <li class="mb-1">
-        <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#home-collapse" aria-expanded="true">
-          Trees
+        <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#my-trees-collapse" aria-expanded="true">
+          My trees
         </button>
-        <div class="collapse show" id="home-collapse">
+        <div class="collapse show" id="my-trees-collapse">
           <ul id="tree-list" class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
             <li id="tree-create">
               <a href="#" data-bs-toggle="modal" data-bs-target="#new-tree-modal" class="link-dark d-inline-flex text-decoration-none rounded">+ Add</a>
@@ -21,14 +21,23 @@
           </ul>
         </div>
       </li>
+      <li>
+        <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#shared-trees-collapse" aria-expanded="true">
+          Shared with me
+        </button>
+        <div class="collapse show" id="shared-trees-collapse">
+          <ul id="shared-tree-list" class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+          </ul>
+        </div>
+      </li>
       <li class="mb-1">
-        <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#home-collapse" aria-expanded="true">
+        <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#account-collapse" aria-expanded="true">
           Account
         </button>
         <div class="collapse show" id="account-collapse">
           <ul id="account-list" class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
             <li>
-              <a href="#" class="link-dark d-inline-flex text-decoration-none rounded">Edit</a>
+              <a href="#" class="link-dark d-inline-flex text-decoration-none rounded">Change password</a>
             </li>
           </ul>
         </div>
