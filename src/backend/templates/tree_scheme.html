@@ -1,7 +1,7 @@
 {% extends "back_base.html" %}
 
 {% block data %}
-<div>
+<div class="h-100">
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
       <h1 class="h2">Scheme of "{{ tree.name }}"</h1>
       <div class="btn-toolbar mb-2 mb-md-0">
@@ -25,7 +25,7 @@
         </div>
       </div>
     </div>
-    <div id="cyto" data-tree-id="{{ tree.id }}" style="height: 900px;"></div>
+    <div id="cyto" data-tree-id="{{ tree.id }}" class="h-100"></div>
     <img src="" alt="Tree" id="cyto-png" class="visually-hidden">
 </div>
 {% endblock %}
