@@ -22,7 +22,7 @@ ARCHIVE=relatives.tar.gz
 SSH_HOST=vps
 
 build:
-	docker compose -f ${LOCAL_COMPOSE} build --no-cache backend
+	docker compose -f ${LOCAL_COMPOSE} build backend
 	docker save ${BACKEND_IMAGE} -o ${DIST_DIR}/${BACKEND_ZIP}
 	cp ${LOCAL_COMPOSE} ${DIST_DIR}/${LOCAL_COMPOSE}
 	tar -czvf ${DIST_DIR}/${ARCHIVE} ${DIST_DIR}/${BACKEND_ZIP} ${DIST_DIR}/${LOCAL_COMPOSE}

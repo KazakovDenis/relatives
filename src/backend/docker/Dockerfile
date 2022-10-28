@@ -22,5 +22,4 @@ RUN pip uninstall -y poetry && \
 FROM base as backend
 
 COPY src/backend .
-COPY src/backend/docker/entrypoint.sh .
-CMD ["./entrypoint.sh"]
+CMD ["./docker/entrypoint.sh"]

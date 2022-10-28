@@ -143,3 +143,10 @@ body {
 }
 
 tbody tr:hover { background: gold; }
+
+/* bootstrap's lg */
+@media (min-width: 993px) {
+  .list-menu {
+    flex-direction: column;
+  }
+}

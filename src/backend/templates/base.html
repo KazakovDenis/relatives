@@ -10,14 +10,14 @@
         {% block extra_head %} {% endblock %}
     </head>
     <body class="container-fluid d-flex flex-column h-100">
-        <header class="row align-items-center justify-content-center justify-content-md-between px-3 py-3 mb-4 border-bottom">
-            <div class="col mx-2">
-                <a href="/" class="d-flex align-items-center col-md-3 mb-2 mb-md-0 text-dark fs-2 fw-bold text-decoration-none">
+        <header class="row align-items-center justify-content-center justify-content-sm-between px-3 py-3 mb-4 border-bottom">
+            <div class="col-auto text-center mx-2">
+                <a href="/" class="d-flex col-md-3 mb-2 mb-md-0 text-dark fs-2 fw-bold text-decoration-none">
                     Relatives
                 </a>
             </div>
 
-            <div class="col mx-2">
+            <div class="col mx-2 d-none d-sm-block">
                 <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
                     <!--          <li><a href="#" class="nav-link px-2 link-secondary">Home</a></li>-->
                     <!--          <li><a href="#" class="nav-link px-2 link-dark">Features</a></li>-->
@@ -25,7 +25,7 @@
                 </ul>
             </div>
 
-            <div class="col d-flex">
+            <div class="col-auto text-center d-flex">
                 {{ request.user.display_name }}
                 {% if request.user.is_authenticated %}
                 <button id="logout-button" type="button" class="btn btn-outline-secondary ms-auto">Log out</button>
@@ -36,7 +36,7 @@
             </div>
         </header>
 
-        <main class="my-auto h-100">
+        <main class="d-flex flex-column justify-content-center my-auto h-100">
             {% block content %} {% endblock %}
         </main>
 
