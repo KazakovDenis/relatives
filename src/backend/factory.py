@@ -30,7 +30,7 @@ def create_app() -> FastAPI:
 
     @app.get('/', response_class=HTMLResponse)
     async def root(request: Request):
-        ctx = {'request': request}
+        ctx = {'request': request, 'public': True}
         return templates.TemplateResponse('index.html', ctx)
 
     return app

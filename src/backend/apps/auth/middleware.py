@@ -10,6 +10,7 @@ class RequestUser(BaseUser):
 
     @property
     def is_authenticated(self) -> bool:
+        # noinspection PyTypeChecker
         return self.user.is_active
 
     @property
@@ -23,21 +24,18 @@ class RequestUser(BaseUser):
 
 class AuthBackend(AuthenticationBackend):
     cookie = 'Authorization'
+    allowed_paths = (
+        'login',
+        'signup',
+        'activate',
+        'verify-email',
+        'static',
+    )
 
     async def authenticate(self, conn):
-        if (
-            # TODO: refactor path check
-            'login' in conn.scope['path']
-            or 'signup' in conn.scope['path']
-            or 'activate' in conn.scope['path']
-            or 'verify-email' in conn.scope['path']
-            or 'static' in conn.scope['path']
-            or conn.scope['path'] == '/'
-        ):
-            # do auth in a handler
-            return
-
         if self.cookie not in conn.cookies:
+            if self.skip_for_path(conn.scope['path']):
+                return
             raise AuthenticationError('Not authenticated')
 
         auth_row = conn.cookies[self.cookie].split()
@@ -57,3 +55,11 @@ class AuthBackend(AuthenticationBackend):
         user = session.user
         scope = Scopes.ADMIN if user.is_superuser else Scopes.USER
         return AuthCredentials([scope]), RequestUser(user)
+
+    def skip_for_path(self, path) -> bool:
+        if path == '/':
+            return True
+        for part in self.allowed_paths:
+            if path.count(part):
+                return True
+        return False

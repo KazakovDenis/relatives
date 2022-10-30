@@ -28,10 +28,13 @@
             <div class="col-auto text-center d-flex">
                 {{ request.user.display_name }}
                 {% if request.user.is_authenticated %}
-                <button id="logout-button" type="button" class="btn btn-outline-secondary ms-auto">Log out</button>
+                    {% if public %}
+                        <a href="{{ url_for('ui_welcome') }}" class="ms-auto"><button type="button" class="btn btn-outline-primary me-2">Open</button></a>
+                    {% endif %}
+                    <button id="logout-button" type="button" class="btn btn-outline-secondary ms-auto">Log out</button>
                 {% else %}
-                <a href="{{ url_for('ui_login') }}" class="ms-auto"><button type="button" class="btn btn-outline-primary me-2">Log in</button></a>
-                <a href="{{ url_for('ui_signup') }}"><button type="button" class="btn btn-primary">Sign-up</button></a>
+                    <a href="{{ url_for('ui_login') }}" class="ms-auto"><button type="button" class="btn btn-outline-primary me-2">Log in</button></a>
+                    <a href="{{ url_for('ui_signup') }}"><button type="button" class="btn btn-primary">Sign-up</button></a>
                 {% endif %}
             </div>
         </header>
