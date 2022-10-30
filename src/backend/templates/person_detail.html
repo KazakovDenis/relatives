@@ -65,7 +65,9 @@
     </div>
     {% if person %}
     <div class="btn-group me-2">
-      <button type="button" id="delete-person-button" class="btn btn-outline-danger">Delete</button>
+      <a href="#" data-bs-toggle="modal" data-bs-target="#delete-person-modal">
+        <button type="button" class="btn btn-outline-danger">Delete</button>
+      </a>
     </div>
     {% endif %}
   </div>
@@ -155,8 +157,8 @@
     </form>
   </div>
   <div class="col-xl">
-    <hr class="d-xl-none my-3">
     {% if person %}
+      <hr class="d-xl-none my-3">
       <h4 class="mb-3">Immediate family</h4>
       {% for rel in relations %}
         <form class="form-inline needs-validation relative-form" data-relative-id="{{ rel.person_to.id }}">
@@ -198,6 +200,9 @@
       <ul id="found-relatives" class="list-group"></ul>
     {% endif %}
   </div>
+  {% if person %}
+    {% include 'delete_person_modal.html' %}
+  {% endif %}
 </div>
 {% endblock %}
 

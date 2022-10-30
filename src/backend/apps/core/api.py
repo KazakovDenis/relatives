@@ -123,6 +123,8 @@ async def person_delete(tree_id: int, pid: int, user: User = Security(get_user))
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
 
     person = await Person.objects.get_or_none(id=pid)
+    if not person:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     # delete person from current tree
     await PersonTree.objects.filter(tree=tree, person=person).delete()
     # delete person totally if it was the only tree

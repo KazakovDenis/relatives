@@ -4,10 +4,10 @@
   const treeId = document.getElementById('person-data').dataset.treeId;
   const personForm = document.getElementById('person-form');
   const createPersonButton = document.getElementById('create-person-button');
-  const deletePersonButton = document.getElementById('delete-person-button');
-  const addRelativeForm = document.getElementById('add-relative-form');
+  const deletePersonForm = document.getElementById('delete-person-form');
   const foundRelativesElem = document.getElementById('found-relatives');
   const relativeForms = document.querySelectorAll('.relative-form');
+  let addRelativeForm = document.getElementById('add-relative-form');
 
   createPersonButton.addEventListener('click', event => {
     if (personForm.checkValidity()) {
@@ -21,8 +21,8 @@
     personForm.classList.add('was-validated')
   }, false);
 
-  if (deletePersonButton) {
-      deletePersonButton.addEventListener('click', event => {
+  if (deletePersonForm) {
+      deletePersonForm.addEventListener('submit', event => {
       const personId = personForm.dataset.personId;
       if (personId) deletePerson(personId);
     }, false);
@@ -46,7 +46,7 @@
     xhr.responseType = 'json';
     xhr.send(getFormData());
     xhr.onload = function() {
-        if (xhr.status === 200) {
+        if (xhr.status === 201) {
           const person_id = xhr.response.id;
           window.location.replace(`${document.location.origin}/ui/tree/${treeId}/person/${person_id}`);
         }
@@ -88,7 +88,11 @@
   }
 
   function findRelatives(event) {
-    if (event.target.value.length < 5) return;
+    if (event.target.value.length < 5) {
+      addRelativeForm.querySelector('input').removeAttribute('data-relative-id');
+      foundRelativesElem.innerHTML = '';
+      return;
+    }
 
     const query = event.target.value;
     const personId = personForm.dataset.personId;
@@ -152,13 +156,13 @@
         oldForm.setAttribute('data-relative-id', relativeId);
 
         // replace this form with new empty
-        const newForm = oldForm.cloneNode(true);
+        addRelativeForm = oldForm.cloneNode(true);
         oldForm.removeAttribute('id');
-        newForm.setAttribute('id', formId);
-        newForm.addEventListener('keyup', findRelatives);
-        newForm.addEventListener('submit', addRelative);
-        newForm.elements.fullName.value = '';
-        newForm.elements.relation.value = '';
+        addRelativeForm.setAttribute('id', formId);
+        addRelativeForm.addEventListener('keyup', findRelatives);
+        addRelativeForm.addEventListener('submit', addRelative);
+        addRelativeForm.elements.fullName.value = '';
+        addRelativeForm.elements.relation.value = '';
 
         oldButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-plus" viewBox="0 0 16 16">\n' +
             '<path d="M6 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H1s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C9.516 10.68 8.289 10 6 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z"/>\n' +
@@ -168,7 +172,7 @@
         oldButton.classList.add('btn-danger');
 
         // insert new empty form after saved one
-        foundRelativesElem.parentNode.insertBefore(newForm, foundRelativesElem);
+        foundRelativesElem.parentNode.insertBefore(addRelativeForm, foundRelativesElem);
       }
     };
     xhr.onerror = function() {
