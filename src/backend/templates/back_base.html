@@ -48,6 +48,9 @@
     {% block data %} {% endblock %}
   </div>
   {% include 'new_tree_modal.html' %}
+  {% if tree %}
+    {% include 'delete_tree_modal.html' %}
+  {% endif %}
 </div>
 {% endblock %}
 

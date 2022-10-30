@@ -48,7 +48,6 @@ async def ui_tree_list(request: Request, tree_id: int, page: int = Query(1), use
     return templates.TemplateResponse('tree_list.html', ctx)
 
 
-# TODO: add confirmation
 # TODO: change to DELETE for front + api
 @router.get('/tree/{tree_id}/delete', response_class=HTMLResponse)
 async def ui_tree_delete(request: Request, tree_id: int, user: User = Security(get_user)):

@@ -13,13 +13,13 @@ router = APIRouter()
 @router.get('/signup', response_class=HTMLResponse)
 async def ui_signup(request: Request):
     ctx = {'request': request, 'public': True, 'signup': True}
-    return templates.TemplateResponse('login.html', ctx)
+    return templates.TemplateResponse('public/login.html', ctx)
 
 
 @router.get('/login', response_class=HTMLResponse)
 async def ui_login(request: Request):
     ctx = {'request': request, 'public': True}
-    return templates.TemplateResponse('login.html', ctx)
+    return templates.TemplateResponse('public/login.html', ctx)
 
 
 @router.get('/activate', response_class=RedirectResponse)
@@ -41,4 +41,4 @@ async def ui_activate(request: Request, token: str | None = Query(None)):
 @router.get('/verify-email', response_class=HTMLResponse)
 async def ui_verify_email(request: Request):
     ctx = {'request': request, 'public': True}
-    return templates.TemplateResponse('verify_email.html', ctx)
+    return templates.TemplateResponse('public/verify_email.html', ctx)
