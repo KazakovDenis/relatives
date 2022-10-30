@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 
 
-let nodes, cyto, treeId;
+let nodes, cyto, treeId, prevNode;
 
 
 function retrieveNodes() {
@@ -105,14 +105,28 @@ function buildTree() {
       }
     });
 
-    let head = cyto.nodes()[0];
-    head.style("background-color", "rgb(200,0,0)");
+    cyto.on('drag', 'node', function(event){
+        prevNode.style('background-color', 'rgba(54,119,206,0.65)');
+        event.target.style('background-color', 'rgb(200,0,0)');
+        prevNode = event.target;
+    });
+
+    prevNode = cyto.nodes()[0];
+    prevNode.style('background-color', 'rgb(200,0,0)');
 }
 
 function download() {
-    let png64 = cyto.png();
-    let img = document.getElementById('cyto-png');
-    img.setAttribute('src', png64);
-    img.classList.remove("visually-hidden");
-    document.getElementById('cyto').classList.add("visually-hidden");
+    const image = cyto.jpg();
+    fetch(image)
+    .then(resp => resp.blob())
+    .then(data => {
+        const blob = window.URL.createObjectURL(data);
+        const anchor = document.createElement('a');
+        anchor.style.display = 'none';
+        anchor.href = blob;
+        anchor.download = 'tree.jpg';
+        document.body.appendChild(anchor);
+        anchor.click();
+        window.URL.revokeObjectURL(blob);
+    });
 }

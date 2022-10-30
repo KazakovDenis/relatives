@@ -23,6 +23,7 @@
 
   if (deletePersonForm) {
       deletePersonForm.addEventListener('submit', event => {
+      event.preventDefault();
       const personId = personForm.dataset.personId;
       if (personId) deletePerson(personId);
     }, false);
