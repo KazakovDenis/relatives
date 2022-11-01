@@ -1,7 +1,7 @@
 from datetime import date
 from typing import Literal, Optional, TypedDict, Union
 
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, EmailStr, validator
 
 from .constants import Gender, RelationType
 from .models import Person, Relation
@@ -51,3 +51,7 @@ class TreeBuildSchema(BaseModel):
 class RelationCreateSchema(BaseModel):
     relation: Relation
     back_relation: Relation
+
+
+class RecipientSchema(BaseModel):
+    email: EmailStr

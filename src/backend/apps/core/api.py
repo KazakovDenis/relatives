@@ -9,6 +9,7 @@ from .models import Person, PersonTree, Relation, Tree, UserTree
 from .permissions import has_tree_perm
 from .schemas import (PersonSchema,
                       PersonUpdateSchema,
+                      RecipientSchema,
                       RelationCreateSchema,
                       RelationSchema,
                       ResultOk,
@@ -40,6 +41,13 @@ async def tree_list(user: User = Security(get_user)):
 
 @router.get('/tree/{tid}', response_model=Tree)
 async def tree_detail(tid: int, user: User = Security(get_user)):
+    if not (tree := await has_tree_perm(user.id, tid)):
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+    return tree
+
+
+@router.post('/tree/{tid}/share', response_model=Tree)
+async def tree_share(tid: int, recipient: RecipientSchema, user: User = Security(get_user)):
     if not (tree := await has_tree_perm(user.id, tid)):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
     return tree

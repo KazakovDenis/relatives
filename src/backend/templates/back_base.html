@@ -46,9 +46,10 @@
   <div class="col-lg-10 h-100">
     {% block data %} {% endblock %}
   </div>
-  {% include 'new_tree_modal.html' %}
+  {% include 'modals/new_tree_modal.html' %}
   {% if tree %}
-    {% include 'delete_tree_modal.html' %}
+    {% include 'modals/delete_tree_modal.html' %}
+    {% include 'modals/share_tree_modal.html' %}
   {% endif %}
 </div>
 {% endblock %}

@@ -35,14 +35,14 @@ upload:
 	@echo "Done!"
 
 deploy:
-	ssh -t ${SSH_HOST} "\
+	ssh ${SSH_HOST} "\
 		tar -xvf ${ARCHIVE} && \
 		docker compose -f ${REMOTE_COMPOSE} rm -f --stop backend && \
 		docker rmi -f ${BACKEND_IMAGE} && \
 		docker load -i ${DIST_DIR}/${BACKEND_ZIP} && \
-		sudo mv ${DIST_DIR}/${LOCAL_COMPOSE} ${REMOTE_COMPOSE} && \
+		mv ${DIST_DIR}/${LOCAL_COMPOSE} ${REMOTE_COMPOSE} && \
 		rm -rf ${DIST_DIR} && \
-		sudo rm -rf ${DIST_DIR}/static && \
+		rm -rf ${DIST_DIR}/static && \
 		docker compose -f ${REMOTE_COMPOSE} up -d --force-recreate backend && \
 		sleep 3 && \
 		docker compose -f ${REMOTE_COMPOSE} cp backend:/app/static . \

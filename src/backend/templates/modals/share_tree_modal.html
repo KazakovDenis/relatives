@@ -1,0 +1,23 @@
+<div class="modal fade" id="share-tree-modal" tabindex="-1" aria-labelledby="share-tree-modal" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form action="" id="share-tree-form" data-tree-id="{{ tree.id }}">
+        <div class="modal-header">
+        <h5 class="modal-title">Invite a user to edit "{{ tree.name }}" together</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+        <div class="modal-body">
+          <label for="share-tree-name" class="visually-hidden"></label>
+          <input type="email" class="form-control" name="email" id="share-tree-name" placeholder="j.doe@mail.com" required>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Invite</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% block extra_script %}
+<script src="{{ url_for('static', path='js/share_tree_modal.js') }}"></script>
+{% endblock %}

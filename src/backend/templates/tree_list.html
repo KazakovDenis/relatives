@@ -7,12 +7,17 @@
       <div class="btn-toolbar mb-2 mb-md-0">
         <div class="btn-group me-2 mt-2">
           <a href="{{ url_for('ui_person_add', tree_id=tree.id) }}">
-            <button type="button" class="btn btn-sm btn-outline-secondary">Add person</button>
+            <button type="button" class="btn btn-sm btn-outline-success">Add person</button>
           </a>
         </div>
         <div class="btn-group me-2 mt-2">
           <a href="{{ url_for('ui_tree_scheme', tree_id=tree.id) }}">
             <button type="button" class="btn btn-sm btn-outline-secondary">Switch to scheme</button>
+          </a>
+        </div>
+        <div class="btn-group me-2 mt-2">
+          <a href="#" data-bs-toggle="modal" data-bs-target="#share-tree-modal">
+            <button type="button" class="btn btn-sm btn-outline-secondary">Share tree</button>
           </a>
         </div>
         <div class="btn-group me-2 mt-2">
