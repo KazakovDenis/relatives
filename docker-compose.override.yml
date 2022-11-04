@@ -1,10 +1,17 @@
-version: '3'
+version: '3.8'
+
+x-env-defaults: &defaults
+  restart: 'no'
 
 services:
   backend:
+    <<: *defaults
     volumes:
       - ./src/backend/relatives.db:/app/relatives.db
     ports:
       - "8000:8000"
-    restart: no
-    profiles: []
+
+  postgres:
+    <<: *defaults
+    ports:
+      - '5432:5432'

@@ -15,7 +15,6 @@ class User(ormar.Model):
     email: str = ormar.String(max_length=100, unique=True)
     password: str = ormar.String(max_length=100)
     is_superuser: str = ormar.Boolean(default=False)
-    # TODO: add confirmation
     is_active: str = ormar.Boolean(default=False)
 
 

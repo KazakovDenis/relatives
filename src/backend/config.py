@@ -5,7 +5,11 @@ from pydantic import BaseSettings
 class Settings(BaseSettings):
     PUBLIC_NAME: str = 'Relatives'
     DOMAIN: str = 'localhost'
-    DB_DSN: str = 'sqlite:///relatives.db'
+    DB_DSN: str = ''
+    DB_HOST: str = 'postgres'
+    DB_NAME: str = 'relatives'
+    DB_USER: str = 'postgres'
+    DB_PASS: str = 'postgres'
     SENTRY_DSN: str = ''
     MAIL_SERVER: str = 'localhost'
     MAIL_PORT: int = 465
@@ -16,6 +20,11 @@ class Settings(BaseSettings):
 
     class Config:
         env_file = '.env'
+
+    def get_db_dsn(self) -> str:
+        if self.DB_DSN:
+            return self.DB_DSN
+        return 'postgresql+aiopg://%s:%s@%s:5432/%s' % (self.DB_USER, self.DB_PASS, self.DB_HOST, self.DB_NAME)
 
 
 settings = Settings()
