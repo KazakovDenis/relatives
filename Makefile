@@ -53,3 +53,6 @@ deploy:
 	@echo "Done!"
 
 full_deploy: build upload deploy
+
+tunnel:
+	ssh -L 127.0.0.1:5432:127.0.0.1:5432 vps -N

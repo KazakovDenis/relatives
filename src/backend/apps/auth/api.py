@@ -39,7 +39,6 @@ async def api_signup(
     return {'result': 'ok'}
 
 
-# TODO: error when already logged in
 @router.get('/login', response_model=ResultOk)
 async def api_login(
         response: Response,
@@ -48,7 +47,7 @@ async def api_login(
         password: str = Query(),
 ):
     if token:
-        return {'result': 'already logged in'}
+        return {'result': 'ok'}
 
     user = await User.objects.get_or_none(email=email)
     if not (user and user.is_active and validate_password(password, user.password)):

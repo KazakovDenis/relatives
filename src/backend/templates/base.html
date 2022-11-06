@@ -26,7 +26,6 @@
             </div>
 
             <div class="col-auto text-center d-flex">
-                {{ request.user.display_name }}
                 {% if request.user.is_authenticated %}
                     {% if public %}
                         <a href="{{ url_for('ui_welcome') }}" class="ms-auto"><button type="button" class="btn btn-outline-primary me-2">Open</button></a>
