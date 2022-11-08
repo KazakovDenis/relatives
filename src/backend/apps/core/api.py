@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException, Query, Security, status
 from fastapi.responses import Response
 from ormar import MultipleMatches, NoMatch
 
+from deps import db
 from ..auth.models import User
 from ..auth.utils import get_user
 from .constants import BACK_RELATIONS, RelationType
@@ -27,8 +28,9 @@ async def tree_create(response: Response, tree: TreeSchema, user: User = Securit
         tree_obj = ut.tree
         response.status_code = status.HTTP_409_CONFLICT
     else:
-        tree_obj = await Tree.objects.create(**tree.dict())
-        await UserTree.objects.create(user=user, tree=tree_obj)
+        async with db.transaction():
+            tree_obj = await Tree.objects.create(**tree.dict())
+            await UserTree.objects.create(user=user, tree=tree_obj)
         response.status_code = status.HTTP_201_CREATED
     return tree_obj
 

@@ -24,7 +24,7 @@ class Settings(BaseSettings):
     def get_db_dsn(self) -> str:
         if self.DB_DSN:
             return self.DB_DSN
-        return 'postgresql+aiopg://%s:%s@%s:5432/%s' % (self.DB_USER, self.DB_PASS, self.DB_HOST, self.DB_NAME)
+        return 'postgresql+asyncpg://%s:%s@%s:5432/%s' % (self.DB_USER, self.DB_PASS, self.DB_HOST, self.DB_NAME)
 
 
 settings = Settings()

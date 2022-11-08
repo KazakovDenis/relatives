@@ -16,6 +16,7 @@ def create_app() -> FastAPI:
     ]
 
     app = FastAPI(middleware=middlewares)
+    app.state.database = db
     app.include_router(api_v1.router)
     app.include_router(ui.router)
     app.mount('/static', StaticFiles(directory='static'), name='static')
