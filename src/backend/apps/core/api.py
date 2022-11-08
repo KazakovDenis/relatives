@@ -1,8 +1,8 @@
+from deps import db
 from fastapi import APIRouter, HTTPException, Query, Security, status
 from fastapi.responses import Response
 from ormar import MultipleMatches, NoMatch
 
-from deps import db
 from ..auth.models import User
 from ..auth.utils import get_user
 from .constants import BACK_RELATIONS, RelationType
