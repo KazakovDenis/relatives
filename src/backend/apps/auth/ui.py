@@ -40,5 +40,11 @@ async def ui_activate(request: Request, token: str | None = Query(None)):
 
 @router.get('/verify-email', response_class=HTMLResponse)
 async def ui_verify_email(request: Request):
-    ctx = {'request': request, 'public': True}
-    return templates.TemplateResponse('public/verify_email.html', ctx)
+    ctx = {'request': request, 'public': True, 'text': 'Please, check your email to continue'}
+    return templates.TemplateResponse('public/empty.html', ctx)
+
+
+@router.get('/forbidden', response_class=HTMLResponse)
+async def ui_forbidden(request: Request):
+    ctx = {'request': request, 'public': True, 'text': 'Forbidden'}
+    return templates.TemplateResponse('public/empty.html', ctx)

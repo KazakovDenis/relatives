@@ -5,6 +5,8 @@ import ormar
 from deps import db, metadata
 from ormar import ReferentialAction
 from pydantic import HttpUrl
+from pydantic.types import UUID
+from sqlalchemy import func
 
 from ..auth.models import User
 from .constants import BACK_RELATIONS, Gender, RelationType
@@ -94,6 +96,7 @@ class UserTree(ormar.Model):
     id: int = ormar.Integer(primary_key=True)
     user: User = ormar.ForeignKey(User, ondelete=ReferentialAction.CASCADE)
     tree: Tree = ormar.ForeignKey(Tree, ondelete=ReferentialAction.CASCADE)
+    is_owner: bool = ormar.Boolean(default=False)
 
 
 class PersonTree(ormar.Model):
@@ -134,3 +137,12 @@ class Relation(ormar.Model):
         if not isinstance(other, type(self)):
             return False
         return self.as_tuple() == other.as_tuple()
+
+
+class Token(ormar.Model):
+    class Meta:
+        database = db
+        metadata = metadata
+        tablename = 'tokens'
+
+    token: UUID = ormar.UUID(primary_key=True, server_default=func.gen_random_uuid())

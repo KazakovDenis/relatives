@@ -1,4 +1,5 @@
 from typing import Tuple
+from uuid import UUID
 
 import aiofiles
 import pydantic
@@ -48,3 +49,10 @@ async def load_persons_csv(filename: str) -> Tuple[int, int]:
                     pass
 
     return loaded, errors
+
+
+def str_to_uuid(token: str) -> UUID | None:
+    try:
+        return UUID(token)
+    except ValueError:
+        return None

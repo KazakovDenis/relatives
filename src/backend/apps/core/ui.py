@@ -5,8 +5,9 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 
 from ..auth.models import User
 from ..auth.utils import get_user
-from .models import Person, PersonTree, Relation, Tree, UserTree
+from .models import Person, PersonTree, Relation, Token, Tree, UserTree
 from .permissions import has_tree_perm
+from .utils import str_to_uuid
 
 
 router = APIRouter()
@@ -80,6 +81,25 @@ async def ui_tree_scheme(request: Request, tree_id: int, user: User = Security(g
     tree = await Tree.objects.get(id=tree_id)
     ctx = {'request': request, 'tree': tree}
     return templates.TemplateResponse('tree_scheme.html', ctx)
+
+
+@router.get('/tree/{tree_id}/join', response_class=RedirectResponse)
+async def ui_tree_join(request: Request, tree_id: int, email: str = Query(''), token: str = Query('')):
+    if not (
+        email and token
+        and (token := str_to_uuid(token))
+        and (token := await Token.objects.get_or_none(token=token))
+        and (user := await User.objects.get_or_none(email=email))
+        and (tree := await Tree.objects.get_or_none(id=tree_id))
+    ):
+        return RedirectResponse(request.url_for('ui_forbidden'))
+
+    await UserTree.objects.create(user=user, tree=tree, is_owner=False)
+    await token.delete()
+
+    if request.user.is_authenticated:
+        return RedirectResponse(request.url_for('ui_welcome'))
+    return RedirectResponse(request.url_for('ui_login'))
 
 
 @router.get('/tree/{tree_id}/person/add', response_class=HTMLResponse)

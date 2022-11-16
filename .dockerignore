@@ -1,4 +1,5 @@
 **/relatives.db
+**/postgresql
 **/tests
 **/__pycache__
 **/.mypy_cache

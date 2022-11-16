@@ -25,17 +25,20 @@ class RequestUser(BaseUser):
 class AuthBackend(AuthenticationBackend):
     cookie = 'Authorization'
     allowed_paths = (
-        'login',
-        'signup',
-        'activate',
-        'verify-email',
-        'static',
+        '/login',
+        '/signup',
+        '/activate',
+        '/join',
+        '/verify-email',
+        '/forbidden',
+        '/static',
     )
 
     async def authenticate(self, conn):
         if self.cookie not in conn.cookies:
             if self.skip_for_path(conn.scope['path']):
                 return
+            # todo: redirect ui to login
             raise AuthenticationError('Not authenticated')
 
         auth_row = conn.cookies[self.cookie].split()

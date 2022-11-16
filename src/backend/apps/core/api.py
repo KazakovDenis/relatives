@@ -2,11 +2,12 @@ from deps import db
 from fastapi import APIRouter, HTTPException, Query, Security, status
 from fastapi.responses import Response
 from ormar import MultipleMatches, NoMatch
+from tools.notifications.email import invite_to_tree
 
 from ..auth.models import User
 from ..auth.utils import get_user
 from .constants import BACK_RELATIONS, RelationType
-from .models import Person, PersonTree, Relation, Tree, UserTree
+from .models import Person, PersonTree, Relation, Token, Tree, UserTree
 from .permissions import has_tree_perm
 from .schemas import (PersonSchema,
                       PersonUpdateSchema,
@@ -30,7 +31,7 @@ async def tree_create(response: Response, tree: TreeSchema, user: User = Securit
     else:
         async with db.transaction():
             tree_obj = await Tree.objects.create(**tree.dict())
-            await UserTree.objects.create(user=user, tree=tree_obj)
+            await UserTree.objects.create(user=user, tree=tree_obj, is_owner=True)
         response.status_code = status.HTTP_201_CREATED
     return tree_obj
 
@@ -48,11 +49,15 @@ async def tree_detail(tid: int, user: User = Security(get_user)):
     return tree
 
 
-@router.post('/tree/{tid}/share', response_model=Tree)
+@router.post('/tree/{tid}/share', response_model=ResultOk)
 async def tree_share(tid: int, recipient: RecipientSchema, user: User = Security(get_user)):
     if not (tree := await has_tree_perm(user.id, tid)):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
-    return tree
+    if not (user := await User.objects.get_or_none(email=recipient.email, is_active=True)):
+        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE)
+    token = await Token.objects.create()
+    await invite_to_tree(recipient.email, user.email, tree, token.token)
+    return {'result': 'ok'}
 
 
 @router.get('/tree/{tid}/scheme', response_model=TreeBuildSchema)
