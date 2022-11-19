@@ -31,17 +31,16 @@ jobs:
       postgres:
         image: bitnami/postgresql:15
         env:
+          POSTGRESQL_EXTRA_FLAGS: >-
+            --health-cmd pg_isready
+            --health-interval 10s
+            --health-timeout 5s
+            --health-retries 5
           POSTGRESQL_DATABASE: test
           POSTGRESQL_USERNAME: postgres
           POSTGRESQL_PASSWORD: postgres
         ports:
           - 5432:5432
-        # Wait until postgres has started
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
 
     steps:
       - uses: actions/checkout@v3
