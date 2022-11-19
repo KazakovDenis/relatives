@@ -33,11 +33,6 @@ jobs:
           POSTGRESQL_PASSWORD: postgres
         ports:
           - 5432:5432
-        healthcheck:
-          test: ["pg_isready -U ${POSTGRESQL_USERNAME} -d ${POSTGRESQL_DATABASE}" ]
-          interval: 10s
-          timeout: 3s
-          retries: 3
 
     steps:
       - uses: actions/checkout@v3
