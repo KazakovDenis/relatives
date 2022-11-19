@@ -1,5 +1,4 @@
 import asyncio
-import os
 
 import pytest
 from apps.auth.models import User
@@ -14,8 +13,6 @@ from . import settings
 
 @pytest.fixture(scope='session')
 def app():
-    # to discover static files correctly
-    os.chdir('src/backend')
     return create_app()
 
 

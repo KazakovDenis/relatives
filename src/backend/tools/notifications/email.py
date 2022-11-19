@@ -16,7 +16,7 @@ smtp_client = FastMail(
         MAIL_SSL_TLS=True,
         USE_CREDENTIALS=True,
         VALIDATE_CERTS=True,
-        TEMPLATE_FOLDER='templates/email',
+        TEMPLATE_FOLDER=settings.TEMPLATES_DIR / 'email',
         SUPPRESS_SEND=settings.MAIL_SUPPRESS,
     )
 )

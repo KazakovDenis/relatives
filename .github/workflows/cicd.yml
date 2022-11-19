@@ -2,10 +2,18 @@ name: CI/CD
 
 run-name: ${{ github.actor }} pushed changes
 
-on: [push]
+on:
+  push:
+  pull_request:
+    branches: [ main ]
 
 env:
-  DB_DSN: "sqlite:///test_relatives.db"
+  DB_HOST: "localhost"
+  DB_NAME: "test"
+  DB_USER: "postgres"
+  DB_PASS: "postgres"
+  STATIC_DIR: "src/backend/static"
+  TEMPLATES_DIR: "src/backend/templates"
   MAIL_SUPPRESS: 1
 
 jobs:
@@ -16,7 +24,25 @@ jobs:
         python-version: [ "3.10" ]
         poetry-version: [ "1.2" ]
         os: [ ubuntu-latest ]
+
     runs-on: ${{ matrix.os }}
+
+    services:
+      postgres:
+        image: bitnami/postgresql:15
+        env:
+          POSTGRESQL_DATABASE: test
+          POSTGRESQL_USERNAME: postgres
+          POSTGRESQL_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        # Wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4

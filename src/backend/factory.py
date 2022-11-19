@@ -9,6 +9,7 @@ from starlette.middleware.authentication import AuthenticationMiddleware
 def create_app() -> FastAPI:
     from apps import api_v1, ui
     from apps.auth.middleware import AuthBackend
+    from config import settings
     from deps import db, templates
 
     middlewares = [
@@ -19,7 +20,7 @@ def create_app() -> FastAPI:
     app.state.database = db
     app.include_router(api_v1.router)
     app.include_router(ui.router)
-    app.mount('/static', StaticFiles(directory='static'), name='static')
+    app.mount('/static', StaticFiles(directory=settings.STATIC_DIR), name='static')
 
     @app.on_event('startup')
     async def startup():

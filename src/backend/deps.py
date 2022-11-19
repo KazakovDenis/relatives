@@ -6,4 +6,4 @@ from fastapi.templating import Jinja2Templates
 
 db = Database(settings.get_db_dsn())
 metadata = sqlalchemy.MetaData()
-templates = Jinja2Templates('templates')
+templates = Jinja2Templates(settings.TEMPLATES_DIR)

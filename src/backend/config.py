@@ -1,5 +1,5 @@
 import sentry_sdk
-from pydantic import BaseSettings
+from pydantic import BaseSettings, DirectoryPath
 
 
 class Settings(BaseSettings):
@@ -17,6 +17,8 @@ class Settings(BaseSettings):
     MAIL_PASSWORD: str = 'password'
     MAIL_FROM: str = MAIL_USERNAME
     MAIL_SUPPRESS: int = 0
+    STATIC_DIR: DirectoryPath = 'static'
+    TEMPLATES_DIR: DirectoryPath = 'templates'
 
     class Config:
         env_file = '.env'
