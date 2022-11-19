@@ -24,15 +24,6 @@ def upgrade() -> None:
         sa.PrimaryKeyConstraint('id')
     )
     op.create_table(
-        'person_tree',
-        sa.Column('id', sa.INTEGER(), nullable=False),
-        sa.Column('tree', sa.INTEGER(), nullable=False),
-        sa.Column('person', sa.INTEGER(), nullable=False),
-        sa.ForeignKeyConstraint(['person'], ['persons.id'], ondelete='CASCADE'),
-        sa.ForeignKeyConstraint(['tree'], ['trees.id'], ondelete='CASCADE'),
-        sa.PrimaryKeyConstraint('id')
-    )
-    op.create_table(
         'persons',
         sa.Column('id', sa.INTEGER(), nullable=False),
         sa.Column('name', sa.VARCHAR(length=100), nullable=False),
@@ -44,6 +35,15 @@ def upgrade() -> None:
         sa.Column('birthplace', sa.VARCHAR(length=100), nullable=True),
         sa.Column('info', sa.TEXT(), nullable=True),
         sa.Column('photo', sa.VARCHAR(length=200), nullable=True),
+        sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table(
+        'person_tree',
+        sa.Column('id', sa.INTEGER(), nullable=False),
+        sa.Column('tree', sa.INTEGER(), nullable=False),
+        sa.Column('person', sa.INTEGER(), nullable=False),
+        sa.ForeignKeyConstraint(['person'], ['persons.id'], ondelete='CASCADE'),
+        sa.ForeignKeyConstraint(['tree'], ['trees.id'], ondelete='CASCADE'),
         sa.PrimaryKeyConstraint('id')
     )
     op.create_table(
@@ -80,7 +80,7 @@ def upgrade() -> None:
         sa.Column('id', sa.INTEGER(), nullable=False),
         sa.Column('user', sa.INTEGER(), nullable=False),
         sa.Column('token', sa.CHAR(length=32), nullable=False),
-        sa.Column('issued_at', sa.DATETIME(), nullable=False),
+        sa.Column('issued_at', sa.TIMESTAMP(), nullable=False),
         sa.ForeignKeyConstraint(['user'], ['users.id'], ondelete='CASCADE'),
         sa.PrimaryKeyConstraint('id')
     )
@@ -93,6 +93,6 @@ def downgrade() -> None:
     op.drop_table('user_tree')
     op.drop_table('users')
     op.drop_table('relations')
-    op.drop_table('persons')
     op.drop_table('person_tree')
+    op.drop_table('persons')
     op.drop_table('trees')
