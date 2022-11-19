@@ -12,9 +12,6 @@ env:
   DB_NAME: "test"
   DB_USER: "postgres"
   DB_PASS: "postgres"
-  STATIC_DIR: "src/backend/static"
-  TEMPLATES_DIR: "src/backend/templates"
-  MAIL_SUPPRESS: 1
 
 jobs:
   CI:
@@ -58,3 +55,7 @@ jobs:
         run: make migrate
       - name: Run tests
         run: make test
+        env:
+          STATIC_DIR: "src/backend/static"
+          TEMPLATES_DIR: "src/backend/templates"
+          MAIL_SUPPRESS: 1
