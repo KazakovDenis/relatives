@@ -36,10 +36,10 @@ async def tree_create(response: Response, tree: TreeSchema, user: User = Securit
     return tree_obj
 
 
-@router.get('/tree', response_model=list[Tree])
+@router.get('/tree', response_model=list[UserTree])
 async def tree_list(user: User = Security(get_user)):
     uts = await UserTree.objects.select_related('tree').all(user=user)
-    return [ut.tree for ut in uts]
+    return uts
 
 
 @router.get('/tree/{tid}', response_model=Tree)

@@ -3,6 +3,7 @@
 
     const treeList = document.getElementById('tree-list');
     const createTreeLink = document.getElementById('tree-create');
+    const sharedTreeList = document.getElementById('shared-tree-list');
 
     getTrees();
 
@@ -15,12 +16,19 @@
         xhr.send();
         xhr.onload = function() {
             if (xhr.status === 200) {
-              xhr.response.forEach(tree => {
-                  const treeUrl = `${document.location.origin}/ui/tree/${tree.id}/list`;
-                  const li = document.createElement('li');
-                  li.innerHTML = `<a href="${treeUrl}" class="link-dark d-inline-flex text-decoration-none rounded">${tree.name}</a>`;
-                  treeList.insertBefore(li, createTreeLink);
-              })
+                if (!xhr.response.length) {
+                    sharedTreeList.parentElement.classList.remove('show');
+                    return
+                }
+
+                xhr.response.forEach(userTree => {
+                    const li = createLink(userTree);
+                    if (userTree.is_owner) {
+                      treeList.insertBefore(li, createTreeLink);
+                    } else {
+                      sharedTreeList.append(li);
+                    }
+                })
             }
         };
         xhr.onerror = function() {
@@ -28,4 +36,10 @@
         };
     }
 
+    function createLink(userTree) {
+        const treeUrl = `${document.location.origin}/ui/tree/${userTree.tree.id}/list`;
+        const li = document.createElement('li');
+        li.innerHTML = `<a href="${treeUrl}" class="link-dark d-inline-flex text-decoration-none rounded">${userTree.tree.name}</a>`;
+        return li;
+    }
 })()
