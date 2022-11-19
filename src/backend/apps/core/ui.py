@@ -94,7 +94,7 @@ async def ui_tree_join(request: Request, tree_id: int, email: str = Query(''), t
     ):
         return RedirectResponse(request.url_for('ui_forbidden'))
 
-    await UserTree.objects.create(user=user, tree=tree, is_owner=False)
+    await UserTree.objects.get_or_create({'is_owner': False}, user=user, tree=tree)
     await token.delete()
 
     if request.user.is_authenticated:

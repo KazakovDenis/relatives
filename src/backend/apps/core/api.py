@@ -50,11 +50,14 @@ async def tree_detail(tid: int, user: User = Security(get_user)):
 
 
 @router.post('/tree/{tid}/share', response_model=ResultOk)
-async def tree_share(tid: int, recipient: RecipientSchema, user: User = Security(get_user)):
-    if not (tree := await has_tree_perm(user.id, tid)):
+async def tree_share(tree_id: int, recipient: RecipientSchema, user: User = Security(get_user)):
+    if not (tree := await has_tree_perm(user.id, tree_id)):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
     if not (user := await User.objects.get_or_none(email=recipient.email, is_active=True)):
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE)
+    if await UserTree.objects.filter(user__email=recipient.email, tree__id=tree_id).exists():
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT)
+
     token = await Token.objects.create()
     await invite_to_tree(recipient.email, user.email, tree, token.token)
     return {'result': 'ok'}

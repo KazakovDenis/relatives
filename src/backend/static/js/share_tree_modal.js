@@ -22,7 +22,9 @@
         xhr.onload = function() {
             if (xhr.status === 406) {
                 alert(`${email} is not registered at Relatives.`)
-            } else if (xhr.status === 406) {
+            } else if (xhr.status === 409) {
+                alert(`${email} has access to this tree already.`);
+            } else if (xhr.status > 400) {
                 alert('Forbidden');
             }
         };
