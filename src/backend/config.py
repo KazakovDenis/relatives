@@ -6,7 +6,7 @@ class Settings(BaseSettings):
     PUBLIC_NAME: str = 'Relatives'
     DOMAIN: str = 'localhost'
     DB_DSN: str = ''
-    DB_HOST: str = 'postgres'
+    DB_HOST: str = 'localhost'
     DB_NAME: str = 'relatives'
     DB_USER: str = 'postgres'
     DB_PASS: str = 'postgres'

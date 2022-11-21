@@ -1,52 +1,50 @@
-import asyncio
-
 import pytest
 from apps.auth.models import User
 from apps.auth.utils import create_session, hash_password
 from apps.core.constants import Gender
 from apps.core.models import Person, PersonTree, Tree, UserTree
+from deps import db
 from factory import create_app
 from fastapi.testclient import TestClient
 
 from . import settings
 
 
-@pytest.fixture(scope='session')
-def app():
-    return create_app()
+@pytest.fixture
+async def app():
+    app = create_app()
+    await db.connect()
+    yield app
+    await db.disconnect()
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture
 def client(app):
     return TestClient(app)
 
 
-@pytest.fixture(scope='session')
-def user():
-    obj = asyncio.run(
-        User.objects.create(
-            email=settings.ACTIVE_USER_EMAIL,
-            password=hash_password(settings.ACTIVE_USER_PASS),
-            is_superuser=False,
-            is_active=True,
-        ),
+@pytest.fixture
+async def user(app):
+    obj = await User.objects.create(
+        email=settings.ACTIVE_USER_EMAIL,
+        password=hash_password(settings.ACTIVE_USER_PASS),
+        is_superuser=False,
+        is_active=True,
     )
     yield obj
-    asyncio.run(obj.delete())
+    await obj.delete()
 
 
-@pytest.fixture(scope='session')
-def inactive_user():
-    obj = asyncio.run(
-        User.objects.create(
-            email=settings.INACTIVE_USER_EMAIL,
-            password=hash_password(settings.INACTIVE_USER_PASS),
-            is_superuser=False,
-            is_active=False,
-        ),
+@pytest.fixture
+async def inactive_user(app):
+    obj = await User.objects.create(
+        email=settings.INACTIVE_USER_EMAIL,
+        password=hash_password(settings.INACTIVE_USER_PASS),
+        is_superuser=False,
+        is_active=False,
     )
     yield obj
-    asyncio.run(obj.delete())
+    await obj.delete()
 
 
 @pytest.fixture
@@ -71,7 +69,7 @@ async def person(tree):
 
 
 @pytest.fixture
-async def relative():
+async def relative(app):
     person = await Person.objects.create(name='Anna', surname='Doe', gender=Gender.FEMALE)
     yield person
     await person.delete()
