@@ -11,7 +11,7 @@ from . import settings
 
 
 @pytest.fixture
-async def app():
+async def app(event_loop):
     app = create_app()
     await db.connect()
     yield app
@@ -79,7 +79,5 @@ async def relative(app):
 def async_teardown(request, event_loop):
     # noinspection PyUnresolvedReferences
     def inner(coro):
-        request.addfinalizer(
-            lambda: event_loop.run_until_complete(coro),
-        )
+        request.addfinalizer(lambda: event_loop.run_until_complete(coro))
     return inner

@@ -1,3 +1,9 @@
+VERSION=0.0.1
+
+install:
+	sudo apt install gettext
+	poetry install
+
 run:
 	uvicorn main:app
 
@@ -14,6 +20,15 @@ style:
 test:
 	poetry run coverage run
 	poetry run coverage report
+
+PO_FILE=src/backend/locale/ru/LC_MESSAGES/messages.po
+MO_FILE=src/backend/locale/ru/LC_MESSAGES/messages.mo
+
+gettext:
+	xgettext -D src/backend -o ${PO_FILE} --force-po -j -i --package-name relatives --package-version ${VERSION} -F app.py
+
+msgfmt:
+	msgfmt -o ${MO_FILE} ${PO_FILE}
 
 DIST_DIR=dist
 BACKEND_ZIP=relatives_backend.img
