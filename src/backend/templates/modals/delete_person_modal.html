@@ -3,14 +3,14 @@
     <div class="modal-content">
       <form id="delete-person-form" action="">
         <div class="modal-header">
-          <h5 class="modal-title">Confirm the action</h5>
+          <h5 class="modal-title" data-text="Confirm the action"></h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          Do you really want to delete <b>{{ person.name }} {{ person.surname }}</b>?
+          <span data-text="Do you really want to delete"></span> <b>{{ person.name }} {{ person.surname }}</b>?
         </div>
         <div class="modal-footer">
-          <button type="submit" class="btn btn-danger">Delete this person</button>
+          <button type="submit" class="btn btn-danger" data-text="Delete"></button>
         </div>
       </form>
     </div>

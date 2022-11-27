@@ -100,7 +100,7 @@
           </div>
         </div>
         <div class="col-md-4">
-          <label for="patronymic" class="form-label" data-text="Patronymic"><span class="text-muted" data-text=" (Optional)"></span></label>
+          <label for="patronymic" class="form-label"><span data-text="Patronymic"></span> <span class="text-muted" data-text="(Optional)"></span></label>
           <div class="input-group has-validation">
           {% if person %}
             <input type="text" class="form-control" id="patronymic" placeholder="" value="{{ person.patronymic or '' }}">
@@ -110,7 +110,7 @@
           </div>
         </div>
         <div class="col-md-6">
-          <label for="birthdate" class="form-label" data-text="Date of birth"><span class="text-muted" data-text=" (Optional)"></span></label>
+          <label for="birthdate" class="form-label"><span data-text="Date of birth"></span> <span class="text-muted" data-text="(Optional)"></span></label>
           {% if person %}
             <input type="date" class="form-control" id="birthdate" placeholder="01.01.1980" value="{{ person.birthdate }}">
           {% else %}
@@ -118,7 +118,7 @@
           {% endif %}
         </div>
         <div class="col-md-6">
-          <label for="birthplace" class="form-label" data-text="Place of birth"><span class="text-muted" data-text=" (Optional)"></span></label>
+          <label for="birthplace" class="form-label"><span data-text="Place of birth"></span> <span class="text-muted" data-text="(Optional)"></span></label>
           {% if person %}
             <input type="text" class="form-control" id="birthplace" placeholder="Murmansk" value="{{ person.birthplace or ''  }}">
           {% else %}
@@ -141,7 +141,7 @@
         </div>
       </div>
       <div class="col-12 my-2">
-        <label for="birthname" class="form-label" data-text="Birth full name"><span class="text-muted" data-text=" (Optional)"></span></label>
+        <label for="birthname" class="form-label"><span data-text="Birth full name"></span> <span class="text-muted" data-text="(Optional)"></span></label>
         <div class="input-group has-validation">
         {% if person %}
           <input type="text" class="form-control" id="birthname" value="{{ person.birthname or '' }}">
@@ -151,7 +151,7 @@
         </div>
       </div>
       <div class="col-12">
-        <label for="info" class="form-label" data-text="Additional info"><span class="text-muted" data-text=" (Optional)"></span></label>
+        <label for="info" class="form-label"><span data-text="Additional info"></span> <span class="text-muted" data-text="(Optional)"></span></label>
         <textarea class="form-control" id="info">{% if person %}{{ person.info or '' }}{% endif %}</textarea>
       </div>
     </form>

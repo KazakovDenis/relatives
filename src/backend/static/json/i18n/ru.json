@@ -55,10 +55,10 @@
   "Think of a name of new tree": "Придумайте название нового дерева",
   "Create": "Создать",
 
-  "Confirm the action": "Подтвердите действие",
-  "Do you really want to delete the tree \"1111\"?": "Вы действительно хотите удалить",
-  "Delete this tree": "Удалить это дерево",
+  "Invite a user to edit this tree together:": "Пригласите пользователя, чтобы вместе редактировать дерево",
+  "Invite": "Пригласить",
 
-  "Do you really want to delete Denis Kazakov?": "Вы действительно хотите удалить",
-  "Delete this person": "Удалить этого родственника"
+  "Confirm the action": "Подтвердите действие",
+  "Do you really want to delete the tree": "Вы действительно хотите удалить",
+  "Do you really want to delete": "Вы действительно хотите удалить"
 }

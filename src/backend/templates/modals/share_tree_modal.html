@@ -3,7 +3,9 @@
     <div class="modal-content">
       <form action="" id="share-tree-form" data-tree-id="{{ tree.id }}">
         <div class="modal-header">
-        <h5 class="modal-title">Invite a user to edit "{{ tree.name }}" together</h5>
+        <h5 class="modal-title">
+          <span data-text="Invite a user to edit this tree together:"></span> "{{ tree.name }}"
+        </h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
         <div class="modal-body">
@@ -11,7 +13,7 @@
           <input type="email" class="form-control" name="email" id="share-tree-name" placeholder="j.doe@mail.com" required>
         </div>
         <div class="modal-footer">
-          <button type="submit" class="btn btn-primary">Invite</button>
+          <button type="submit" class="btn btn-primary" data-text="Create">Invite</button>
         </div>
       </form>
     </div>
