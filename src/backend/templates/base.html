@@ -19,16 +19,19 @@
 
             <div class="col mx-2 d-none d-sm-block">
                 <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
-                    <!--          <li><a href="#" class="nav-link px-2 link-secondary">Home</a></li>-->
-                    <!--          <li><a href="#" class="nav-link px-2 link-dark">Features</a></li>-->
-                    <!--          <li><a href="#" class="nav-link px-2 link-dark">About</a></li>-->
+                  <li><a href="#" class="nav-link px-2 link-secondary lang-button">
+                      <img src="{{ url_for('static', path='img/uk.png') }}" alt="English" data-lang-id="en" width="24">
+                  </a></li>
+                  <li><a href="#" class="nav-link px-2 link-dark lang-button">
+                      <img src="{{ url_for('static', path='img/ru.png') }}" alt="Russian" data-lang-id="ru" width="24">
+                  </a></li>
                 </ul>
             </div>
 
             <div class="col-auto text-center d-flex">
                 {% if request.user.is_authenticated %}
                     {% if public %}
-                        <a href="{{ url_for('ui_welcome') }}" class="ms-auto"><button type="button" class="btn btn-outline-primary me-2">Open</button></a>
+                        <a href="{{ url_for('ui_welcome') }}" class="ms-auto"><button type="button" class="btn btn-outline-primary me-2" data-lang="Open"></button></a>
                     {% endif %}
                     <button id="logout-button" type="button" class="btn btn-outline-secondary ms-auto">Log out</button>
                 {% else %}
@@ -54,7 +57,8 @@
             </div>
         </footer>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" crossorigin="anonymous"></script>
-        <script src="{{ url_for('static', path='js/main.js') }}"></script>
+        <script src="{{ url_for('static', path='js/auth.js') }}"></script>
+        <script src="{{ url_for('static', path='js/i18n.js') }}"></script>
         {% block extra_script %} {% endblock %}
     </body>
 </html>
