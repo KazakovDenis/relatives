@@ -7,37 +7,34 @@
 {% block content %}
 <section class="form-signin w-100 m-auto d-flex h-50">
   <div>
-    <h2 class="h3 mb-3 fw-normal">
-      {% if signup %}
-        Welcome
-      {% else %}
-        Please sign in
-      {% endif %}
+    {% if signup %}
+      <h2 class="h3 mb-3 fw-normal" data-text="Welcome">
+    {% else %}
+      <h2 class="h3 mb-3 fw-normal" data-text="Please sign in">
+    {% endif %}
     </h2>
 
     <div class="form-floating">
       <input type="email" name="email" class="form-control" id="email-input" placeholder="name@example.com">
-      <label for="email-input">Email address</label>
+      <label for="email-input">Email</label>
     </div>
     <div class="form-floating">
       <input type="password" name="password" class="form-control" id="password-input" placeholder="Password">
-      <label for="password-input">Password</label>
+      <label for="password-input" data-text="Password"></label>
     </div>
 
     {% if not signup %}
     <div class="checkbox mb-3">
-      <label>
-        <input type="checkbox" value="remember-me"> Remember me
-      </label>
+      <input type="checkbox" name="remember-me">
+      <label data-text="Remember me"></label>
     </div>
     {% endif %}
 
-    <button class="w-100 btn btn-lg btn-primary" id="sign-in-button">
-      {% if signup %}
-        Sign up
-      {% else %}
-        Sign in
-      {% endif %}
+    {% if signup %}
+      <button class="w-100 btn btn-lg btn-primary" id="sign-in-button" data-text="Sign up">
+    {% else %}
+      <button class="w-100 btn btn-lg btn-primary" id="sign-in-button" data-text="Sign in">
+    {% endif %}
     </button>
   </div>
 </section>

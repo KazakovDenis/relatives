@@ -1,8 +1,62 @@
 {
   "Build and fill your family tree with your relatives together": "Стройте своё генеалогическое древо вместе с родственниками",
+  "© 2022 Denis Kazakov": "© 2022 Денис Казаков",
+  "Privacy": "Политика конфиденциальности персональной информации",
+
+  "Welcome": "Добро пожаловать",
+  "Open": "Открыть",
+  "Log in": "Войти",
+  "Log out": "Выйти",
+  "Sign up": "Зарегистрироваться",
+  "Sign in": "Войти",
+  "Password": "Пароль",
+  "Please sign in": "Войти в личный кабинет",
+  "Remember me": "Запомнить",
+
+  "My trees": "Дои деревья",
+  "Add +": "Добавить +",
+  "Shared with me": "Меня пригласили",
+  "Account": "Мой профиль",
+  "Change password": "Сменить пароль",
+
+  "Add person": "Добавить",
+  "Switch to scheme": "Схема",
+  "Share tree": "Пригласить",
+  "Delete tree": "Удалить",
+  "Download": "Скачать",
+  "Switch to list": "Список",
+
+  "Add": "Добавить",
+  "Add new person": "Добавить родственника",
+  "Personal information": "Личные данные",
   "First name": "Имя",
   "Last name": "Фамилия",
-  "Patronymic": "Отчество",
-  "2022 Denis Kazakov": "2022 Денис Казаков",
-  "Privacy": "Политика конфиденциальности персональной информации"
+  "Patronymic ": "Отчество ",
+  "Date of birth ": "Дата рождения ",
+  "Place of birth ": "Место рождения ",
+  "Male": "Мужчина",
+  "Female": "Женщина",
+  "Birth full name ": "Имя при рождении ",
+  "Additional info ": "Дополнительная информация",
+  "(Optional)": "(Необязательно)",
+
+  "Edit person": "Редактировать данные",
+  "Save": "Сохранить",
+  "Delete": "Удалить",
+  "Immediate family": "Близкие родственники",
+  "Choose...": "Выбрать...",
+  "Child": "Ребенок",
+  "Parent": "Родитель",
+  "Spouse": "Супруг",
+  "Ex-spouse": "Бывший супруг",
+
+  "Think of a name of new tree": "Придумайте название нового дерева",
+  "Create": "Создать",
+
+  "Confirm the action": "Подтвердите действие",
+  "Do you really want to delete the tree \"1111\"?": "Вы действительно хотите удалить",
+  "Delete this tree": "Удалить это дерево",
+
+  "Do you really want to delete Denis Kazakov?": "Вы действительно хотите удалить",
+  "Delete this person": "Удалить этого родственника"
 }

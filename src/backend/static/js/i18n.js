@@ -2,25 +2,19 @@
   'use strict'
 
   document.querySelectorAll('.lang-button').forEach(button => {
-    button.addEventListener('click', changeLang);
+    button.addEventListener('click', (event) => {
+      changeLang(event.target.dataset.lang);
+    });
   })
 
-  let currentLang = window.localStorage.getItem('language');
-  if (currentLang) changeLang(currentLang);
+  const currentLang = window.localStorage.getItem('language') || navigator.language || navigator.userLanguage;
+  if (currentLang) changeLang(currentLang.slice(0, 2));
 
-  function changeLang(event) {
-    let lang;
-
-    if (event.target) {
-      lang = event.target.dataset.langId;
-    } else {
-      lang = "en";
-    }
-
+  function changeLang(lang) {
     window.localStorage.setItem('language', lang);
 
     if (lang === "en") {
-      translate(lang, {})
+      translate(lang, {});
       return
     }
 
@@ -31,14 +25,14 @@
   }
 
   function translate(lang, translation) {
-    document.querySelectorAll('[data-lang]').forEach(elem => {
-      const text = elem.dataset.lang;
+    document.querySelectorAll('[data-text]').forEach(elem => {
+      const text = elem.dataset.text;
       const trans = translation[text];
       if (trans) {
         elem.textContent = trans;
       } else {
         elem.textContent = text;
-        console.warn(`No translation in ${lang} for "${text}"`);
+        if (lang !== 'en') console.warn(`No translation in "${lang}" for "${text}"`);
       }
     })
   }
