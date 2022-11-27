@@ -58,15 +58,15 @@
 
 {% block data %}
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-  <h1 class="h2">{% if person %}Edit person{% else %}Add new person{% endif %}</h1>
+  <h1 class="h2" data-text="{% if person %}Edit person{% else %}Add new person{% endif %}"></h1>
   <div class="btn-toolbar mb-2 mb-md-0">
     <div class="btn-group me-2">
-      <button type="button" id="create-person-button" class="btn btn-outline-success">{% if person %}Save{% else %}Add{% endif %}</button>
+      <button type="button" id="create-person-button" class="btn btn-outline-success" data-text="{% if person %}Save{% else %}Add{% endif %}"></button>
     </div>
     {% if person %}
     <div class="btn-group me-2">
       <a href="#" data-bs-toggle="modal" data-bs-target="#delete-person-modal">
-        <button type="button" class="btn btn-outline-danger">Delete</button>
+        <button type="button" class="btn btn-outline-danger" data-text="Delete"></button>
       </a>
     </div>
     {% endif %}
@@ -74,11 +74,11 @@
 </div>
 <div class="row justify-content-between ms-sm-auto px-md-4">
   <div class="col-xl" id="person-data" {% if tree_id %}data-tree-id="{{ tree_id }}"{% endif %}>
-    <h4 class="mb-3">Personal information</h4>
+    <h4 class="mb-3" data-text="Personal information"></h4>
     <form class="needs-validation" id="person-form" {% if person %}data-person-id="{{ person.id }}"{% endif %} novalidate>
       <div class="row g-3">
         <div class="col-md-4">
-          <label for="surname" class="form-label">Last name</label>
+          <label for="surname" class="form-label" data-text="Last name"></label>
           {% if person %}
             <input type="text" class="form-control" id="surname" placeholder="" value="{{ person.surname }}" required>
           {% else %}
@@ -89,7 +89,7 @@
           </div>
         </div>
         <div class="col-md-4">
-          <label for="name" class="form-label">First name</label>
+          <label for="name" class="form-label" data-text="First name"></label>
           {% if person %}
             <input type="text" class="form-control" id="name" placeholder="" value="{{ person.name }}" required>
           {% else %}
@@ -100,7 +100,7 @@
           </div>
         </div>
         <div class="col-md-4">
-          <label for="patronymic" class="form-label">Patronymic <span class="text-muted">(Optional)</span></label>
+          <label for="patronymic" class="form-label" data-text="Patronymic"><span class="text-muted" data-text=" (Optional)"></span></label>
           <div class="input-group has-validation">
           {% if person %}
             <input type="text" class="form-control" id="patronymic" placeholder="" value="{{ person.patronymic or '' }}">
@@ -110,7 +110,7 @@
           </div>
         </div>
         <div class="col-md-6">
-          <label for="birthdate" class="form-label">Date of birth <span class="text-muted">(Optional)</span></label>
+          <label for="birthdate" class="form-label" data-text="Date of birth"><span class="text-muted" data-text=" (Optional)"></span></label>
           {% if person %}
             <input type="date" class="form-control" id="birthdate" placeholder="01.01.1980" value="{{ person.birthdate }}">
           {% else %}
@@ -118,7 +118,7 @@
           {% endif %}
         </div>
         <div class="col-md-6">
-          <label for="birthplace" class="form-label">Place of birth <span class="text-muted">(Optional)</span></label>
+          <label for="birthplace" class="form-label" data-text="Place of birth"><span class="text-muted" data-text=" (Optional)"></span></label>
           {% if person %}
             <input type="text" class="form-control" id="birthplace" placeholder="Murmansk" value="{{ person.birthplace or ''  }}">
           {% else %}
@@ -131,17 +131,17 @@
           <input id="male" name="gender" value="MALE" type="radio" class="form-check-input"
              {% if person and person.gender.value == 'MALE' %}checked{% endif %}
            required>
-          <label class="form-check-label" for="male">Male</label>
+          <label class="form-check-label" for="male" data-text="Male"></label>
         </div>
         <div class="col-3 form-check form-check-inline">
           <input id="female" name="gender" value="FEMALE" type="radio" class="form-check-input"
              {% if person and person.gender.value == 'FEMALE' %}checked{% endif %}
             required>
-          <label class="form-check-label" for="female">Female</label>
+          <label class="form-check-label" for="female" data-text="Female"></label>
         </div>
       </div>
       <div class="col-12 my-2">
-        <label for="birthname" class="form-label">Birth full name <span class="text-muted">(Optional)</span></label>
+        <label for="birthname" class="form-label" data-text="Birth full name"><span class="text-muted" data-text=" (Optional)"></span></label>
         <div class="input-group has-validation">
         {% if person %}
           <input type="text" class="form-control" id="birthname" value="{{ person.birthname or '' }}">
@@ -151,7 +151,7 @@
         </div>
       </div>
       <div class="col-12">
-        <label for="info" class="form-label">Additional info <span class="text-muted">(Optional)</span></label>
+        <label for="info" class="form-label" data-text="Additional info"><span class="text-muted" data-text=" (Optional)"></span></label>
         <textarea class="form-control" id="info">{% if person %}{{ person.info or '' }}{% endif %}</textarea>
       </div>
     </form>
@@ -159,16 +159,16 @@
   <div class="col-xl">
     {% if person %}
       <hr class="d-xl-none my-3">
-      <h4 class="mb-3">Immediate family</h4>
+      <h4 class="mb-3" data-text="Immediate family"></h4>
       {% for rel in relations %}
         <form class="form-inline needs-validation relative-form" data-relative-id="{{ rel.person_to.id }}">
           <div class="input-group mb-2 mr-sm-2">
             <input type="text" class="form-control" value="{{ rel.person_to.fio }}" placeholder="Type in full name" required>
             <select class="form-select mx-2" required>
-              <option value="PARENT" {% if rel.type.value == 'PARENT' %}selected{% endif %}>Parent</option>
-              <option value="SPOUSE" {% if rel.type.value == 'SPOUSE' %}selected{% endif %}>Spouse</option>
-              <option value="EX_SPOUSE" {% if rel.type.value == 'EX_SPOUSE' %}selected{% endif %}>Ex-spouse</option>
-              <option value="CHILD" {% if rel.type.value == 'CHILD' %}selected{% endif %}>Child</option>
+              <option value="PARENT" {% if rel.type.value == 'PARENT' %}selected{% endif %} data-text="Parent"></option>
+              <option value="SPOUSE" {% if rel.type.value == 'SPOUSE' %}selected{% endif %} data-text="Spouse"></option>
+              <option value="EX_SPOUSE" {% if rel.type.value == 'EX_SPOUSE' %}selected{% endif %} data-text="Ex-spouse"></option>
+              <option value="CHILD" {% if rel.type.value == 'CHILD' %}selected{% endif %} data-text="Child"></option>
             </select>
             <button type="submit" class="btn btn-danger">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-x" viewBox="0 0 16 16">
@@ -183,11 +183,11 @@
         <div class="input-group mb-2 mr-sm-2">
           <input type="text" class="form-control" name="fullName" placeholder="Type in name or surname" required>
           <select class="form-select mx-2" name="relation" required>
-            <option value="" selected>Choose...</option>
-            <option value="PARENT">Parent</option>
-            <option value="SPOUSE">Spouse</option>
-            <option value="EX_SPOUSE">Ex-spouse</option>
-            <option value="CHILD">Child</option>
+            <option value="" data-text="Relation..." selected></option>
+            <option value="PARENT" data-text="Parent"></option>
+            <option value="SPOUSE" data-text="Spouse"></option>
+            <option value="EX_SPOUSE" data-text="Ex-spouse"></option>
+            <option value="CHILD" data-text="Child"></option>
           </select>
           <button type="submit" class="btn btn-success">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-plus" viewBox="0 0 16 16">

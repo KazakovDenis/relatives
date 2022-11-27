@@ -6,21 +6,21 @@
       <h1 class="h2">{{ tree.name }}</h1>
       <div class="btn-toolbar mb-2 mb-md-0">
         <div class="btn-group me-2">
-          <button id="cyto-download" type="button" class="btn btn-sm btn-outline-secondary">Download</button>
+          <button id="cyto-download" type="button" class="btn btn-sm btn-outline-secondary" data-text="Download"></button>
         </div>
         <div class="btn-group me-2">
           <a href="{{ url_for('ui_person_add', tree_id=tree.id) }}">
-            <button type="button" class="btn btn-sm btn-outline-secondary">Add person</button>
+            <button type="button" class="btn btn-sm btn-outline-secondary" data-text="Add person"></button>
           </a>
         </div>
         <div class="btn-group me-2">
           <a href="{{ url_for('ui_tree_list', tree_id=tree.id) }}">
-            <button type="button" class="btn btn-sm btn-outline-secondary">Switch to list</button>
+            <button type="button" class="btn btn-sm btn-outline-secondary" data-text="Switch to list"></button>
           </a>
         </div>
         <div class="btn-group me-2">
           <a href="{{ url_for('ui_tree_delete', tree_id=tree.id) }}">
-            <button type="button" class="btn btn-sm btn-outline-danger">Delete tree</button>
+            <button type="button" class="btn btn-sm btn-outline-danger" data-text="Delete tree"></button>
           </a>
         </div>
       </div>
