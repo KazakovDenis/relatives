@@ -7,7 +7,8 @@ from tools.notifications.email import invite_to_tree
 from ..auth.models import User
 from ..auth.utils import get_user
 from .constants import BACK_RELATIONS, RelationType
-from .models import Person, PersonTree, Relation, Token, Tree, UserTree
+from .file import save_person_photo
+from .models import Person, PersonTree, Photo, Relation, Token, Tree, UserTree
 from .permissions import has_tree_perm
 from .schemas import (PersonSchema,
                       PersonUpdateSchema,
@@ -84,8 +85,14 @@ async def tree_scheme(tid: int, user: User = Security(get_user)):
 async def person_create(response: Response, person: PersonSchema, tree_id: int, user: User = Security(get_user)):
     if not (tree := await has_tree_perm(user.id, tree_id)):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
-    person = await Person.objects.create(**person.dict())
+
+    data = person.dict()
+    photo = data.pop('photo', None)
+    person = await Person.objects.create(**data)
     await PersonTree.objects.create(tree=tree, person=person)
+
+    if photo:
+        await save_person_photo(person, photo)
     response.status_code = status.HTTP_201_CREATED
     return person
 
@@ -121,7 +128,7 @@ async def person_detail(tree_id: int, pid: int, user: User = Security(get_user))
     if not await has_tree_perm(user.id, tree_id):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
     try:
-        return await Person.objects.get(id=pid)
+        return await Person.objects.select_related('photos').get(id=pid)
     except (NoMatch, MultipleMatches):
         raise HTTPException(status_code=404, detail='Person not found')
 
@@ -130,8 +137,14 @@ async def person_detail(tree_id: int, pid: int, user: User = Security(get_user))
 async def person_update(tree_id: int, pid: int, person: PersonUpdateSchema, user: User = Security(get_user)):
     if not await has_tree_perm(user.id, tree_id):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+
     data = {k: v for k, v in person.dict().items() if v is not None}
+    photo = data.pop('photo', None)
     await Person.objects.filter(id=pid).update(**data)
+
+    if photo:
+        person = await Person.objects.get(id=pid)
+        await save_person_photo(person, photo)
     return {'result': 'ok'}
 
 
@@ -147,6 +160,7 @@ async def person_delete(tree_id: int, pid: int, user: User = Security(get_user))
     await PersonTree.objects.filter(tree=tree, person=person).delete()
     # delete person totally if it was the only tree
     if not await PersonTree.objects.filter(person=person).exists():
+        await Photo.objects.filter(person=person).delete()
         await person.delete()
     return {'result': 'ok'}
 

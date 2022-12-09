@@ -20,6 +20,7 @@ def create_app() -> FastAPI:
     app.include_router(api_v1.router)
     app.include_router(ui.router)
     app.mount('/static', StaticFiles(directory=settings.STATIC_DIR), name='static')
+    app.mount('/uploads', StaticFiles(directory=settings.UPLOADS_DIR), name='uploads')
 
     @app.on_event('startup')
     async def startup():

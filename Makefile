@@ -56,7 +56,7 @@ deploy:
 		rm -rf ${DIST_DIR} && \
 		rm -rf ${DIST_DIR}/static && \
 		docker compose -f ${REMOTE_COMPOSE} up -d --force-recreate backend && \
-		sleep 3 && \
+		rm -r ${REMOTE_DIR}/static \
 		docker compose -f ${REMOTE_COMPOSE} cp backend:/app/static . \
 	"
 	@echo "Done!"

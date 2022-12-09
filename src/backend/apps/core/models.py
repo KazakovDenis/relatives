@@ -1,10 +1,11 @@
+from contextlib import suppress
 from datetime import date
+from pathlib import Path
 from typing import Optional, Tuple, Union
 
 import ormar
 from deps import db, metadata
-from ormar import ReferentialAction
-from pydantic import HttpUrl
+from ormar import ReferentialAction, pre_delete
 from pydantic.types import UUID
 from sqlalchemy import func
 
@@ -27,7 +28,6 @@ class Person(ormar.Model):
         tablename = 'persons'
 
     id: int = ormar.Integer(primary_key=True)
-    # TODO: migrate from name/surname/patronymic to fullname
     name: str = ormar.String(max_length=100)
     surname: str = ormar.String(max_length=100)
     patronymic: Optional[str] = ormar.String(max_length=100, nullable=True)
@@ -36,7 +36,6 @@ class Person(ormar.Model):
     birthdate: Optional[date] = ormar.Date(nullable=True)
     birthplace: Optional[str] = ormar.String(max_length=100, nullable=True)
     info: Optional[str] = ormar.Text(nullable=True)
-    photo: Optional[HttpUrl] = ormar.String(max_length=200, nullable=True)
 
     @property
     def fio(self):
@@ -74,6 +73,29 @@ class Person(ormar.Model):
         # todo: This backend does not support multiple-table criteria within DELETE
         await Relation.objects.filter(person_from=self, person_to=person).delete()
         await Relation.objects.filter(person_from=person, person_to=self).delete()
+
+
+class Photo(ormar.Model):
+    class Meta:
+        database = db
+        metadata = metadata
+        tablename = 'photos'
+
+    id: int = ormar.Integer(primary_key=True)
+    location: str = ormar.String(max_length=256)
+    person: Person = ormar.ForeignKey(Person, ondelete=ReferentialAction.CASCADE)
+
+
+@pre_delete(Person)
+async def pre_delete_person(instance, **kwargs):
+    with suppress(ormar.NoMatch):
+        if photo := await Photo.objects.first(person=instance.id):
+            Path(photo.location).parent.rmdir()
+
+
+@pre_delete(Photo)
+async def pre_delete_photo(instance, **kwargs):
+    Path(instance.location).unlink(missing_ok=True)
 
 
 class Tree(ormar.Model):

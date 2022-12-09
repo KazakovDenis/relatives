@@ -7,8 +7,11 @@
   const deletePersonForm = document.getElementById('delete-person-form');
   const foundRelativesElem = document.getElementById('found-relatives');
   const relativeForms = document.querySelectorAll('.relative-form');
-  let addRelativeForm = document.getElementById('add-relative-form');
 
+  let addRelativeForm = document.getElementById('add-relative-form');
+  let savedFile;
+
+  document.querySelector('#photo').addEventListener('change', readFile);
   createPersonButton.addEventListener('click', event => {
     if (personForm.checkValidity()) {
       const personId = personForm.dataset.personId;
@@ -212,7 +215,20 @@
       birthplace: personForm.elements.birthplace.value,
       gender: personForm.elements.gender.value,
       info: personForm.elements.info.value,
+      photo: savedFile,
     });
+  }
+
+  function readFile(event) {
+    let file = event.target.files[0];
+    let reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = function() {
+      savedFile = reader.result;
+    };
+    reader.onerror = function() {
+      console.log(reader.error);
+    };
   }
 
 })()

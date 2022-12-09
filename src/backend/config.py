@@ -19,6 +19,7 @@ class Settings(BaseSettings):
     MAIL_SUPPRESS: int = 0
     STATIC_DIR: DirectoryPath = 'static'
     TEMPLATES_DIR: DirectoryPath = 'templates'
+    UPLOADS_DIR: DirectoryPath = 'uploads'
 
     class Config:
         env_file = '.env'

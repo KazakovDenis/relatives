@@ -19,7 +19,7 @@ async def ui_welcome(request: Request, user: User = Security(get_user)):
     uts = await UserTree.objects.all(user=user)
     if not uts:
         tree = await Tree.objects.create()
-        ut = await UserTree.objects.create(user=user, tree=tree)
+        ut = await UserTree.objects.create(user=user, tree=tree, is_owner=True)
     else:
         ut = uts[0]
     return RedirectResponse(request.url_for('ui_tree_list', tree_id=ut.tree.id))
@@ -115,7 +115,7 @@ async def ui_person_detail(request: Request, tree_id: int, person_id: int, user:
     if not await has_tree_perm(user.id, tree_id):
         return RedirectResponse(request.url_for('ui_welcome'))
 
-    person = await Person.objects.get_or_none(id=person_id)
+    person = await Person.objects.select_related('photos').get_or_none(id=person_id)
     if not person:
         return RedirectResponse(request.url_for('ui_tree_list', tree_id=tree_id))
 

@@ -12,9 +12,10 @@ services:
     build:
       context: .
       dockerfile: src/backend/docker/Dockerfile
-#    volumes:
+    volumes:
       # why not copied from container?
-      #- ./static/:/app/static/
+      # - ./static/:/app/static/
+      - ./uploads/:/app/uploads/
     ports:
       - "9000:8000"
 

@@ -20,6 +20,7 @@ class PersonSchema(BaseModel):
     birthdate: Optional[Union[date, Literal['']]] = None
     birthplace: Optional[str] = None
     info: Optional[str] = None
+    photo: Optional[str] = None
 
     # TODO: remove after fix on the front
     @validator('birthdate')
