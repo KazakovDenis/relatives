@@ -1,0 +1,73 @@
+<div class="modal fade" id="delete-photo-modal" tabindex="-1" aria-labelledby="delete-photo-modal" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form id="delete-photo-form" action="">
+        <div class="modal-header">
+          <h5 class="modal-title" data-text="Confirm the action"></h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <span data-text="Do you really want to delete this photo?"></span>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-danger" data-text="Delete"></button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% block extra_script %}
+<script>
+  (() => {
+    'use strict'
+
+    const modal = document.getElementById('delete-photo-modal');
+    const form = document.getElementById('delete-photo-form');
+
+    modal.addEventListener('show.bs.modal', function (event) {
+      const data = event.relatedTarget.dataset;
+      form.setAttribute('data-tree-id', data.treeId);
+      form.setAttribute('data-person-id', data.personId);
+      form.setAttribute('data-photo-id', data.photoId);
+    });
+
+    form.addEventListener('submit', function (event) {
+      event.preventDefault();
+      const treeId = event.target.dataset.treeId;
+      const personId = event.target.dataset.personId;
+      const photoId = event.target.dataset.photoId;
+      const url = `${document.location.origin}/api/v1/tree/${treeId}/persons/${personId}/photos/${photoId}`;
+      const xhr = new XMLHttpRequest();
+
+      xhr.open('DELETE', url);
+      xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+      xhr.responseType = 'json';
+      xhr.send();
+      xhr.onload = function() {
+          if (xhr.status === 200) {
+            document.querySelector(`.carousel-item[data-photo-id="${photoId}"]`).remove();
+            document.querySelector(`.carousel-indicators button[data-photo-id="${photoId}"]`).remove();
+
+            const anotherPhoto = document.querySelector(`.carousel-item`);
+            if (anotherPhoto) {
+              // TODO: TypeError: Cannot read properties of null (reading 'classList') - if more than 2 photos
+              // make first photo active
+              anotherPhoto.classList.add('active');
+              const anotherId = anotherPhoto.dataset.photoId;
+              document.querySelector(`.carousel-indicators button[data-photo-id="${anotherId}"]`).classList.add('active');
+              modal.querySelector('.btn-close').click();
+            } else {
+              // no more photos => remove slider
+              document.querySelector(`#carouselInterval`).remove();
+              modal.querySelector('.btn-close').click();
+            }
+          }
+      };
+      xhr.onerror = function() {
+          alert(`Network Error`);
+      };
+    })
+  })()
+</script>
+{% endblock %}

@@ -87,14 +87,15 @@ class Photo(ormar.Model):
 
 
 @pre_delete(Person)
-async def pre_delete_person(instance, **kwargs):
+async def pre_delete_person(sender, instance, **kwargs):
     with suppress(ormar.NoMatch):
         if photo := await Photo.objects.first(person=instance.id):
             Path(photo.location).parent.rmdir()
 
 
+# TODO: does not work
 @pre_delete(Photo)
-async def pre_delete_photo(instance, **kwargs):
+async def pre_delete_photo(sender, instance, **kwargs):
     Path(instance.location).unlink(missing_ok=True)
 
 

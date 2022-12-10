@@ -79,13 +79,18 @@
       <div id="carouselInterval" class="carousel carousel-dark slide" data-bs-ride="carousel">
         <div class="carousel-indicators">
           {% for photo in person.photos %}
-            <button type="button" data-bs-target="#carouselIndicators" data-bs-slide-to="{{ loop.index0 }}" class="{% if loop.index0 == 0 %}active{% endif %}" aria-current="true" aria-label="Slide 1"></button>
+            <button type="button" data-photo-id="{{ photo.id }}" data-bs-target="#carouselIndicators" data-bs-slide-to="{{ loop.index0 }}" class="{% if loop.index0 == 0 %}active{% endif %}" aria-current="true" aria-label="Slide 1"></button>
           {% endfor %}
         </div>
         <div class="carousel-inner">
           {% for photo in person.photos %}
-            <div class="carousel-item {% if loop.index == 1 %}active{% endif %}" data-bs-interval="10000">
+            <div class="carousel-item {% if loop.index == 1 %}active{% endif %}" data-photo-id="{{ photo.id }}" data-bs-interval="10000">
               <img src="{{ url_for('uploads', path=photo.location) }}" class="d-block w-100" alt="{{ person.name }}">
+              <div class="carousel-caption d-none d-md-block">
+                <a href="#" data-bs-toggle="modal" data-bs-target="#delete-photo-modal" data-tree-id="{{ tree_id }}" data-person-id="{{ person.id }}" data-photo-id="{{ photo.id }}">
+                  <button type="button" class="delete-photo-button btn-close"></button>
+                </a>
+              </div>
             </div>
           {% endfor %}
         </div>
@@ -230,6 +235,7 @@
   </div>
   {% if person %}
     {% include 'modals/delete_person_modal.html' %}
+    {% include 'modals/delete_photo_modal.html' %}
   {% endif %}
 </div>
 {% endblock %}

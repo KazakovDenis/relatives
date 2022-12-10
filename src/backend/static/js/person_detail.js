@@ -37,9 +37,7 @@
     addRelativeForm.addEventListener('submit', addRelative);
   }
 
-  relativeForms.forEach(form => {
-    form.addEventListener('submit', deleteRelative);
-  });
+  relativeForms.forEach(form => form.addEventListener('submit', deleteRelative));
 
   function createPerson() {
     const createPersonUrl = `${document.location.origin}/api/v1/tree/${treeId}/persons`;
@@ -68,6 +66,9 @@
     xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8');
     xhr.responseType = 'json';
     xhr.send(getFormData());
+    xhr.onload = function () {
+      window.location.reload();
+    };
     xhr.onerror = function() {
         alert(`Network Error`);
     };

@@ -7,8 +7,6 @@
     function shareTree(event) {
         event.preventDefault();
 
-        console.log(event.target);
-
         const treeId = event.target.dataset.treeId;
         const email = event.target.elements.email.value;
         const url = `${document.location.origin}/api/v1/tree/${treeId}/share`;

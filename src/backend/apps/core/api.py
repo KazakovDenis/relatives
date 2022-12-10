@@ -198,3 +198,15 @@ async def person_relative_delete(tree_id: int, from_: int, to: int, user: User =
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Person not found')
     await person_from.remove_relative(person_to)
     return {'result': 'ok'}
+
+
+@router.delete('/tree/{tree_id}/persons/{pid}/photos/{photo_id}', response_model=ResultOk)
+async def person_photo_delete(tree_id: int, pid: int, photo_id: int, user: User = Security(get_user)):
+    if not await has_tree_perm(user.id, tree_id):
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+
+    # not delete to trigger pre_delete signal
+    photo = await Photo.objects.get_or_none(person__id=pid, id=photo_id)
+    if photo:
+        await photo.delete()
+    return {'result': 'ok'}
