@@ -75,7 +75,7 @@
 <div class="row justify-content-between ms-sm-auto px-md-4">
   <div class="col-xl" id="person-data" {% if tree_id %}data-tree-id="{{ tree_id }}"{% endif %}>
     <h4 class="mb-3" data-text="Personal information"></h4>
-    {% if person  %}
+    {% if person and person.photos %}
       <div id="carouselInterval" class="carousel carousel-dark slide" data-bs-ride="carousel">
         <div class="carousel-indicators">
           {% for photo in person.photos %}
@@ -179,8 +179,8 @@
         <textarea class="form-control" id="info">{% if person %}{{ person.info or '' }}{% endif %}</textarea>
       </div>
       <div class="mb-3">
-        <label for="photo" class="form-label" data-text="Photo"></label>
-        <input class="form-control form-control-sm" type="file" accept="image/*" id="photo">
+        <label for="photos" class="form-label" data-text="Photos"></label>
+        <input class="form-control form-control-sm" type="file" accept="image/*" multiple id="photos">
       </div>
     </form>
   </div>

@@ -20,6 +20,7 @@ class Settings(BaseSettings):
     STATIC_DIR: DirectoryPath = 'static'
     TEMPLATES_DIR: DirectoryPath = 'templates'
     UPLOADS_DIR: DirectoryPath = 'uploads'
+    MAX_FILE_SIZE: int = 5_242_880
 
     class Config:
         env_file = '.env'

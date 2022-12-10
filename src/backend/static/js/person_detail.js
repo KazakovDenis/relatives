@@ -9,9 +9,9 @@
   const relativeForms = document.querySelectorAll('.relative-form');
 
   let addRelativeForm = document.getElementById('add-relative-form');
-  let savedFile;
+  let savedFiles = [];
 
-  document.querySelector('#photo').addEventListener('change', readFile);
+  document.querySelector('#photos').addEventListener('change', readFiles);
   createPersonButton.addEventListener('click', event => {
     if (personForm.checkValidity()) {
       const personId = personForm.dataset.personId;
@@ -215,20 +215,33 @@
       birthplace: personForm.elements.birthplace.value,
       gender: personForm.elements.gender.value,
       info: personForm.elements.info.value,
-      photo: savedFile,
+      photos: savedFiles,
     });
   }
 
-  function readFile(event) {
-    let file = event.target.files[0];
-    let reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = function() {
-      savedFile = reader.result;
-    };
-    reader.onerror = function() {
-      console.log(reader.error);
-    };
+  function readFiles(event) {
+    savedFiles = [];
+    const files = Array.from(event.target.files);
+
+    for (let i in files) {
+      let file = files[i];
+
+      if (!(file instanceof Blob)) continue;
+
+      if (file.size > 5_242_880) {
+        alert(`File is too large (max 5 Mb): ${file.name}`)
+        continue
+      }
+
+      let reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = function() {
+        savedFiles.push(reader.result);
+      };
+      reader.onerror = function() {
+        console.log(reader.error);
+      };
+    }
   }
 
 })()

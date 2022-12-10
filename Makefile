@@ -56,7 +56,8 @@ deploy:
 		rm -rf ${DIST_DIR} && \
 		rm -rf ${DIST_DIR}/static && \
 		docker compose -f ${REMOTE_COMPOSE} up -d --force-recreate backend && \
-		rm -r ${REMOTE_DIR}/static \
+		docker compose -f ${REMOTE_COMPOSE} exec backend alembic upgrade head && \
+		rm -rf ${REMOTE_DIR}/static && \
 		docker compose -f ${REMOTE_COMPOSE} cp backend:/app/static . \
 	"
 	@echo "Done!"

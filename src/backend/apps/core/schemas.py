@@ -1,8 +1,10 @@
+import sys
 from datetime import date
 from typing import Literal, Optional, TypedDict, Union
 
 from pydantic import BaseModel, EmailStr, validator
 
+from config import settings
 from .constants import Gender, RelationType
 from .models import Person, Relation
 
@@ -20,12 +22,19 @@ class PersonSchema(BaseModel):
     birthdate: Optional[Union[date, Literal['']]] = None
     birthplace: Optional[str] = None
     info: Optional[str] = None
-    photo: Optional[str] = None
+    photos: list[str]
 
     # TODO: remove after fix on the front
     @validator('birthdate')
     def birthdate_str_or_date(cls, v):
         return None if v == '' else v
+
+    @validator('photos')
+    def validate_photos(cls, v):
+        for photo in v:
+            if sys.getsizeof(photo) > settings.MAX_FILE_SIZE:
+                raise ValueError('File is too large')
+        return v
 
 
 class PersonUpdateSchema(PersonSchema):

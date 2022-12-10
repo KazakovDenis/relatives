@@ -87,11 +87,11 @@ async def person_create(response: Response, person: PersonSchema, tree_id: int, 
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
 
     data = person.dict()
-    photo = data.pop('photo', None)
+    photos = data.pop('photos', [])
     person = await Person.objects.create(**data)
     await PersonTree.objects.create(tree=tree, person=person)
 
-    if photo:
+    for photo in photos:
         await save_person_photo(person, photo)
     response.status_code = status.HTTP_201_CREATED
     return person
@@ -139,11 +139,11 @@ async def person_update(tree_id: int, pid: int, person: PersonUpdateSchema, user
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
 
     data = {k: v for k, v in person.dict().items() if v is not None}
-    photo = data.pop('photo', None)
+    photos = data.pop('photos', [])
     await Person.objects.filter(id=pid).update(**data)
 
-    if photo:
-        person = await Person.objects.get(id=pid)
+    person = await Person.objects.get(id=pid)
+    for photo in photos:
         await save_person_photo(person, photo)
     return {'result': 'ok'}
 
