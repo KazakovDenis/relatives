@@ -205,7 +205,6 @@ async def person_photo_delete(tree_id: int, pid: int, photo_id: int, user: User 
     if not await has_tree_perm(user.id, tree_id):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
 
-    # not delete to trigger pre_delete signal
     photo = await Photo.objects.get_or_none(person__id=pid, id=photo_id)
     if photo:
         await photo.delete()

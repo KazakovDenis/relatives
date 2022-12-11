@@ -1,4 +1,4 @@
-"""Add token
+"""Add token.
 
 Revision ID: 358efc539b17
 Revises: b652da8e1cf3

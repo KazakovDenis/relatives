@@ -14,8 +14,8 @@ class User(ormar.Model):
     id: int = ormar.Integer(primary_key=True)
     email: str = ormar.String(max_length=100, unique=True)
     password: str = ormar.String(max_length=100)
-    is_superuser: str = ormar.Boolean(default=False)
-    is_active: str = ormar.Boolean(default=False)
+    is_superuser: str = ormar.Boolean(default=False, nullable=False)
+    is_active: str = ormar.Boolean(default=False, nullable=False)
 
 
 class Session(ormar.Model):
@@ -25,6 +25,6 @@ class Session(ormar.Model):
         tablename = 'sessions'
 
     id: int = ormar.Integer(primary_key=True)
-    user: User = ormar.ForeignKey(User, ondelete=ReferentialAction.CASCADE)
+    user: User = ormar.ForeignKey(User, ondelete=ReferentialAction.CASCADE, nullable=False)
     token: str = ormar.UUID(index=True)
     issued_at: datetime = ormar.DateTime()

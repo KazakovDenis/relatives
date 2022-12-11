@@ -8,7 +8,7 @@ run:
 	uvicorn main:app
 
 makemigrations:
-	cd src/backend && poetry run alembic revision --autogenerate
+	cd src/backend && poetry run alembic revision --autogenerate -m "xxx_message"
 
 migrate:
 	cd src/backend && poetry run alembic upgrade head

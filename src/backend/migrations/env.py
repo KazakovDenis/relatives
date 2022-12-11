@@ -18,7 +18,8 @@ if config.config_file_name is not None:
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
 from config import settings  # noqa: E402
-from deps import metadata  # noqa: E402
+from apps.auth.models import *   # noqa: E402, F401
+from apps.core.models import *   # noqa: E402
 
 
 db_dsn = settings.get_db_dsn().replace('+asyncpg', '')

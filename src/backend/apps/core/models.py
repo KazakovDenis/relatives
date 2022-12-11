@@ -83,7 +83,11 @@ class Photo(ormar.Model):
 
     id: int = ormar.Integer(primary_key=True)
     location: str = ormar.String(max_length=256)
-    person: Person = ormar.ForeignKey(Person, ondelete=ReferentialAction.CASCADE)
+    person: Person = ormar.ForeignKey(Person, ondelete=ReferentialAction.CASCADE, nullable=False)
+
+    def delete(self):
+        Path(self.location).unlink(missing_ok=True)
+        return super().delete()
 
 
 @pre_delete(Person)
@@ -91,12 +95,6 @@ async def pre_delete_person(sender, instance, **kwargs):
     with suppress(ormar.NoMatch):
         if photo := await Photo.objects.first(person=instance.id):
             Path(photo.location).parent.rmdir()
-
-
-# TODO: does not work
-@pre_delete(Photo)
-async def pre_delete_photo(sender, instance, **kwargs):
-    Path(instance.location).unlink(missing_ok=True)
 
 
 class Tree(ormar.Model):
@@ -109,16 +107,18 @@ class Tree(ormar.Model):
     name: str = ormar.String(max_length=100, default='My tree')
 
 
-# TODO: (user, tree) unique constraint
 class UserTree(ormar.Model):
     class Meta:
         database = db
         metadata = metadata
         tablename = 'user_tree'
+        constraints = [
+            ormar.UniqueColumns('user', 'tree'),
+        ]
 
     id: int = ormar.Integer(primary_key=True)
-    user: User = ormar.ForeignKey(User, ondelete=ReferentialAction.CASCADE)
-    tree: Tree = ormar.ForeignKey(Tree, ondelete=ReferentialAction.CASCADE)
+    user: User = ormar.ForeignKey(User, ondelete=ReferentialAction.CASCADE, nullable=False)
+    tree: Tree = ormar.ForeignKey(Tree, ondelete=ReferentialAction.CASCADE, nullable=False)
     is_owner: bool = ormar.Boolean(default=False)
 
 
@@ -127,10 +127,13 @@ class PersonTree(ormar.Model):
         database = db
         metadata = metadata
         tablename = 'person_tree'
+        constraints = [
+            ormar.UniqueColumns('person', 'tree'),
+        ]
 
     id: int = ormar.Integer(primary_key=True)
-    tree: Tree = ormar.ForeignKey(Tree, ondelete=ReferentialAction.CASCADE)
-    person: Person = ormar.ForeignKey(Person, ondelete=ReferentialAction.CASCADE)
+    tree: Tree = ormar.ForeignKey(Tree, ondelete=ReferentialAction.CASCADE, nullable=False)
+    person: Person = ormar.ForeignKey(Person, ondelete=ReferentialAction.CASCADE, nullable=False)
 
 
 class Relation(ormar.Model):
@@ -138,10 +141,23 @@ class Relation(ormar.Model):
         database = db
         metadata = metadata
         tablename = 'relations'
+        constraints = [
+            ormar.UniqueColumns('person_from', 'person_to'),
+        ]
 
     id: int = ormar.Integer(primary_key=True)
-    person_from: Person = ormar.ForeignKey(Person, ondelete=ReferentialAction.CASCADE, related_name='relations_to')
-    person_to: Person = ormar.ForeignKey(Person, ondelete=ReferentialAction.CASCADE, related_name='relations_from')
+    person_from: Person = ormar.ForeignKey(
+        Person,
+        ondelete=ReferentialAction.CASCADE,
+        related_name='relations_to',
+        nullable=False,
+    )
+    person_to: Person = ormar.ForeignKey(
+        Person,
+        ondelete=ReferentialAction.CASCADE,
+        related_name='relations_from',
+        nullable=False,
+    )
     type: str = ormar.Enum(enum_class=RelationType)
 
     def as_tuple(self) -> Tuple[int, int]:
