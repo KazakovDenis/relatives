@@ -1,21 +1,48 @@
+import asyncio
+
 import pytest
 from apps.auth.models import User
 from apps.auth.utils import create_session, hash_password
 from apps.core.constants import Gender
 from apps.core.models import Person, PersonTree, Tree, UserTree
-from deps import db
+from deps import db as database
+from deps import metadata
 from factory import create_app
 from fastapi.testclient import TestClient
+from sqlalchemy.ext.asyncio import create_async_engine
 
-from . import settings
+from . import constants
+
+
+@pytest.fixture(scope='session')
+def event_loop():
+    policy = asyncio.get_event_loop_policy()
+    loop = policy.new_event_loop()
+    yield loop
+    loop.close()
+
+
+@pytest.fixture(scope='session')
+async def db(event_loop):
+    await database.connect()
+    yield database
+    await database.disconnect()
+
+
+@pytest.fixture(autouse=True, scope='session')
+async def apply_migrations(db):
+    engine = create_async_engine(str(db.url))
+    async with engine.begin() as conn:
+        await conn.run_sync(metadata.drop_all)
+        await conn.run_sync(metadata.create_all)
+        yield db
+        await conn.run_sync(metadata.drop_all)
 
 
 @pytest.fixture
-async def app(event_loop):
+async def app(apply_migrations):
     app = create_app()
-    await db.connect()
     yield app
-    await db.disconnect()
 
 
 @pytest.fixture
@@ -26,8 +53,8 @@ def client(app):
 @pytest.fixture
 async def user(app):
     obj = await User.objects.create(
-        email=settings.ACTIVE_USER_EMAIL,
-        password=hash_password(settings.ACTIVE_USER_PASS),
+        email=constants.ACTIVE_USER_EMAIL,
+        password=hash_password(constants.ACTIVE_USER_PASS),
         is_superuser=False,
         is_active=True,
     )
@@ -38,8 +65,8 @@ async def user(app):
 @pytest.fixture
 async def inactive_user(app):
     obj = await User.objects.create(
-        email=settings.INACTIVE_USER_EMAIL,
-        password=hash_password(settings.INACTIVE_USER_PASS),
+        email=constants.INACTIVE_USER_EMAIL,
+        password=hash_password(constants.INACTIVE_USER_PASS),
         is_superuser=False,
         is_active=False,
     )
@@ -79,5 +106,5 @@ async def relative(app):
 def async_teardown(request, event_loop):
     # noinspection PyUnresolvedReferences
     def inner(coro):
-        request.addfinalizer(lambda: event_loop.run_until_complete(coro))
+        request.addfinalizer(lambda: event_loop.call_soon(coro))
     return inner

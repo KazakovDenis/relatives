@@ -6,16 +6,17 @@ authors = ["Denis Kazakov <denis@kazakov.ru.net>"]
 
 [tool.poetry.dependencies]
 python = "^3.10"
-fastapi = "^0.85.1"
-uvicorn = "^0.18.2"
+fastapi = "^0.87"
+uvicorn = "^0.20.0"
 Jinja2 = "^3.1.2"
 alembic = "^1.8.1"
 aiocsv = "^1.2.2"
 aiofiles = "^22.1.0"
 pydantic = {extras = ["dotenv"], version = "^1.10.2"}
 ormar = {extras = ["postgresql"], version = "^0.12.0"}
+starlette = "^0.21.0"
 sentry-sdk = {extras = ["fastapi"], version = "^1.9.10"}
-fastapi-mail = "^1.2.0"
+fastapi-mail = "^1.2.2"
 databases = "^0.6.1"
 
 [tool.poetry.group.dev.dependencies]
@@ -29,6 +30,8 @@ types-aiofiles = "^0.8.10"
 coverage = "^6.5.0"
 aiosqlite = "^0.17.0"
 ipython = "^8.7.0"
+httpx = "^0.23.1"
+colorama = "^0.4.6"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

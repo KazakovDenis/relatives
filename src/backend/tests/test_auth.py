@@ -2,7 +2,7 @@ import pytest
 from apps.auth.models import Session, User
 from apps.auth.utils import AUTH_COOKIE, create_session, token_to_uuid
 from fastapi import status
-from tests import settings
+from tests import constants
 
 
 AUTH_PREFIX = '/api/v1/auth'
@@ -24,8 +24,8 @@ def test_auth_api_signup(async_teardown, client):
 
 @pytest.mark.usefixtures('user', 'inactive_user')
 @pytest.mark.parametrize('email, pwd, status_code', [
-    (settings.ACTIVE_USER_EMAIL, settings.ACTIVE_USER_PASS, status.HTTP_200_OK),
-    (settings.INACTIVE_USER_EMAIL, settings.INACTIVE_USER_PASS, status.HTTP_403_FORBIDDEN),
+    (constants.ACTIVE_USER_EMAIL, constants.ACTIVE_USER_PASS, status.HTTP_200_OK),
+    (constants.INACTIVE_USER_EMAIL, constants.INACTIVE_USER_PASS, status.HTTP_403_FORBIDDEN),
     ('unknown@test.com', 'test:unknown', status.HTTP_403_FORBIDDEN),
 ])
 def test_auth_api_login(client, email, pwd, status_code):
