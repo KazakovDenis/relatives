@@ -13,7 +13,6 @@ from .permissions import has_tree_perm
 from .schemas import (PersonSchema,
                       PersonUpdateSchema,
                       RecipientSchema,
-                      RelationCreateSchema,
                       RelationSchema,
                       ResultOk,
                       TreeBuildSchema,
@@ -120,7 +119,13 @@ async def person_list(tree_id: int, q: str = Query(''), exclude: int = Query(0),
     else:
         where = {'surname__icontains': q[0]}
 
-    return await Person.objects.exclude(id=exclude).filter(**where, persontrees__tree__id=tree_id).limit(20).all()
+    persons = await (
+        Person.objects.exclude(id=exclude)
+        .filter(**where, persontrees__tree__id=tree_id)
+        .exclude_fields(['persontrees'])
+        .limit(20).all()
+    )
+    return persons
 
 
 @router.get('/tree/{tree_id}/persons/{pid}', response_model=Person)
@@ -165,7 +170,7 @@ async def person_delete(tree_id: int, pid: int, user: User = Security(get_user))
     return {'result': 'ok'}
 
 
-@router.post('/tree/{tree_id}/relations', response_model=RelationCreateSchema)
+@router.post('/tree/{tree_id}/relations', response_model=Relation)
 async def relation_create(response: Response, relation: RelationSchema, tree_id: int, user: User = Security(get_user)):
     if not await has_tree_perm(user.id, tree_id):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
@@ -175,16 +180,13 @@ async def relation_create(response: Response, relation: RelationSchema, tree_id:
         person_to=await Person.objects.get(id=relation.person_to),
         type=relation.relation,
     )
-    back_rel = await Relation.objects.create(
+    await Relation.objects.create(
        person_from=rel.person_to,
        person_to=rel.person_from,
        type=BACK_RELATIONS[relation.relation],
     )
     response.status_code = status.HTTP_201_CREATED
-    return {
-        'relation': rel,
-        'back_relation': back_rel,
-    }
+    return rel
 
 
 @router.delete('/tree/{tree_id}/persons/{from_}/relatives/{to}', response_model=ResultOk)

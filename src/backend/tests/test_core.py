@@ -1,8 +1,8 @@
 import pytest
 from apps.auth.utils import AUTH_COOKIE
 from apps.core.constants import Gender
-from apps.core.models import Person, PersonTree, Tree, UserTree
-from apps.core.schemas import RelationCreateSchema, RelationType, ResultOk, TreeBuildSchema
+from apps.core.models import Person, PersonTree, Relation, Tree, UserTree
+from apps.core.schemas import RelationType, ResultOk, TreeBuildSchema
 from fastapi import status
 
 
@@ -78,7 +78,9 @@ async def test_core_api_tree_create(async_teardown, api_request, tree, exists, s
 async def test_core_api_tree_list(api_request):
     response = await api_request('get', '/tree', auth=True)
     assert response.status_code == status.HTTP_200_OK
-    assert Tree(**response.json()[0])
+    data = response.json()[0]
+    data['tree'] = data['tree']['id']
+    assert UserTree(**data)
 
 
 @pytest.mark.parametrize('exists, status_code', [
@@ -179,7 +181,12 @@ async def test_core_api_tree_relative_add(api_request, tree, person, relative):
     }
     response = await api_request('post', f'/tree/{tree.id}/relations', auth=True, json=relation)
     assert response.status_code == status.HTTP_201_CREATED
-    assert RelationCreateSchema(**response.json())
+
+    # TODO: should endpoint return the whole object or only id?
+    data = response.json()
+    data['person_to'] = data['person_to']['id']
+    data['person_from'] = data['person_from']['id']
+    assert Relation(**data)
 
 
 @pytest.mark.parametrize('exists, status_code', [

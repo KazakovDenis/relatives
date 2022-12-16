@@ -3,7 +3,6 @@ import asyncio
 import pytest
 from alembic import command as alembic
 from alembic.config import Config
-
 from apps.auth.models import User
 from apps.auth.utils import create_session, hash_password
 from apps.core.constants import Gender

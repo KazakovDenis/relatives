@@ -3,7 +3,7 @@ from datetime import date
 from typing import Literal, Optional, TypedDict, Union
 
 from config import settings
-from pydantic import BaseModel, EmailStr, validator
+from pydantic import BaseModel, EmailStr, Field, validator
 
 from .constants import Gender, RelationType
 from .models import Person, Relation
@@ -22,7 +22,7 @@ class PersonSchema(BaseModel):
     birthdate: Optional[Union[date, Literal['']]] = None
     birthplace: Optional[str] = None
     info: Optional[str] = None
-    photos: list[str]
+    photos: list[str] = Field(default_factory=list)
 
     # TODO: remove after fix on the front
     @validator('birthdate')
@@ -56,11 +56,6 @@ class TreeSchema(BaseModel):
 class TreeBuildSchema(BaseModel):
     nodes: list[Person]
     edges: list[Relation]
-
-
-class RelationCreateSchema(BaseModel):
-    relation: Relation
-    back_relation: Relation
 
 
 class RecipientSchema(BaseModel):
