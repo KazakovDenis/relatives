@@ -4,10 +4,11 @@ from pathlib import Path
 from typing import Optional, Tuple, Union
 
 import ormar
-from deps import db, metadata
 from ormar import ReferentialAction, pre_delete
 from pydantic.types import UUID
 from sqlalchemy import func
+
+from deps import db, metadata
 
 from ..auth.models import User
 from .constants import BACK_RELATIONS, Gender, RelationType

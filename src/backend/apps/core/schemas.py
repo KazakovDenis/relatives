@@ -2,8 +2,9 @@ import sys
 from datetime import date
 from typing import Literal, Optional, TypedDict, Union
 
-from config import settings
 from pydantic import BaseModel, EmailStr, Field, validator
+
+from config import settings
 
 from .constants import Gender, RelationType
 from .models import Person, Relation

@@ -1,7 +1,8 @@
-from deps import templates
 from fastapi import APIRouter, Query, Security
 from fastapi.requests import Request
 from fastapi.responses import HTMLResponse, RedirectResponse
+
+from deps import templates
 
 from ..auth.models import User
 from ..auth.utils import get_user

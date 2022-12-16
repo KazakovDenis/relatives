@@ -1,6 +1,7 @@
+from starlette.authentication import AuthCredentials, AuthenticationBackend, AuthenticationError, BaseUser
+
 from apps.auth.models import Session, User
 from apps.auth.utils import Scopes, token_to_uuid
-from starlette.authentication import AuthCredentials, AuthenticationBackend, AuthenticationError, BaseUser
 
 
 class RequestUser(BaseUser):

@@ -3,13 +3,14 @@ import asyncio
 import pytest
 from alembic import command as alembic
 from alembic.config import Config
+from httpx import AsyncClient
+
 from apps.auth.models import User
 from apps.auth.utils import create_session, hash_password
 from apps.core.constants import Gender
 from apps.core.models import Person, PersonTree, Tree, UserTree
 from deps import db as database
 from factory import create_app
-from httpx import AsyncClient
 
 from . import constants
 

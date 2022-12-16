@@ -1,7 +1,8 @@
-from deps import db
 from fastapi import APIRouter, HTTPException, Query, Security, status
 from fastapi.responses import Response
 from ormar import MultipleMatches, NoMatch
+
+from deps import db
 from tools.notifications.email import invite_to_tree
 
 from ..auth.models import User
@@ -10,13 +11,15 @@ from .constants import BACK_RELATIONS, RelationType
 from .file import save_person_photo
 from .models import Person, PersonTree, Photo, Relation, Token, Tree, UserTree
 from .permissions import has_tree_perm
-from .schemas import (PersonSchema,
-                      PersonUpdateSchema,
-                      RecipientSchema,
-                      RelationSchema,
-                      ResultOk,
-                      TreeBuildSchema,
-                      TreeSchema,)
+from .schemas import (
+    PersonSchema,
+    PersonUpdateSchema,
+    RecipientSchema,
+    RelationSchema,
+    ResultOk,
+    TreeBuildSchema,
+    TreeSchema,
+)
 
 
 router = APIRouter()

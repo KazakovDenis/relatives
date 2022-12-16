@@ -1,7 +1,8 @@
-from apps.core.models import Tree
-from config import settings
 from fastapi_mail import ConnectionConfig, FastMail, MessageSchema, MessageType
 from pydantic import EmailStr
+
+from apps.core.models import Tree
+from config import settings
 
 
 smtp_client = FastMail(

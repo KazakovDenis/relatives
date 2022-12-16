@@ -1,7 +1,8 @@
-from deps import templates
 from fastapi import APIRouter, HTTPException, Query, status
 from fastapi.requests import Request
 from fastapi.responses import HTMLResponse, RedirectResponse
+
+from deps import templates
 
 from .models import Session, User
 from .utils import AUTH_COOKIE, create_session, token_to_uuid

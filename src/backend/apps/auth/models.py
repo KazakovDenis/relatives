@@ -1,8 +1,9 @@
 from datetime import datetime
 
 import ormar
-from deps import db, metadata
 from ormar import ReferentialAction
+
+from deps import db, metadata
 
 
 class User(ormar.Model):

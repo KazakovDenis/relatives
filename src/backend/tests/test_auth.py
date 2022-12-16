@@ -1,7 +1,8 @@
 import pytest
+from fastapi import status
+
 from apps.auth.models import Session, User
 from apps.auth.utils import AUTH_COOKIE, create_session, token_to_uuid
-from fastapi import status
 from tests import constants
 
 

@@ -1,9 +1,10 @@
 import pytest
+from fastapi import status
+
 from apps.auth.utils import AUTH_COOKIE
 from apps.core.constants import Gender
 from apps.core.models import Person, PersonTree, Relation, Tree, UserTree
 from apps.core.schemas import RelationType, ResultOk, TreeBuildSchema
-from fastapi import status
 
 
 CORE_API_PREFIX = '/api/v1'
