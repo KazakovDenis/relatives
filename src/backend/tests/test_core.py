@@ -214,7 +214,7 @@ def ui_request(async_client, session):
 ])
 async def test_core_ui_ok(ui_request, path, status_code, tree, person):
     path = build_path(path, tree.id, person.id, None)
-    response = await ui_request('get', path, auth=True, allow_redirects=False)
+    response = await ui_request('get', path, auth=True, follow_redirects=False)
     assert response.status_code == status_code
 
 
@@ -230,12 +230,12 @@ async def test_core_ui_tree_user_denied(async_teardown, ui_request, person, path
     async_teardown(tree.delete())
 
     path = build_path(path, tree.id, person.id, None)
-    response = await ui_request('get', path, auth=True, allow_redirects=False)
+    response = await ui_request('get', path, auth=True, follow_redirects=False)
     assert response.status_code == status.HTTP_307_TEMPORARY_REDIRECT
 
 
 async def test_core_ui_last_tree_not_deleted(ui_request, tree):
-    response = await ui_request('get', f'/tree/{tree.id}/delete', auth=True, allow_redirects=False)
+    response = await ui_request('get', f'/tree/{tree.id}/delete', auth=True, follow_redirects=False)
     assert response.status_code == status.HTTP_307_TEMPORARY_REDIRECT
     assert await Tree.objects.all(id=tree.id)
 
@@ -245,6 +245,6 @@ async def test_core_ui_tree_delete(async_teardown, ui_request, user, tree):
     await UserTree.objects.create(tree=new_tree, user=user)
     async_teardown(new_tree.delete())
 
-    response = await ui_request('get', f'/tree/{tree.id}/delete', auth=True, allow_redirects=False)
+    response = await ui_request('get', f'/tree/{tree.id}/delete', auth=True, follow_redirects=False)
     assert response.status_code == status.HTTP_307_TEMPORARY_REDIRECT
     assert not await Tree.objects.all(id=tree.id)

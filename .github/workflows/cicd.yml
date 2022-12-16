@@ -53,4 +53,5 @@ jobs:
         env:
           STATIC_DIR: "src/backend/static"
           TEMPLATES_DIR: "src/backend/templates"
+          UPLOADS_DIR: "src/backend/uploads"
           MAIL_SUPPRESS: 1

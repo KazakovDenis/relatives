@@ -1,15 +1,16 @@
 import asyncio
 
 import pytest
+from alembic import command as alembic
+from alembic.config import Config
+
 from apps.auth.models import User
 from apps.auth.utils import create_session, hash_password
 from apps.core.constants import Gender
 from apps.core.models import Person, PersonTree, Tree, UserTree
 from deps import db as database
-from deps import metadata
 from factory import create_app
 from httpx import AsyncClient
-from sqlalchemy.ext.asyncio import create_async_engine
 
 from . import constants
 
@@ -31,12 +32,12 @@ async def db(event_loop):
 
 @pytest.fixture(autouse=True, scope='session')
 async def apply_migrations(db):
-    engine = create_async_engine(str(db.url))
-    async with engine.begin() as conn:
-        await conn.run_sync(metadata.drop_all)
-        await conn.run_sync(metadata.create_all)
-        yield db
-        await conn.run_sync(metadata.drop_all)
+    config = Config()
+    config.set_main_option('script_location', 'src.backend:migrations')
+    config.set_main_option('sqlalchemy.url', str(db.url))
+    alembic.upgrade(config, 'head')
+    yield
+    alembic.downgrade(config, 'base')
 
 
 @pytest.fixture
