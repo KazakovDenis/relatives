@@ -8,7 +8,7 @@ from apps.core.models import Person, PersonTree, Tree, UserTree
 from deps import db as database
 from deps import metadata
 from factory import create_app
-from fastapi.testclient import TestClient
+from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import create_async_engine
 
 from . import constants
@@ -46,8 +46,9 @@ async def app(apply_migrations):
 
 
 @pytest.fixture
-def client(app):
-    return TestClient(app)
+async def async_client(app):
+    async with AsyncClient(app=app, base_url='http://test') as ac:
+        yield ac
 
 
 @pytest.fixture

@@ -21,11 +21,11 @@ def build_path(path, tree_id, person_id, relative_id) -> str:
 
 
 @pytest.fixture
-def api_request(client, session):
+def api_request(async_client, session):
     def inner(method, path, auth, **kwargs):
         if auth:
             kwargs['cookies'] = {AUTH_COOKIE: f'Bearer {session}'}
-        return getattr(client, method)(CORE_API_PREFIX + path, **kwargs)
+        return getattr(async_client, method)(CORE_API_PREFIX + path, **kwargs)
     return inner
 
 
@@ -39,9 +39,9 @@ def api_request(client, session):
     '/tree/%s/persons/%s/relatives/%s',
     '/tree/%s/relations',
 ])
-def test_core_api_not_logged(api_request, tree, person, relative, path):
+async def test_core_api_not_logged(api_request, tree, person, relative, path):
     path = build_path(path, tree.id, person.id, relative.id)
-    response = api_request('get', path, auth=False)
+    response = await api_request('get', path, auth=False)
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
 
@@ -57,7 +57,7 @@ async def test_core_api_tree_user_denied(async_teardown, api_request, person, re
     async_teardown(tree.delete())
 
     path = build_path(path, tree.id, person.id, relative.id)
-    response = api_request('get', path, auth=True)
+    response = await api_request('get', path, auth=True)
     assert response.status_code == status.HTTP_403_FORBIDDEN
 
 
@@ -65,18 +65,18 @@ async def test_core_api_tree_user_denied(async_teardown, api_request, person, re
     (False, status.HTTP_201_CREATED),
     (True, status.HTTP_409_CONFLICT),
 ])
-def test_core_api_tree_create(async_teardown, api_request, tree, exists, status_code):
+async def test_core_api_tree_create(async_teardown, api_request, tree, exists, status_code):
     name = tree.name if exists else 'New test'
     async_teardown(Tree.objects.delete(name=name))
 
-    response = api_request('post', '/tree', auth=True, json={'name': name})
+    response = await api_request('post', '/tree', auth=True, json={'name': name})
     assert response.status_code == status_code
     assert Tree(**response.json())
 
 
 @pytest.mark.usefixtures('tree')
-def test_core_api_tree_list(api_request):
-    response = api_request('get', '/tree', auth=True)
+async def test_core_api_tree_list(api_request):
+    response = await api_request('get', '/tree', auth=True)
     assert response.status_code == status.HTTP_200_OK
     assert Tree(**response.json()[0])
 
@@ -85,8 +85,8 @@ def test_core_api_tree_list(api_request):
     (True, status.HTTP_200_OK),
     (False, status.HTTP_403_FORBIDDEN),
 ])
-def test_core_api_tree_detail(api_request, tree, exists, status_code):
-    response = api_request('get', f'/tree/{tree.id if exists else 0}', auth=True)
+async def test_core_api_tree_detail(api_request, tree, exists, status_code):
+    response = await api_request('get', f'/tree/{tree.id if exists else 0}', auth=True)
     assert response.status_code == status_code
     if exists:
         assert Tree(**response.json())
@@ -96,14 +96,14 @@ def test_core_api_tree_detail(api_request, tree, exists, status_code):
     (True, status.HTTP_200_OK),
     (False, status.HTTP_403_FORBIDDEN),
 ])
-def test_core_api_tree_scheme(api_request, tree, exists, status_code):
-    response = api_request('get', f'/tree/{tree.id if exists else 0}/scheme', auth=True)
+async def test_core_api_tree_scheme(api_request, tree, exists, status_code):
+    response = await api_request('get', f'/tree/{tree.id if exists else 0}/scheme', auth=True)
     assert response.status_code == status_code
     if exists:
         assert TreeBuildSchema(**response.json())
 
 
-def test_core_api_tree_person_create(async_teardown, api_request, tree):
+async def test_core_api_tree_person_create(async_teardown, api_request, tree):
     person_data = {
         'name': 'Name',
         'surname': 'Surname',
@@ -111,21 +111,21 @@ def test_core_api_tree_person_create(async_teardown, api_request, tree):
     }
     async_teardown(Person.objects.delete(**person_data))
 
-    response = api_request('post', f'/tree/{tree.id}/persons', auth=True, json=person_data)
+    response = await api_request('post', f'/tree/{tree.id}/persons', auth=True, json=person_data)
     assert response.status_code == status.HTTP_201_CREATED
     assert Person(**response.json())
 
 
 @pytest.mark.usefixtures('person')
 @pytest.mark.parametrize('fullname', ['Doe', 'Doe John'])
-def test_core_api_tree_person_list_ok(api_request, tree, fullname):
-    response = api_request('get', f'/tree/{tree.id}/persons?q={fullname}', auth=True)
+async def test_core_api_tree_person_list_ok(api_request, tree, fullname):
+    response = await api_request('get', f'/tree/{tree.id}/persons?q={fullname}', auth=True)
     assert response.status_code == status.HTTP_200_OK
     assert Person(**response.json()[0])
 
 
-def test_core_api_tree_person_list_unknown(api_request, tree):
-    response = api_request('get', f'/tree/{tree.id}/persons?q=unknown', auth=True)
+async def test_core_api_tree_person_list_unknown(api_request, tree):
+    response = await api_request('get', f'/tree/{tree.id}/persons?q=unknown', auth=True)
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == []
 
@@ -134,8 +134,8 @@ def test_core_api_tree_person_list_unknown(api_request, tree):
     (True, status.HTTP_200_OK),
     (False, status.HTTP_404_NOT_FOUND),
 ])
-def test_core_api_tree_person_detail(api_request, tree, person, exists, status_code):
-    response = api_request('get', f'/tree/{tree.id}/persons/{person.id if exists else 0}', auth=True)
+async def test_core_api_tree_person_detail(api_request, tree, person, exists, status_code):
+    response = await api_request('get', f'/tree/{tree.id}/persons/{person.id if exists else 0}', auth=True)
     assert response.status_code == status_code
     if exists:
         assert Person(**response.json())
@@ -145,7 +145,7 @@ async def test_core_api_tree_person_update(api_request, tree, person):
     person_data = {'info': 'Update person'}
     assert person.info != person_data['info']
 
-    response = api_request('patch', f'/tree/{tree.id}/persons/{person.id}', auth=True, json=person_data)
+    response = await api_request('patch', f'/tree/{tree.id}/persons/{person.id}', auth=True, json=person_data)
     assert response.status_code == status.HTTP_200_OK
     assert ResultOk(**response.json())
 
@@ -154,7 +154,7 @@ async def test_core_api_tree_person_update(api_request, tree, person):
 
 
 async def test_core_api_tree_person_delete_totally(api_request, tree, person):
-    response = api_request('delete', f'/tree/{tree.id}/persons/{person.id}', auth=True)
+    response = await api_request('delete', f'/tree/{tree.id}/persons/{person.id}', auth=True)
     assert response.status_code == status.HTTP_200_OK
     assert ResultOk(**response.json())
     assert not await Person.objects.all(id=person.id)
@@ -165,7 +165,7 @@ async def test_core_api_tree_person_delete_from_tree(async_teardown, api_request
     await PersonTree.objects.create(person=person, tree=new_tree)
     async_teardown(new_tree.delete())
 
-    response = api_request('delete', f'/tree/{tree.id}/persons/{person.id}', auth=True)
+    response = await api_request('delete', f'/tree/{tree.id}/persons/{person.id}', auth=True)
     assert response.status_code == status.HTTP_200_OK
     assert ResultOk(**response.json())
     assert await Person.objects.all(id=person.id)
@@ -177,7 +177,7 @@ async def test_core_api_tree_relative_add(api_request, tree, person, relative):
         'person_to': relative.id,
         'relation': RelationType.SPOUSE.value,
     }
-    response = api_request('post', f'/tree/{tree.id}/relations', auth=True, json=relation)
+    response = await api_request('post', f'/tree/{tree.id}/relations', auth=True, json=relation)
     assert response.status_code == status.HTTP_201_CREATED
     assert RelationCreateSchema(**response.json())
 
@@ -189,7 +189,7 @@ async def test_core_api_tree_relative_add(api_request, tree, person, relative):
 async def test_core_api_tree_relative_delete(api_request, tree, person, relative, exists, status_code):
     await person.add_relative(RelationType.SPOUSE, relative)
     to = relative.id if exists else 0
-    response = api_request('delete', f'/tree/{tree.id}/persons/{person.id}/relatives/{to}', auth=True)
+    response = await api_request('delete', f'/tree/{tree.id}/persons/{person.id}/relatives/{to}', auth=True)
     assert response.status_code == status_code
     if exists:
         assert ResultOk(**response.json())
@@ -197,11 +197,11 @@ async def test_core_api_tree_relative_delete(api_request, tree, person, relative
 
 # UI tests
 @pytest.fixture
-def ui_request(client, session):
+def ui_request(async_client, session):
     def inner(method, path, auth, **kwargs):
         if auth:
             kwargs['cookies'] = {AUTH_COOKIE: f'Bearer {session}'}
-        return getattr(client, method)('/ui' + path, **kwargs)
+        return getattr(async_client, method)('/ui' + path, **kwargs)
     return inner
 
 
@@ -212,9 +212,9 @@ def ui_request(client, session):
     ('/tree/%s/person/add', status.HTTP_200_OK),
     ('/tree/%s/person/%s', status.HTTP_200_OK),
 ])
-def test_core_ui_ok(ui_request, path, status_code, tree, person):
+async def test_core_ui_ok(ui_request, path, status_code, tree, person):
     path = build_path(path, tree.id, person.id, None)
-    response = ui_request('get', path, auth=True, allow_redirects=False)
+    response = await ui_request('get', path, auth=True, allow_redirects=False)
     assert response.status_code == status_code
 
 
@@ -230,12 +230,12 @@ async def test_core_ui_tree_user_denied(async_teardown, ui_request, person, path
     async_teardown(tree.delete())
 
     path = build_path(path, tree.id, person.id, None)
-    response = ui_request('get', path, auth=True, allow_redirects=False)
+    response = await ui_request('get', path, auth=True, allow_redirects=False)
     assert response.status_code == status.HTTP_307_TEMPORARY_REDIRECT
 
 
 async def test_core_ui_last_tree_not_deleted(ui_request, tree):
-    response = ui_request('get', f'/tree/{tree.id}/delete', auth=True, allow_redirects=False)
+    response = await ui_request('get', f'/tree/{tree.id}/delete', auth=True, allow_redirects=False)
     assert response.status_code == status.HTTP_307_TEMPORARY_REDIRECT
     assert await Tree.objects.all(id=tree.id)
 
@@ -245,6 +245,6 @@ async def test_core_ui_tree_delete(async_teardown, ui_request, user, tree):
     await UserTree.objects.create(tree=new_tree, user=user)
     async_teardown(new_tree.delete())
 
-    response = ui_request('get', f'/tree/{tree.id}/delete', auth=True, allow_redirects=False)
+    response = await ui_request('get', f'/tree/{tree.id}/delete', auth=True, allow_redirects=False)
     assert response.status_code == status.HTTP_307_TEMPORARY_REDIRECT
     assert not await Tree.objects.all(id=tree.id)
