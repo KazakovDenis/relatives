@@ -26,7 +26,10 @@ services:
       POSTGRESQL_DATABASE: $DB_NAME
       POSTGRESQL_USERNAME: $DB_USER
       POSTGRESQL_PASSWORD: $DB_PASS
+      PGPASSFILE: /opt/.pgpass
     ports:
       - "127.0.0.1:5432:5432"
     volumes:
       - ./postgresql:/bitnami/postgresql
+      - ./dump/postgresql:/opt/dump    # chmod -R a+w
+      - ./scripts/pgpass.sh:/docker-entrypoint-preinitdb.d/pgpass.sh

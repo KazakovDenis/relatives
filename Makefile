@@ -66,3 +66,16 @@ full_deploy: build upload deploy
 
 tunnel:
 	ssh -L 127.0.0.1:5432:127.0.0.1:5432 vps -N
+
+DUMP_LOC=/opt/relatives/dump/postgresql/relatives.tar
+
+pgdump:
+	ssh ${SSH_HOST} "\
+		cd /opt/relatives && \
+		docker compose exec postgres sh -c \"pg_dump -U relatives -F t relatives > /opt/dump/relatives.tar\" \
+	"
+	scp ${SSH_HOST}:${DUMP_LOC} ./dump/postgresql
+	@echo "Done!"
+
+loaddump: migrate
+	pg_restore -d relatives -c -U relatives -h localhost -p 5432 ./dump/postgresql/relatives.tar
