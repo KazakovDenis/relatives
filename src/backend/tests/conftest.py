@@ -105,8 +105,13 @@ async def relative(app):
 
 
 @pytest.fixture
-def async_teardown(request, event_loop):
-    # noinspection PyUnresolvedReferences
-    def inner(coro):
-        request.addfinalizer(lambda: event_loop.call_soon(coro))
-    return inner
+async def async_teardown():
+    coroutines = []
+
+    def inner(*args):
+        coroutines.extend(args)
+
+    yield inner
+
+    for coro in coroutines:
+        await coro
