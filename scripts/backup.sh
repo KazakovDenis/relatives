@@ -15,4 +15,4 @@ scp $SSH_HOST:$SOURCE_FILE $DB_DUMP_DIR/relatives.tar
 mv $DB_DUMP_DIR/relatives.tar $DB_DUMP_DIR/"$(date +%F -r $DB_DUMP_DIR/relatives.tar)".tar
 
 # backup media files
-rclone -v --syslog --progress sync vps:/opt/relatives/uploads $MEDIA_DIR
+rclone --log-level INFO --log-file /var/log/rclone/relatives.log --progress sync vps:/opt/relatives/uploads $MEDIA_DIR

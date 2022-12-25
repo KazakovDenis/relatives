@@ -11,7 +11,7 @@ from .models import Person, Relation
 
 
 class ResultOk(TypedDict):
-    result: Literal['ok']
+    result: Literal['ok'] | str
 
 
 class PersonSchema(BaseModel):

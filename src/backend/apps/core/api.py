@@ -71,7 +71,7 @@ async def tree_scheme(tid: int, user: User = Security(get_user)):
     if not (tree := await has_tree_perm(user.id, tid)):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
 
-    persons = await Person.objects.all(persontrees__tree=tree)
+    persons = await Person.objects.exclude_fields(['persontrees']).all(persontrees__tree=tree)
     rels = (
         await Relation.objects
         .exclude(type=RelationType.CHILD)

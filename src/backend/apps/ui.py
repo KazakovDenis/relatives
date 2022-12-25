@@ -1,3 +1,4 @@
+"""UI modules will be removed when frontend is ready."""
 from fastapi import APIRouter
 
 from . import auth, core
