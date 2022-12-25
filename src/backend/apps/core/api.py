@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Query, Security, status
+from fastapi import APIRouter, HTTPException, Query, Request, Security, status
 from fastapi.responses import Response
 from ormar import MultipleMatches, NoMatch
 
@@ -64,6 +64,17 @@ async def tree_share(tree_id: int, recipient: RecipientSchema, user: User = Secu
     token = await Token.objects.create()
     await invite_to_tree(recipient.email, user.email, tree, token.token)
     return {'result': 'ok'}
+
+
+@router.get('/tree/{tree_id}/share-link', response_model=ResultOk)
+async def tree_get_share_link(request: Request, tree_id: int, user: User = Security(get_user)):
+    if not (tree := await has_tree_perm(user.id, tree_id)):
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+    if not await UserTree.objects.get_or_none(user=user, tree__id=tree_id, is_owner=True):
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+
+    token, _ = await Token.objects.get_or_create(user=user, tree=tree)
+    return {'result': request.url_for('ui_tree_join_link', tree_id=tree_id, token=token.token)}
 
 
 @router.get('/tree/{tid}/scheme', response_model=TreeBuildSchema)

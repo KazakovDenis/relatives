@@ -184,5 +184,10 @@ class Token(ormar.Model):
         database = db
         metadata = metadata
         tablename = 'tokens'
+        constraints = [
+            ormar.UniqueColumns('user', 'tree'),
+        ]
 
     token: UUID = ormar.UUID(primary_key=True, server_default=func.gen_random_uuid())
+    user: User = ormar.ForeignKey(User, ondelete=ReferentialAction.CASCADE, nullable=True)
+    tree: Tree = ormar.ForeignKey(Tree, ondelete=ReferentialAction.CASCADE, nullable=True)

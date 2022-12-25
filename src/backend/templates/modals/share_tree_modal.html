@@ -9,11 +9,13 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
         <div class="modal-body">
+          <p><a href="#" id="share-link"></a></p>
           <label for="share-tree-name" class="visually-hidden"></label>
           <input type="email" class="form-control" name="email" id="share-tree-name" placeholder="j.doe@mail.com" required>
         </div>
         <div class="modal-footer">
-          <button type="submit" class="btn btn-primary" data-text="Create">Invite</button>
+          <button type="button" class="btn btn-primary" id="copy-share-link" data-text="Copy link"></button>
+          <button type="submit" class="btn btn-primary" data-text="Send email"></button>
         </div>
       </form>
     </div>

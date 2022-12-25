@@ -103,6 +103,11 @@ async def ui_tree_join(request: Request, tree_id: int, email: str = Query(''), t
     return RedirectResponse(request.url_for('ui_login'))
 
 
+@router.get('/tree/{tree_id}/join-link/{token}', response_class=RedirectResponse)
+async def ui_tree_join_link(request: Request, tree_id: int, token: str):
+    return RedirectResponse(request.url_for('ui_login'))
+
+
 @router.get('/tree/{tree_id}/person/add', response_class=HTMLResponse)
 async def ui_person_add(request: Request, tree_id: int, user: User = Security(get_user)):
     if not await has_tree_perm(user.id, tree_id):
