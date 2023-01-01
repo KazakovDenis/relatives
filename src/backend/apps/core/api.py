@@ -142,7 +142,8 @@ async def person_list(
         Person.objects.exclude(id=exclude)
         .filter(**where, persontrees__tree__id=tree_id)
         .exclude_fields(['persontrees'])
-        .limit(20).all()
+        .limit(20)
+        .all()
     )
     return persons
 

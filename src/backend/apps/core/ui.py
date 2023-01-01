@@ -33,6 +33,7 @@ async def ui_tree_list(
         tree_id: int,
         page: int = Query(1),
         q: str = Query(''),
+        sort: str = Query(''),
         user: User = Security(get_active_user),
 ):
     if not (tree := await has_tree_perm(user.id, tree_id)):
@@ -58,9 +59,20 @@ async def ui_tree_list(
         case _:
             where = {}
 
+    sort = sort.split('-', maxsplit=1)
+    if sort:
+        if (
+            sort[0] not in {'name', 'surname', 'patronymic', 'birthdate'}
+            or len(sort) != 2
+        ):
+            sort = 'id'
+        else:
+            sort = ('-' if sort[1] == 'desc' else '') + 'person__' + sort[0]
+
     pts = await (
         PersonTree.objects.select_related('person')
         .filter(tree=tree, **where)
+        .order_by(sort)
         .offset(offset)
         .limit(PERSONS_PER_PAGE)
         .all()
