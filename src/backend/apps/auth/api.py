@@ -4,6 +4,8 @@ from fastapi import APIRouter, Cookie, HTTPException, Query, status
 from fastapi.background import BackgroundTasks
 from fastapi.responses import Response
 
+from ..core.models import Token
+from ..core.utils import str_to_uuid
 from .models import User
 from .schemas import Credentials, ResultOk
 from .utils import AUTH_COOKIE, create_session, create_user, delete_session, validate_password
@@ -47,7 +49,7 @@ async def api_login(
         password: str = Query(),
 ):
     if token:
-        return {'result': 'ok'}
+        await Token.objects.delete(token=str_to_uuid(token))
 
     user = await User.objects.get_or_none(email=email)
     if not (user and user.is_active and validate_password(password, user.password)):

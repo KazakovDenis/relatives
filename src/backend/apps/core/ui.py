@@ -28,17 +28,42 @@ async def ui_welcome(request: Request, user: User = Security(get_active_user)):
 
 
 @router.api_route('/tree/{tree_id}/list', methods=['GET', 'POST'], response_class=HTMLResponse)
-async def ui_tree_list(request: Request, tree_id: int, page: int = Query(1), user: User = Security(get_active_user)):
+async def ui_tree_list(
+        request: Request,
+        tree_id: int,
+        page: int = Query(1),
+        q: str = Query(''),
+        user: User = Security(get_active_user),
+):
     if not (tree := await has_tree_perm(user.id, tree_id)):
         return RedirectResponse(request.url_for('ui_welcome'))
 
     offset = (page - 1) * PERSONS_PER_PAGE
+    q = q.split(maxsplit=2)
+
+    match len(q):
+        case 3:
+            where = {
+                'person__surname__icontains': q[0],
+                'person__name__icontains': q[1],
+                'person__patronymic__icontains': q[2],
+            }
+        case 2:
+            where = {
+                'person__surname__icontains': q[0],
+                'person__name__icontains': q[1],
+            }
+        case 1:
+            where = {'person__surname__icontains': q[0]}
+        case _:
+            where = {}
 
     pts = await (
         PersonTree.objects.select_related('person')
+        .filter(tree=tree, **where)
         .offset(offset)
         .limit(PERSONS_PER_PAGE)
-        .all(tree=tree)
+        .all()
     )
 
     ctx = {
