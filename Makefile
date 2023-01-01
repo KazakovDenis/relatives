@@ -15,7 +15,7 @@ migrate:
 
 style:
 	poetry run flake8
-	poetry run isort -c .
+	poetry run isort .
 
 test:
 	poetry run coverage run

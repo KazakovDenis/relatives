@@ -6,7 +6,7 @@ from deps import db
 from tools.notifications.email import invite_to_tree
 
 from ..auth.models import User
-from ..auth.utils import get_user
+from ..auth.utils import get_active_user
 from .constants import BACK_RELATIONS, RelationType
 from .file import save_person_photo
 from .models import Person, PersonTree, Photo, Relation, Token, Tree, UserTree
@@ -26,7 +26,7 @@ router = APIRouter()
 
 
 @router.post('/tree', response_model=Tree)
-async def tree_create(response: Response, tree: TreeSchema, user: User = Security(get_user)):
+async def tree_create(response: Response, tree: TreeSchema, user: User = Security(get_active_user)):
     ut = await UserTree.objects.select_related('tree').get_or_none(user=user, tree__name=tree.name)
     if ut:
         tree_obj = ut.tree
@@ -40,20 +40,20 @@ async def tree_create(response: Response, tree: TreeSchema, user: User = Securit
 
 
 @router.get('/tree', response_model=list[UserTree])
-async def tree_list(user: User = Security(get_user)):
+async def tree_list(user: User = Security(get_active_user)):
     uts = await UserTree.objects.select_related('tree').all(user=user)
     return uts
 
 
 @router.get('/tree/{tid}', response_model=Tree)
-async def tree_detail(tid: int, user: User = Security(get_user)):
+async def tree_detail(tid: int, user: User = Security(get_active_user)):
     if not (tree := await has_tree_perm(user.id, tid)):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
     return tree
 
 
 @router.post('/tree/{tid}/share', response_model=ResultOk)
-async def tree_share(tree_id: int, recipient: RecipientSchema, user: User = Security(get_user)):
+async def tree_share(tree_id: int, recipient: RecipientSchema, user: User = Security(get_active_user)):
     if not (tree := await has_tree_perm(user.id, tree_id)):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
     if not (user := await User.objects.get_or_none(email=recipient.email, is_active=True)):
@@ -67,7 +67,7 @@ async def tree_share(tree_id: int, recipient: RecipientSchema, user: User = Secu
 
 
 @router.get('/tree/{tree_id}/share-link', response_model=ResultOk)
-async def tree_get_share_link(request: Request, tree_id: int, user: User = Security(get_user)):
+async def tree_get_share_link(request: Request, tree_id: int, user: User = Security(get_active_user)):
     if not (tree := await has_tree_perm(user.id, tree_id)):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
     if not await UserTree.objects.get_or_none(user=user, tree__id=tree_id, is_owner=True):
@@ -78,7 +78,7 @@ async def tree_get_share_link(request: Request, tree_id: int, user: User = Secur
 
 
 @router.get('/tree/{tid}/scheme', response_model=TreeBuildSchema)
-async def tree_scheme(tid: int, user: User = Security(get_user)):
+async def tree_scheme(tid: int, user: User = Security(get_active_user)):
     if not (tree := await has_tree_perm(user.id, tid)):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
 
@@ -95,7 +95,7 @@ async def tree_scheme(tid: int, user: User = Security(get_user)):
 
 
 @router.post('/tree/{tree_id}/persons', response_model=Person)
-async def person_create(response: Response, person: PersonSchema, tree_id: int, user: User = Security(get_user)):
+async def person_create(response: Response, person: PersonSchema, tree_id: int, user: User = Security(get_active_user)):
     if not (tree := await has_tree_perm(user.id, tree_id)):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
 
@@ -111,7 +111,12 @@ async def person_create(response: Response, person: PersonSchema, tree_id: int, 
 
 
 @router.get('/tree/{tree_id}/persons', response_model=list[Person])
-async def person_list(tree_id: int, q: str = Query(''), exclude: int = Query(0), user: User = Security(get_user)):
+async def person_list(
+        tree_id: int,
+        q: str = Query(''),
+        exclude: int = Query(0),
+        user: User = Security(get_active_user),
+):
     if not await has_tree_perm(user.id, tree_id):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
 
@@ -143,7 +148,7 @@ async def person_list(tree_id: int, q: str = Query(''), exclude: int = Query(0),
 
 
 @router.get('/tree/{tree_id}/persons/{pid}', response_model=Person)
-async def person_detail(tree_id: int, pid: int, user: User = Security(get_user)):
+async def person_detail(tree_id: int, pid: int, user: User = Security(get_active_user)):
     if not await has_tree_perm(user.id, tree_id):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
     try:
@@ -153,7 +158,7 @@ async def person_detail(tree_id: int, pid: int, user: User = Security(get_user))
 
 
 @router.patch('/tree/{tree_id}/persons/{pid}', response_model=ResultOk)
-async def person_update(tree_id: int, pid: int, person: PersonUpdateSchema, user: User = Security(get_user)):
+async def person_update(tree_id: int, pid: int, person: PersonUpdateSchema, user: User = Security(get_active_user)):
     if not await has_tree_perm(user.id, tree_id):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
 
@@ -168,7 +173,7 @@ async def person_update(tree_id: int, pid: int, person: PersonUpdateSchema, user
 
 
 @router.delete('/tree/{tree_id}/persons/{pid}', response_model=ResultOk)
-async def person_delete(tree_id: int, pid: int, user: User = Security(get_user)):
+async def person_delete(tree_id: int, pid: int, user: User = Security(get_active_user)):
     if not (tree := await has_tree_perm(user.id, tree_id)):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
 
@@ -185,7 +190,12 @@ async def person_delete(tree_id: int, pid: int, user: User = Security(get_user))
 
 
 @router.post('/tree/{tree_id}/relations', response_model=Relation)
-async def relation_create(response: Response, relation: RelationSchema, tree_id: int, user: User = Security(get_user)):
+async def relation_create(
+        response: Response,
+        relation: RelationSchema,
+        tree_id: int,
+        user: User = Security(get_active_user),
+):
     if not await has_tree_perm(user.id, tree_id):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
 
@@ -204,7 +214,7 @@ async def relation_create(response: Response, relation: RelationSchema, tree_id:
 
 
 @router.delete('/tree/{tree_id}/persons/{from_}/relatives/{to}', response_model=ResultOk)
-async def person_relative_delete(tree_id: int, from_: int, to: int, user: User = Security(get_user)):
+async def person_relative_delete(tree_id: int, from_: int, to: int, user: User = Security(get_active_user)):
     if not await has_tree_perm(user.id, tree_id):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
     try:
@@ -217,7 +227,7 @@ async def person_relative_delete(tree_id: int, from_: int, to: int, user: User =
 
 
 @router.delete('/tree/{tree_id}/persons/{pid}/photos/{photo_id}', response_model=ResultOk)
-async def person_photo_delete(tree_id: int, pid: int, photo_id: int, user: User = Security(get_user)):
+async def person_photo_delete(tree_id: int, pid: int, photo_id: int, user: User = Security(get_active_user)):
     if not await has_tree_perm(user.id, tree_id):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
 

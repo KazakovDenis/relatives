@@ -12,15 +12,17 @@ let signupUrl = `${document.location.origin}/api/v1/auth/signup`;
 
 
 function login() {
-    let email = document.getElementById('email-input').value;
-    let password = document.getElementById('password-input').value;
+    const email = document.getElementById('email-input').value;
+    const password = document.getElementById('password-input').value;
+    const urlParams = new URLSearchParams(window.location.search);
+    const next = urlParams.get('next');
 
     let xhr = new XMLHttpRequest();
     xhr.open('GET', `${loginUrl}?email=${email}&password=${password}`);
     xhr.send();
     xhr.onload = function() {
         if (xhr.status === 200) {
-            window.location.replace(`${document.location.origin}/ui/welcome`);
+            window.location.replace(next || `${document.location.origin}/ui/welcome`);
         } else {
             alert(`Bad credentials`);
         }
@@ -31,8 +33,10 @@ function login() {
 }
 
 function signup() {
-    let email = document.getElementById('email-input').value;
-    let password = document.getElementById('password-input').value;
+    const email = document.getElementById('email-input').value;
+    const password = document.getElementById('password-input').value;
+    const urlParams = new URLSearchParams(window.location.search);
+    const next = urlParams.get('next');
     let payload = JSON.stringify({
       email,
       password
@@ -45,7 +49,7 @@ function signup() {
     xhr.send(payload);
     xhr.onload = function() {
         if (xhr.status === 201) {
-            window.location.replace(`${document.location.origin}/ui/verify-email`);
+            window.location.replace(next || `${document.location.origin}/ui/verify-email`);
         } else {
             alert(`Bad credentials`);
         }

@@ -36,13 +36,13 @@ class AuthBackend(AuthenticationBackend):
     )
 
     async def authenticate(self, conn):
+        # todo: move to Security
         if self.cookie not in conn.cookies:
             if self.skip_for_path(conn.scope['path']):
                 return
-            # todo: redirect ui to login
             raise AuthenticationError('Not authenticated')
 
-        auth_row = conn.cookies[self.cookie].split()
+        auth_row = conn.cookies.get(self.cookie, '').split()
         if len(auth_row) < 2:
             return
 

@@ -1,11 +1,12 @@
 from fastapi import APIRouter, Query, Security
+from fastapi.datastructures import URL
 from fastapi.requests import Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 
 from deps import templates
 
 from ..auth.models import User
-from ..auth.utils import get_user
+from ..auth.utils import get_active_user, get_user
 from .models import Person, PersonTree, Relation, Token, Tree, UserTree
 from .permissions import has_tree_perm
 from .utils import str_to_uuid
@@ -16,7 +17,7 @@ PERSONS_PER_PAGE = 20
 
 
 @router.get('/welcome', response_class=RedirectResponse)
-async def ui_welcome(request: Request, user: User = Security(get_user)):
+async def ui_welcome(request: Request, user: User = Security(get_active_user)):
     uts = await UserTree.objects.all(user=user)
     if not uts:
         tree = await Tree.objects.create()
@@ -27,7 +28,7 @@ async def ui_welcome(request: Request, user: User = Security(get_user)):
 
 
 @router.api_route('/tree/{tree_id}/list', methods=['GET', 'POST'], response_class=HTMLResponse)
-async def ui_tree_list(request: Request, tree_id: int, page: int = Query(1), user: User = Security(get_user)):
+async def ui_tree_list(request: Request, tree_id: int, page: int = Query(1), user: User = Security(get_active_user)):
     if not (tree := await has_tree_perm(user.id, tree_id)):
         return RedirectResponse(request.url_for('ui_welcome'))
 
@@ -52,7 +53,7 @@ async def ui_tree_list(request: Request, tree_id: int, page: int = Query(1), use
 
 # TODO: change to DELETE for front + api
 @router.get('/tree/{tree_id}/delete', response_class=HTMLResponse)
-async def ui_tree_delete(request: Request, tree_id: int, user: User = Security(get_user)):
+async def ui_tree_delete(request: Request, tree_id: int, user: User = Security(get_active_user)):
     if not (tree := await has_tree_perm(user.id, tree_id)):
         return RedirectResponse(request.url_for('ui_welcome'))
 
@@ -75,7 +76,7 @@ async def ui_tree_delete(request: Request, tree_id: int, user: User = Security(g
 
 
 @router.get('/tree/{tree_id}/scheme', response_class=HTMLResponse)
-async def ui_tree_scheme(request: Request, tree_id: int, user: User = Security(get_user)):
+async def ui_tree_scheme(request: Request, tree_id: int, user: User = Security(get_active_user)):
     if not await has_tree_perm(user.id, tree_id):
         return RedirectResponse(request.url_for('ui_welcome'))
 
@@ -105,11 +106,20 @@ async def ui_tree_join(request: Request, tree_id: int, email: str = Query(''), t
 
 @router.get('/tree/{tree_id}/join-link/{token}', response_class=RedirectResponse)
 async def ui_tree_join_link(request: Request, tree_id: int, token: str):
-    return RedirectResponse(request.url_for('ui_login'))
+    if not (user := get_user(request)):
+        url = URL(request.url_for('ui_login')).include_query_params(next=request.url)
+        return RedirectResponse(url)
+
+    token = await Token.objects.select_related('tree').get_or_none(token=str_to_uuid(token))
+    if token.tree.id != tree_id:
+        return RedirectResponse(request.url_for('ui_forbidden'))
+
+    await UserTree.objects.get_or_create(user=user, tree=token.tree)
+    return RedirectResponse(request.url_for('ui_tree_list', tree_id=tree_id))
 
 
 @router.get('/tree/{tree_id}/person/add', response_class=HTMLResponse)
-async def ui_person_add(request: Request, tree_id: int, user: User = Security(get_user)):
+async def ui_person_add(request: Request, tree_id: int, user: User = Security(get_active_user)):
     if not await has_tree_perm(user.id, tree_id):
         return RedirectResponse(request.url_for('ui_welcome'))
     ctx = {'request': request, 'tree_id': tree_id}
@@ -117,7 +127,7 @@ async def ui_person_add(request: Request, tree_id: int, user: User = Security(ge
 
 
 @router.get('/tree/{tree_id}/person/{person_id}', response_class=HTMLResponse)
-async def ui_person_detail(request: Request, tree_id: int, person_id: int, user: User = Security(get_user)):
+async def ui_person_detail(request: Request, tree_id: int, person_id: int, user: User = Security(get_active_user)):
     if not await has_tree_perm(user.id, tree_id):
         return RedirectResponse(request.url_for('ui_welcome'))
 

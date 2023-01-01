@@ -88,7 +88,6 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
-    op.drop_index('ix_sessions_token', table_name='sessions')
     op.drop_table('sessions')
     op.drop_table('user_tree')
     op.drop_table('users')
