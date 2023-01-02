@@ -13,7 +13,6 @@ from .utils import str_to_uuid
 
 
 router = APIRouter()
-PERSONS_PER_PAGE = 20
 
 
 @router.get('/welcome', response_class=RedirectResponse)
@@ -33,13 +32,15 @@ async def ui_tree_list(
         tree_id: int,
         page: int = Query(1),
         q: str = Query(''),
-        sort: str = Query(''),
+        sort: str = Query('surname'),
+        order: str = Query('0'),
+        per_page: int = Query(20),
         user: User = Security(get_active_user),
 ):
     if not (tree := await has_tree_perm(user.id, tree_id)):
         return RedirectResponse(request.url_for('ui_welcome'))
 
-    offset = (page - 1) * PERSONS_PER_PAGE
+    offset = (page - 1) * per_page
     q = q.split(maxsplit=2)
 
     match len(q):
@@ -59,22 +60,18 @@ async def ui_tree_list(
         case _:
             where = {}
 
-    sort = sort.split('-', maxsplit=1)
-    if sort:
-        if (
-            sort[0] not in {'name', 'surname', 'patronymic', 'birthdate'}
-            or len(sort) != 2
-        ):
-            sort = 'id'
-        else:
-            sort = ('-' if sort[1] == 'desc' else '') + 'person__' + sort[0]
+    if sort not in Person.__fields__:
+        sort = 'person__surname'
+    else:
+        prefix = '' if order == '0' else '-'
+        sort = f'{prefix}person__{sort}'
 
     pts = await (
         PersonTree.objects.select_related('person')
         .filter(tree=tree, **where)
-        .order_by(sort)
+        .order_by(sort or [])
         .offset(offset)
-        .limit(PERSONS_PER_PAGE)
+        .limit(per_page)
         .all()
     )
 

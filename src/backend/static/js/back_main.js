@@ -5,6 +5,15 @@
     const createTreeLink = document.getElementById('tree-create');
     const sharedTreeList = document.getElementById('shared-tree-list');
 
+    document.querySelectorAll('thead th span').forEach(elem => {
+        elem.addEventListener('click', sortTable);
+
+        const urlParams = new URLSearchParams(window.location.search);
+        if (elem.dataset.field === urlParams.get('sort')) {
+            elem.dataset.order = urlParams.get('order') ^ '1';
+        }
+    });
+
     getTrees();
 
     function getTrees() {
@@ -41,5 +50,18 @@
         const li = document.createElement('li');
         li.innerHTML = `<a href="${treeUrl}" class="link-dark d-inline-flex text-decoration-none rounded">${userTree.tree.name}</a>`;
         return li;
+    }
+
+    function sortTable(event) {
+        event.preventDefault();
+
+        const field = event.target.dataset.field;
+        const order = event.target.dataset.order;
+        const url = document.location.origin + document.location.pathname
+        const urlParams = new URLSearchParams(window.location.search);
+
+        urlParams.set('sort', field);
+        urlParams.set('order', order);
+        window.location.replace(`${url}?${urlParams.toString()}`);
     }
 })()
