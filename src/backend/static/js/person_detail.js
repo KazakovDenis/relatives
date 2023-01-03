@@ -38,6 +38,7 @@
   }
 
   relativeForms.forEach(form => form.addEventListener('submit', deleteRelative));
+  relativeForms.forEach(form => form.querySelector('input').addEventListener('click', openRelative));
 
   function createPerson() {
     const createPersonUrl = `${document.location.origin}/api/v1/tree/${treeId}/persons`;
@@ -204,6 +205,11 @@
     xhr.onerror = function() {
         alert(`Network Error`);
     };
+  }
+
+  function openRelative(event) {
+    const personId = event.target.dataset.relativeId;
+    window.open(`${document.location.origin}/ui/tree/${treeId}/person/${personId}`);
   }
 
   function getFormData() {

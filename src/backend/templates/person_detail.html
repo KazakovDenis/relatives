@@ -196,8 +196,8 @@
       {% for rel in relations %}
         <form class="form-inline needs-validation relative-form" data-relative-id="{{ rel.person_to.id }}">
           <div class="input-group mb-2 mr-sm-2">
-            <input type="text" class="form-control" value="{{ rel.person_to.fio }}" placeholder="Type in full name" required>
-            <select class="form-select mx-2" required>
+            <input type="button" class="form-control text-start" value="{{ rel.person_to.fio }}" data-relative-id="{{ rel.person_to.id }}" placeholder="Type in full name">
+            <select class="form-select mx-2" disabled>
               <option value="PARENT" {% if rel.type.value == 'PARENT' %}selected{% endif %} data-text="Parent"></option>
               <option value="SPOUSE" {% if rel.type.value == 'SPOUSE' %}selected{% endif %} data-text="Spouse"></option>
               <option value="EX_SPOUSE" {% if rel.type.value == 'EX_SPOUSE' %}selected{% endif %} data-text="Ex-spouse"></option>
