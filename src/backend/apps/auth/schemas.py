@@ -10,3 +10,9 @@ class Credentials(BaseModel):
 
 class ResultOk(TypedDict):
     result: Literal['ok']
+
+
+class ChangePassword(BaseModel):
+    user_id: int
+    old: str
+    new: str

@@ -1,11 +1,11 @@
-from fastapi import APIRouter, HTTPException, Query, status
+from fastapi import APIRouter, HTTPException, Query, Security, status
 from fastapi.requests import Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 
 from deps import templates
 
 from .models import Session, User
-from .utils import AUTH_COOKIE, create_session, token_to_uuid
+from .utils import AUTH_COOKIE, create_session, get_active_user, token_to_uuid
 
 
 router = APIRouter()
@@ -49,3 +49,15 @@ async def ui_verify_email(request: Request):
 async def ui_forbidden(request: Request):
     ctx = {'request': request, 'public': True, 'text': 'Forbidden'}
     return templates.TemplateResponse('public/empty.html', ctx)
+
+
+@router.get('/profile/{user_id}/password', response_class=HTMLResponse)
+async def ui_change_password(request: Request, user_id: int, user: User = Security(get_active_user)):
+    if user_id != user.id:
+        return RedirectResponse(request.url_for('ui_forbidden'))
+
+    ctx = {
+        'request': request,
+        'user': user,
+    }
+    return templates.TemplateResponse('password.html', ctx)

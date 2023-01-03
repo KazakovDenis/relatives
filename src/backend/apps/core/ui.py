@@ -77,6 +77,7 @@ async def ui_tree_list(
 
     ctx = {
         'request': request,
+        'user': user,
         'tree': tree,
         'page': page,
         'offset': offset,
@@ -115,7 +116,11 @@ async def ui_tree_scheme(request: Request, tree_id: int, user: User = Security(g
         return RedirectResponse(request.url_for('ui_welcome'))
 
     tree = await Tree.objects.get(id=tree_id)
-    ctx = {'request': request, 'tree': tree}
+    ctx = {
+        'request': request,
+        'user': user,
+        'tree': tree,
+    }
     return templates.TemplateResponse('tree_scheme.html', ctx)
 
 
@@ -156,7 +161,11 @@ async def ui_tree_join_link(request: Request, tree_id: int, token: str):
 async def ui_person_add(request: Request, tree_id: int, user: User = Security(get_active_user)):
     if not await has_tree_perm(user.id, tree_id):
         return RedirectResponse(request.url_for('ui_welcome'))
-    ctx = {'request': request, 'tree_id': tree_id}
+    ctx = {
+        'request': request,
+        'user': user,
+        'tree_id': tree_id,
+    }
     return templates.TemplateResponse('person_detail.html', ctx)
 
 
@@ -173,6 +182,7 @@ async def ui_person_detail(request: Request, tree_id: int, person_id: int, user:
 
     ctx = {
         'request': request,
+        'user': user,
         'tree_id': tree_id,
         'person': person,
         'relations': relations,

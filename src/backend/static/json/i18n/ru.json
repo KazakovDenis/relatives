@@ -63,5 +63,11 @@
   "Confirm the action": "Подтвердите действие",
   "Do you really want to delete the tree": "Вы действительно хотите удалить",
   "Do you really want to delete this photo?": "Вы действительно хотите удалить эту фотографию?",
-  "Do you really want to delete": "Вы действительно хотите удалить"
+  "Do you really want to delete": "Вы действительно хотите удалить",
+
+  "Change": "Изменить",
+  "Old password": "Старой пароль",
+  "New password": "Новый пароль",
+  "Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters.":
+    "Должен содержать не менее 1 цифры и буквы в разном регистре, а также быть длиной не менее 8 символов."
 }

@@ -32,7 +32,7 @@
         <div class="collapse" id="account-collapse">
           <ul id="account-list" class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
             <li>
-              <a href="#" class="link-dark d-inline-flex text-decoration-none rounded" data-text="Change password"></a>
+              <a href="{{ url_for('ui_change_password', user_id=user.id) }}" class="link-dark d-inline-flex text-decoration-none rounded" data-text="Change password"></a>
             </li>
           </ul>
         </div>

@@ -1,14 +1,22 @@
 from typing import Optional
 
-from fastapi import APIRouter, Cookie, HTTPException, Query, status
+from fastapi import APIRouter, Cookie, HTTPException, Query, Security, status
 from fastapi.background import BackgroundTasks
 from fastapi.responses import Response
 
 from ..core.models import Token
 from ..core.utils import str_to_uuid
 from .models import User
-from .schemas import Credentials, ResultOk
-from .utils import AUTH_COOKIE, create_session, create_user, delete_session, validate_password
+from .schemas import ChangePassword, Credentials, ResultOk
+from .utils import (
+    AUTH_COOKIE,
+    create_session,
+    create_user,
+    delete_session,
+    get_active_user,
+    hash_password,
+    validate_password,
+)
 
 
 router = APIRouter(prefix='/auth')
@@ -66,4 +74,17 @@ async def api_logout(response: Response, auth_token: Optional[str] = Cookie(None
     response.status_code = status.HTTP_202_ACCEPTED
     if auth_token:
         await delete_session(auth_token.removeprefix('Bearer '))
+    return {'result': 'ok'}
+
+
+@router.post('/change-password', response_model=ResultOk)
+async def api_change_password(body: ChangePassword, user: User = Security(get_active_user)):
+    if not (
+        user.is_active
+        and body.user_id == user.id
+        and validate_password(body.old, user.password)
+    ):
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+
+    await User.objects.filter(id=user.id).update(password=hash_password(body.new))
     return {'result': 'ok'}
