@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Query, Request, Security, status
+from fastapi import APIRouter, Body, HTTPException, Query, Request, Security, status
 from fastapi.responses import Response
 from ormar import MultipleMatches, NoMatch
 
@@ -17,6 +17,7 @@ from .schemas import (
     RecipientSchema,
     RelationSchema,
     ResultOk,
+    ShareTreeSchema,
     TreeBuildSchema,
     TreeSchema,
 )
@@ -66,7 +67,7 @@ async def tree_share(tree_id: int, recipient: RecipientSchema, user: User = Secu
     return {'result': 'ok'}
 
 
-@router.get('/tree/{tree_id}/share-link', response_model=ResultOk)
+@router.get('/tree/{tree_id}/share-link', response_model=ShareTreeSchema)
 async def tree_get_share_link(request: Request, tree_id: int, user: User = Security(get_active_user)):
     if not (tree := await has_tree_perm(user.id, tree_id)):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
@@ -74,7 +75,23 @@ async def tree_get_share_link(request: Request, tree_id: int, user: User = Secur
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
 
     token, _ = await Token.objects.get_or_create(user=user, tree=tree)
-    return {'result': request.url_for('ui_tree_join_link', tree_id=tree_id, token=token.token)}
+    shared_with = await User.objects.filter(usertrees__is_owner=False, usertrees__tree=tree).values('email')
+    return {
+        'link': request.url_for('ui_tree_join_link', tree_id=tree_id, token=token.token),
+        'shared_with': shared_with,
+    }
+
+
+@router.post('/tree/{tree_id}/revoke-access', response_model=ResultOk)
+async def tree_revoke_access(tree_id: int, email: str = Body(), user: User = Security(get_active_user)):
+    if not (tree := await has_tree_perm(user.id, tree_id)):
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+
+    # user__email lookup does not work with filter-delete
+    ut = await UserTree.objects.get_or_none(tree=tree, user__email=email)
+    if ut:
+        await ut.delete()
+    return {'result': 'ok'}
 
 
 @router.get('/tree/{tid}/scheme', response_model=TreeBuildSchema)

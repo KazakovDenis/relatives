@@ -61,3 +61,8 @@ class TreeBuildSchema(BaseModel):
 
 class RecipientSchema(BaseModel):
     email: EmailStr
+
+
+class ShareTreeSchema(TypedDict):
+    link: str
+    shared_with: list[dict]

@@ -43,8 +43,20 @@
         xhr.responseType = 'json';
         xhr.send();
         xhr.onload = function() {
+            const sharedWithList = document.getElementById('shared-with');
+            sharedWithList.replaceChildren();
+
+            xhr.response.shared_with.forEach(item => {
+                const elem = document.createElement('li');
+                elem.classList.add('list-group-item', 'd-flex', 'align-items-center', 'justify-content-between')
+                elem.innerHTML = `${item.email}<button type="button" data-tree-id="${treeId}" data-email="${item.email}" class="btn">⨯</button>`;
+                elem.lastChild.addEventListener('click', revokeAccess)
+                sharedWithList.append(elem);
+            })
+
+            // copy share link logic
             const linkElem = document.getElementById('share-link');
-            linkElem.textContent = xhr.response.result;
+            linkElem.textContent = xhr.response.link;
 
             linkElem.onclick = function(clickEvent) {
                 clickEvent.preventDefault();
@@ -62,4 +74,22 @@
             alert(`Network Error`);
         };
     }
+
+    function revokeAccess(event) {
+        const treeId = event.target.dataset.treeId;
+        const email = event.target.dataset.email;
+
+        const xhr = new XMLHttpRequest();
+
+        xhr.open('POST', `${document.location.origin}/api/v1/tree/${treeId}/revoke-access`);
+        xhr.responseType = 'json';
+        xhr.send(email);
+        xhr.onload = function() {
+            event.target.parentNode.remove();
+        }
+        xhr.onerror = function() {
+            alert(`Network Error`);
+        };
+    }
+
 })()
