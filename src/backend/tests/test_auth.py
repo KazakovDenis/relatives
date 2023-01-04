@@ -64,6 +64,7 @@ async def test_auth_bad_auth_cookie(async_client, user, cookie):
     '/ui/login',
     '/ui/signup',
     '/ui/verify-email',
+    '/ui/forbidden',
 ])
 async def test_auth_ui_pages(async_client, path):
     response = await async_client.get(path)
@@ -83,3 +84,21 @@ async def test_auth_ui_activate_ok(async_client, inactive_user):
     await inactive_user.load()
     assert inactive_user.is_active
     assert not await Session.objects.all(token=token_to_uuid(session))
+
+
+async def test_auth_ui_change_password_forbidden(async_client, session):
+    forbidden_user_id = 0
+    response = await async_client.get(
+        f'/ui/profile/{forbidden_user_id}/password',
+        cookies={AUTH_COOKIE: f'Bearer {session}'},
+        follow_redirects=False,
+    )
+    assert response.status_code == status.HTTP_307_TEMPORARY_REDIRECT
+
+
+async def test_auth_ui_change_password_ok(async_client, user, session):
+    response = await async_client.get(
+        f'/ui/profile/{user.id}/password',
+        cookies={AUTH_COOKIE: f'Bearer {session}'},
+    )
+    assert response.status_code == status.HTTP_200_OK

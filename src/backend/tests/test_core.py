@@ -39,6 +39,7 @@ def api_request(async_client, session):
     '/tree/%s/persons/%s',
     '/tree/%s/persons/%s/relatives/%s',
     '/tree/%s/relations',
+    '/tree/%s/share-link',
 ])
 async def test_core_api_not_logged(api_request, tree, person, relative, path):
     path = build_path(path, tree.id, person.id, relative.id)
@@ -201,6 +202,21 @@ async def test_core_api_tree_relative_delete(api_request, tree, person, relative
     assert response.status_code == status_code
     if exists:
         assert ResultOk(**response.json())
+
+
+async def test_core_api_tree_revoke_access_from_self(api_request, user, tree):
+    response = await api_request('post', f'/tree/{tree.id}/revoke-access', auth=True, json=user.email)
+    assert response.status_code == status.HTTP_403_FORBIDDEN
+
+
+async def test_core_api_tree_revoke_access_another_tree(api_request):
+    response = await api_request('post', '/tree/0/revoke-access', auth=True, json='test@email.com')
+    assert response.status_code == status.HTTP_403_FORBIDDEN
+
+
+async def test_core_api_tree_revoke_access_ok(api_request, tree):
+    response = await api_request('post', f'/tree/{tree.id}/revoke-access', auth=True, json='test@email.com')
+    assert response.status_code == status.HTTP_200_OK
 
 
 # UI tests

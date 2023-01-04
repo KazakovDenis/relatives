@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Body, HTTPException, Query, Request, Security, status
 from fastapi.responses import Response
 from ormar import MultipleMatches, NoMatch
+from pydantic import EmailStr
 
 from deps import db
 from tools.notifications.email import invite_to_tree
@@ -83,8 +84,11 @@ async def tree_get_share_link(request: Request, tree_id: int, user: User = Secur
 
 
 @router.post('/tree/{tree_id}/revoke-access', response_model=ResultOk)
-async def tree_revoke_access(tree_id: int, email: str = Body(), user: User = Security(get_active_user)):
+async def tree_revoke_access(tree_id: int, email: EmailStr = Body(), user: User = Security(get_active_user)):
     if not (tree := await has_tree_perm(user.id, tree_id)):
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+
+    if email == user.email:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
 
     # user__email lookup does not work with filter-delete
