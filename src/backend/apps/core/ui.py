@@ -7,6 +7,7 @@ from deps import templates
 
 from ..auth.models import User
 from ..auth.utils import get_active_user, get_user
+from .emails import email_joined_tree
 from .models import Person, PersonTree, Relation, Token, Tree, UserTree
 from .permissions import has_tree_perm
 from .utils import str_to_uuid
@@ -149,11 +150,13 @@ async def ui_tree_join_link(request: Request, tree_id: int, token: str):
         url = URL(request.url_for('ui_login')).include_query_params(next=request.url)
         return RedirectResponse(url)
 
-    token = await Token.objects.select_related('tree').get_or_none(token=str_to_uuid(token))
+    token = await Token.objects.select_related(['user', 'tree']).get_or_none(token=str_to_uuid(token))
     if token.tree.id != tree_id:
         return RedirectResponse(request.url_for('ui_forbidden'))
 
-    await UserTree.objects.get_or_create(user=user, tree=token.tree)
+    _, created = await UserTree.objects.get_or_create(user=user, tree=token.tree)
+    if created:
+        await email_joined_tree(token.user.email, user, token.tree)
     return RedirectResponse(request.url_for('ui_tree_list', tree_id=tree_id))
 
 
