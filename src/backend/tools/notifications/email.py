@@ -1,7 +1,6 @@
 from fastapi_mail import ConnectionConfig, FastMail, MessageSchema, MessageType
 from pydantic import EmailStr
 
-from apps.core.models import Tree
 from config import settings
 
 
@@ -31,29 +30,3 @@ async def send_email(subject: str, recipients: list[EmailStr], template: str, ct
         subtype=MessageType.html,
     )
     await smtp_client.send_message(message, template_name=template)
-
-
-async def verify_email(email: EmailStr, token: str):
-    await send_email(
-        subject=f'Welcome to {settings.PUBLIC_NAME}',
-        recipients=[email],
-        template='signup.html',
-        ctx={
-            'domain': settings.DOMAIN,
-            'token': token,
-        },
-    )
-
-
-async def invite_to_tree(email: EmailStr, user: str, tree: Tree, token: str):
-    await send_email(
-        subject=f'{settings.PUBLIC_NAME}: You have an invitation!',
-        recipients=[email],
-        template='invite.html',
-        ctx={
-            'domain': settings.DOMAIN,
-            'user': user,
-            'tree': tree,
-            'token': str(token),
-        },
-    )

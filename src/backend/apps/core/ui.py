@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Query, Security
+from fastapi.background import BackgroundTasks
 from fastapi.datastructures import URL
 from fastapi.requests import Request
 from fastapi.responses import HTMLResponse, RedirectResponse
@@ -145,7 +146,7 @@ async def ui_tree_join(request: Request, tree_id: int, email: str = Query(''), t
 
 
 @router.get('/tree/{tree_id}/join-link/{token}', response_class=RedirectResponse)
-async def ui_tree_join_link(request: Request, tree_id: int, token: str):
+async def ui_tree_join_link(request: Request, tree_id: int, token: str, background_tasks: BackgroundTasks):
     if not (user := get_user(request)):
         url = URL(request.url_for('ui_login')).include_query_params(next=request.url)
         return RedirectResponse(url)
@@ -156,7 +157,7 @@ async def ui_tree_join_link(request: Request, tree_id: int, token: str):
 
     _, created = await UserTree.objects.get_or_create(user=user, tree=token.tree)
     if created:
-        await email_joined_tree(token.user.email, user, token.tree)
+        background_tasks.add_task(email_joined_tree, token.user.email, user, token.tree)
     return RedirectResponse(request.url_for('ui_tree_list', tree_id=tree_id))
 
 

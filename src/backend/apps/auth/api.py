@@ -30,7 +30,7 @@ async def api_signup(
         token: str = Cookie(None, alias=AUTH_COOKIE),
 ):
     # FIXME
-    from tools.notifications.email import verify_email
+    from .emails import email_verify
 
     if token:
         return {'result': 'already logged in'}
@@ -44,7 +44,7 @@ async def api_signup(
         )
 
     token = await create_session(user)
-    background_tasks.add_task(verify_email, cred.email, token)
+    background_tasks.add_task(email_verify, cred.email, token)
     response.status_code = status.HTTP_201_CREATED
     return {'result': 'ok'}
 

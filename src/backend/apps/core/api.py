@@ -4,11 +4,11 @@ from ormar import MultipleMatches, NoMatch
 from pydantic import EmailStr
 
 from deps import db
-from tools.notifications.email import invite_to_tree
 
 from ..auth.models import User
 from ..auth.utils import get_active_user
 from .constants import BACK_RELATIONS, RelationType
+from .emails import email_invite_to_tree
 from .file import save_person_photo
 from .models import Person, PersonTree, Photo, Relation, Token, Tree, UserTree
 from .permissions import has_tree_perm
@@ -64,7 +64,7 @@ async def tree_share(tree_id: int, recipient: RecipientSchema, user: User = Secu
         raise HTTPException(status_code=status.HTTP_409_CONFLICT)
 
     token = await Token.objects.create()
-    await invite_to_tree(recipient.email, user.email, tree, token.token)
+    await email_invite_to_tree(recipient.email, user.email, tree, token.token)
     return {'result': 'ok'}
 
 
