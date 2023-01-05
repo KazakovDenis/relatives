@@ -59,10 +59,10 @@ function parseResponse(response) {
                 id: `${person_from}/${person_to}`,
                 source: person_from,
                 target: person_to,
-                relationType: item['type'],
             }
         }
-        newNodes.push(edge)
+        if (item['type'] === 'PARENT') edge.data.arrow = 'triangle';
+        newNodes.push(edge);
     })
     nodes = newNodes;
 }
@@ -90,9 +90,14 @@ function buildTree() {
                     'line-color': '#ccc',
                     'line-dash-pattern': [3, 5],
                     'line-style': 'dashed',
-                    // 'source-arrow-shape': 'triangle',
                 }
-            }
+            },
+            {
+                'selector': 'edge[arrow]',
+                'style': {
+                    'source-arrow-shape': 'data(arrow)',
+                }
+            },
         ],
         layout: {
             name: 'cose-bilkent',

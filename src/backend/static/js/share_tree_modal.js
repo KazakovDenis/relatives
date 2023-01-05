@@ -5,7 +5,7 @@
     shareTreeForm.addEventListener('submit', shareTree);
 
     const shareTreeButton = document.getElementById('share-button');
-    shareTreeButton.addEventListener('click', getShareLink);
+    if (shareTreeButton) shareTreeButton.addEventListener('click', getShareLink);
 
     function shareTree(event) {
         event.preventDefault();
