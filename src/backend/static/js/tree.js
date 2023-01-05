@@ -86,14 +86,22 @@ function buildTree() {
                 selector: 'edge',
                 style: {
                     'width': 3,
+                    'curve-style': 'bezier',
                     'line-color': '#ccc',
-                    'curve-style': 'bezier'
+                    'line-dash-pattern': [3, 5],
+                    'line-style': 'dashed',
+                    // 'source-arrow-shape': 'triangle',
                 }
             }
         ],
         layout: {
-            name: 'cose',
+            name: 'cose-bilkent',
             fit: true,
+            nodeDimensionsIncludeLabels: true,
+            idealEdgeLength: 50,
+        },
+        ready: () => {
+            alert('You can move nodes, zoom in/out and open person profile by clicking');
         }
     });
 
@@ -116,7 +124,11 @@ function buildTree() {
 }
 
 function download() {
-    const image = cyto.jpg();
+    const image = cyto.jpg({
+        full: true,
+        scale: 10,
+        quality: 1,
+    });
     fetch(image)
     .then(resp => resp.blob())
     .then(data => {
