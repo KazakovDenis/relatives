@@ -25,15 +25,18 @@ class RequestUser(BaseUser):
 
 class AuthBackend(AuthenticationBackend):
     cookie = 'Authorization'
-    allowed_paths = (
+    allowed_paths = {
         '/login',
         '/signup',
         '/activate',
         '/join',
         '/verify-email',
+        '/forgot-password',
+        '/request-password-reset',
+        '/reset-password',
         '/forbidden',
         '/static',
-    )
+    }
 
     async def authenticate(self, conn):
         # todo: move to Security

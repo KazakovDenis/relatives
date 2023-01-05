@@ -51,6 +51,18 @@ async def ui_forbidden(request: Request):
     return templates.TemplateResponse('public/empty.html', ctx)
 
 
+@router.get('/forgot-password', response_class=HTMLResponse)
+async def ui_forgot_password(request: Request):
+    ctx = {'request': request, 'public': True}
+    return templates.TemplateResponse('public/forgot_password.html', ctx)
+
+
+@router.get('/reset-password', response_class=HTMLResponse)
+async def ui_reset_password(request: Request):
+    ctx = {'request': request, 'public': True}
+    return templates.TemplateResponse('public/reset_password.html', ctx)
+
+
 @router.get('/profile/{user_id}/password', response_class=HTMLResponse)
 async def ui_change_password(request: Request, user_id: int, user: User = Security(get_active_user)):
     if user_id != user.id:
@@ -60,4 +72,4 @@ async def ui_change_password(request: Request, user_id: int, user: User = Securi
         'request': request,
         'user': user,
     }
-    return templates.TemplateResponse('password.html', ctx)
+    return templates.TemplateResponse('change_password.html', ctx)

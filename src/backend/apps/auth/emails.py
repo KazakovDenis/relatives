@@ -14,3 +14,15 @@ async def email_verify(email: EmailStr, token: str):
             'token': token,
         },
     )
+
+
+async def email_reset_password(email: EmailStr, token: str):
+    await send_email(
+        subject='Password reset requested',
+        recipients=[email],
+        template='reset_password.html',
+        ctx={
+            'domain': settings.DOMAIN,
+            'token': token,
+        },
+    )

@@ -1,13 +1,17 @@
+from datetime import timedelta
 from typing import Optional
 
 from fastapi import APIRouter, Cookie, HTTPException, Query, Security, status
 from fastapi.background import BackgroundTasks
 from fastapi.responses import Response
 
-from ..core.models import Token
+from tools.datetime import utcnow
+
+from ..core.models import Token, TokenActions
 from ..core.utils import str_to_uuid
+from .emails import email_reset_password
 from .models import User
-from .schemas import ChangePassword, Credentials, ResultOk
+from .schemas import ChangePassword, Credentials, EmailSchema, ResetPassword, ResultOk
 from .utils import (
     AUTH_COOKIE,
     create_session,
@@ -74,6 +78,31 @@ async def api_logout(response: Response, auth_token: Optional[str] = Cookie(None
     response.status_code = status.HTTP_202_ACCEPTED
     if auth_token:
         await delete_session(auth_token.removeprefix('Bearer '))
+    return {'result': 'ok'}
+
+
+@router.post('/request-password-reset', response_model=ResultOk)
+async def api_request_password_reset(body: EmailSchema):
+    if not (user := await User.objects.get_or_none(email=body.email)):
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+
+    dt = utcnow()
+    token = await Token.objects.get_or_none(user=user, action=TokenActions.RESET_PASSWORD, valid_until__gt=dt)
+    if not token:
+        await Token.objects.filter(user=user, action=TokenActions.RESET_PASSWORD, valid_until__lt=dt).delete()
+        dt = dt + timedelta(hours=1)
+        token = await Token.objects.create(user=user, action=TokenActions.RESET_PASSWORD, valid_until=dt)
+    await email_reset_password(body.email, str(token.token))
+    return {'result': 'ok'}
+
+
+@router.post('/reset-password', response_model=ResultOk)
+async def api_reset_password(body: ResetPassword):
+    if not (token := await Token.objects.get_or_none(token=str_to_uuid(body.token))):
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+
+    await User.objects.filter(id=token.user.id).update(password=hash_password(body.password))
+    await token.delete()
     return {'result': 'ok'}
 
 

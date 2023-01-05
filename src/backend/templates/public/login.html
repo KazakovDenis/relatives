@@ -6,14 +6,13 @@
 
 {% block content %}
 <section class="form-signin w-100 m-auto d-flex h-50">
-  <div>
+  <form id="sign-in-form">
     {% if signup %}
       <h2 class="h3 mb-3 fw-normal" data-text="Welcome">
     {% else %}
       <h2 class="h3 mb-3 fw-normal" data-text="Please sign in">
     {% endif %}
     </h2>
-
     <div class="form-floating">
       <input type="email" name="email" class="form-control" id="email-input" placeholder="name@example.com">
       <label for="email-input">Email</label>
@@ -22,21 +21,16 @@
       <input type="password" name="password" class="form-control" id="password-input" placeholder="Password">
       <label for="password-input" data-text="Password"></label>
     </div>
-
-    {% if not signup %}
-    <div class="checkbox mb-3">
-      <input type="checkbox" name="remember-me">
-      <label data-text="Remember me"></label>
+    <div class="col-auto my-2">
+      <a href="{{ url_for('ui_forgot_password') }}" data-text="Forgot password?"></a>
     </div>
-    {% endif %}
-
     {% if signup %}
-      <button class="w-100 btn btn-lg btn-primary" id="sign-in-button" data-text="Sign up">
+      <button class="w-100 btn btn-lg btn-primary" data-text="Sign up">
     {% else %}
-      <button class="w-100 btn btn-lg btn-primary" id="sign-in-button" data-text="Sign in">
+      <button class="w-100 btn btn-lg btn-primary" data-text="Sign in">
     {% endif %}
     </button>
-  </div>
+  </form>
 </section>
 {% endblock %}
 

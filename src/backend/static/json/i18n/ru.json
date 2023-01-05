@@ -11,7 +11,13 @@
   "Sign in": "Войти",
   "Password": "Пароль",
   "Please sign in": "Войти в личный кабинет",
-  "Remember me": "Запомнить",
+  "Forgot password?": "Забыли пароль?",
+
+  "You will receive an email with a reset link": "Вам придёт ссылка для смены пароля",
+  "Please, check your email to continue": "Пожалуйста, проверьте свою почту для продолжения",
+  "Reset password": "Сбросить пароль",
+  "Submit": "Отправить",
+  "Set new password": "Задайте новый пароль",
 
   "My trees": "Мои деревья",
   "+ Add": "+ Добавить",

@@ -1,9 +1,9 @@
 document.addEventListener('DOMContentLoaded', function() {
-    let button = document.getElementById('sign-in-button');
+    const form = document.getElementById('sign-in-form');
     if (document.location.href.includes('signup')) {
-        button.addEventListener('click', signup);
+        form.addEventListener('submit', signup);
     } else {
-        button.addEventListener('click', login);
+        form.addEventListener('submit', login);
     }
 });
 
@@ -11,7 +11,9 @@ let loginUrl = `${document.location.origin}/api/v1/auth/login`;
 let signupUrl = `${document.location.origin}/api/v1/auth/signup`;
 
 
-function login() {
+function login(event) {
+    event.preventDefault();
+
     const email = document.getElementById('email-input').value;
     const password = document.getElementById('password-input').value;
     const urlParams = new URLSearchParams(window.location.search);
@@ -32,7 +34,9 @@ function login() {
     };
 }
 
-function signup() {
+function signup(event) {
+    event.preventDefault();
+
     const email = document.getElementById('email-input').value;
     const password = document.getElementById('password-input').value;
     const urlParams = new URLSearchParams(window.location.search);

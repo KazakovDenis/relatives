@@ -1,5 +1,5 @@
 from contextlib import suppress
-from datetime import date
+from datetime import date, datetime
 from pathlib import Path
 from typing import Optional, Tuple, Union
 
@@ -179,6 +179,10 @@ class Relation(ormar.Model):
         return self.as_tuple() == other.as_tuple()
 
 
+class TokenActions:
+    RESET_PASSWORD = 'RESET_PASSWORD'
+
+
 class Token(ormar.Model):
     class Meta:
         database = db
@@ -191,3 +195,5 @@ class Token(ormar.Model):
     token: UUID = ormar.UUID(primary_key=True, server_default=func.gen_random_uuid())
     user: User = ormar.ForeignKey(User, ondelete=ReferentialAction.CASCADE, nullable=True)
     tree: Tree = ormar.ForeignKey(Tree, ondelete=ReferentialAction.CASCADE, nullable=True)
+    action: str = ormar.String(max_length=100, nullable=True)
+    valid_until: datetime = ormar.DateTime(timezone=True, nullable=True)
