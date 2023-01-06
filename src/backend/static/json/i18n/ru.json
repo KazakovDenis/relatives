@@ -27,7 +27,8 @@
 
   "Add person": "Добавить родственника",
   "Switch to scheme": "Показать дерево",
-  "Share tree": "Пригласить",
+  "Share": "Пригласить",
+  "Copy": "Копировать",
   "Delete tree": "Удалить дерево",
   "Download": "Скачать",
   "Switch to list": "Показать список",

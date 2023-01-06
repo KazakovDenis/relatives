@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Body, HTTPException, Query, Request, Security, status
+from fastapi.background import BackgroundTasks
 from fastapi.responses import Response
 from ormar import MultipleMatches, NoMatch
 from pydantic import EmailStr
@@ -22,6 +23,7 @@ from .schemas import (
     TreeBuildSchema,
     TreeSchema,
 )
+from .utils import copy_tree
 
 
 router = APIRouter()
@@ -113,6 +115,19 @@ async def tree_scheme(tid: int, user: User = Security(get_active_user)):
         'nodes': persons,
         'edges': list({rel for rel in rels}),
     }
+
+
+@router.post('/tree/{tree_id}/copy', response_model=ResultOk)
+async def tree_copy(
+    tree_id: int,
+    body: TreeSchema,
+    background_tasks: BackgroundTasks,
+    user: User = Security(get_active_user),
+):
+    if not (tree := await has_tree_perm(user.id, tree_id)):
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+    background_tasks.add_task(copy_tree, user, tree, body.name)
+    return {'result': 'ok'}
 
 
 @router.post('/tree/{tree_id}/persons', response_model=Person)

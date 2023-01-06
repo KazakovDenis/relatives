@@ -1,0 +1,48 @@
+<div class="modal fade" id="copy-tree-modal" tabindex="-1" aria-labelledby="copy-tree-modal" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form id="copy-tree-form" data-tree-id="{{ tree.id }}">
+        <div class="modal-header">
+          <h5 class="modal-title">
+            <span data-text="Copy"></span> "{{ tree.name }}"
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <label for="copy-tree-name" class="visually-hidden"></label>
+          <input type="text" class="form-control" name="name" id="copy-tree-name" value="{{ tree.name }} (copy)" required>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary" data-text="Copy"></button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% block extra_script %}
+<script>
+  (() => {
+    document.getElementById('copy-tree-form').addEventListener('submit', event => {
+      event.preventDefault();
+      const treeId = event.target.dataset.treeId;
+      const name = event.target.elements.name.value;
+
+      fetch(`${document.location.origin}/api/v1/tree/${treeId}/copy`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json;charset=utf-8',
+        },
+        body: JSON.stringify({name: name})
+      }).then(response => {
+        if (response.status === 200) {
+          alert('It takes some time. You will have a new tree in "My trees". Refresh the page after a few seconds.')
+          event.target.querySelector('.btn-close').click();
+        } else {
+          alert('Error')
+        }
+      })
+    })
+  })()
+</script>
+{% endblock %}
