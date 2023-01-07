@@ -77,6 +77,18 @@ async def inactive_user(app):
 
 
 @pytest.fixture
+async def super_user(app):
+    obj = await User.objects.create(
+        email=constants.SUPER_USER_EMAIL,
+        password=hash_password(constants.SUPER_USER_PASS),
+        is_superuser=True,
+        is_active=True,
+    )
+    yield obj
+    await obj.delete()
+
+
+@pytest.fixture
 async def session(user):
     return await create_session(user)
 

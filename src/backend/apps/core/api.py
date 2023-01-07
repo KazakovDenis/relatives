@@ -56,7 +56,7 @@ async def tree_detail(tid: int, user: User = Security(get_active_user)):
     return tree
 
 
-@router.post('/tree/{tid}/share', response_model=ResultOk)
+@router.post('/tree/{tree_id}/share', response_model=ResultOk)
 async def tree_share(tree_id: int, recipient: RecipientSchema, user: User = Security(get_active_user)):
     if not (tree := await has_tree_perm(user.id, tree_id)):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
