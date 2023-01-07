@@ -1,12 +1,82 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="d-flex align-content-center flex-wrap justify-content-center">
-    <div></div>
-    <div class="text-center mt-auto mb-auto" >
-        <h1 data-text="Build and fill your family tree with your relatives together"></h1>
-        <img src="{{ url_for('static', path='img/dicaprio.png') }}" alt="DiCaprio tree" class="w-100" style="max-width: 70%">
+<div class="d-flex align-content-center flex-wrap justify-content-center h-100 w-100">
+    <div class="h-100 w-100 mb-auto mt-auto">
+        <h1 class="text-center" data-text="Build and fill your family tree with your relatives together"></h1>
+        <div id="cyto" class="h-100" style="max-width: 100%"></div>
     </div>
     <div></div>
 </div>
+{% endblock %}
+
+{% block extra_script %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.22.1/cytoscape.min.js"></script>
+<script>
+    cyto = cytoscape({
+        container: document.getElementById('cyto'),
+        elements: [
+            {data: {id: 99, fullName: 'Leonardo Wilhelm DiCaprio'}, position: { x: 0, y: 0 }},
+            {data: {id: 100, fullName: 'George Paul DiCaprio'}, position: { x: 200, y: -100 }},
+            {data: {id: 101, fullName: 'Irmelin Indenbirken'}, position: { x: -200, y: -100 }},
+            {data: {id: 102, fullName: 'Helen Indenbirken'}, position: { x: -100, y: -200 }},
+            {data: {id: 103, fullName: 'Wilhelm Indenbirken'}, position: { x: -300, y: -200 }},
+            {data: {id: 104, fullName: 'George Leon DiCaprio'}, position: { x: 100, y: -200 }},
+            {data: {id: 105, fullName: 'Olga Ann Jacobs'}, position: { x: 300, y: -200 }},
+            {data: {id: 1, source: 100, target: 104, arrow: 'triangle'}},
+            {data: {id: 2, source: 99, target: 100, arrow: 'triangle'}},
+            {data: {id: 3, source: 101, target: 103, arrow: 'triangle'}},
+            {data: {id: 4, source: 103, target: 102}},
+            {data: {id: 5, source: 100, target: 105, arrow: 'triangle'}},
+            {data: {id: 6, source: 105, target: 104}},
+            {data: {id: 7, source: 101, target: 102, arrow: 'triangle'}},
+            {data: {id: 8, source: 99, target: 101, arrow: 'triangle'}},
+            {data: {id: 9, source: 100, target: 101}},
+        ],
+        style: [
+            {
+                selector: 'node',
+                style: {
+                    'label': 'data(fullName)',
+                    'background-color': 'rgba(54,119,206,0.65)',
+                    'font-size': 16,
+                    'text-valign': 'bottom',
+                }
+            },
+            {
+                selector: 'edge',
+                style: {
+                    'width': 3,
+                    'curve-style': 'bezier',
+                    'line-color': '#ccc',
+                    'line-dash-pattern': [3, 5],
+                    'line-style': 'dashed',
+                }
+            },
+            {
+                'selector': 'edge[arrow]',
+                'style': {
+                    'source-arrow-shape': 'data(arrow)',
+                }
+            },
+        ],
+        layout: {
+            name: 'preset',
+            fit: true,
+            directed: true,
+            avoidOverlap: true,
+            spacingFactor: 1,
+            nodeDimensionsIncludeLabels: true,
+        },
+    });
+
+    cyto.on('drag', 'node', function(event){
+        prevNode.style('background-color', 'rgba(54,119,206,0.65)');
+        event.target.style('background-color', 'rgb(200,0,0)');
+        prevNode = event.target;
+    });
+
+    prevNode = cyto.nodes()[0];
+    prevNode.style('background-color', 'rgb(200,0,0)');
+</script>
 {% endblock %}
